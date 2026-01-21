@@ -7,7 +7,87 @@
 
 <style>
 body{
+  font-family: Arial, sans-serif;
+  background:#f4f6fa;
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+h1{
+  text-align:center;
+  font-size:30px;
+  color:#0b4f6c;
+}
+h3{
+  margin-top:25px;
+  color:#333;
+}
+a{
+  display:block;
+  padding:18px;
+  margin:12px 0;
+  font-size:22px;
+  text-decoration:none;
+  color:#fff;
+  border-radius:10px;
+}
+.blue{background:#1565c0}
+.green{background:#2e7d32}
+.orange{background:#ef6c00}
+.purple{background:#6a1b9a}
+.note{
+  margin-top:20px;
+  font-size:18px;
+  color:#333;
+}
+label{
+  display:block;
+  margin-top:10px;
+}
+input, select, button, textarea{
+  font-size:16px;
+  padding:6px;
+  margin-top:4px;
+}
+button{
+  margin-right:6px;
+}
+ul{
+  padding-left:18px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📌 AFFILIATE DASHBOARD</h1>
+
+<!-- ===== MENU ===== -->
+<a class="blue" href="002-thoi-gian-bieu-lam-viec.html">
+🕒 Thời gian biểu & Báo giờ đăng bài
+</a>
+
+<a class="green" href="003-shopee-tu-dong-lam-hh.html">
+🤖 Shopee – Tự động làm hoa hồng
+</a>
+
+<a class="orange" href="004-shopee-tim-chu-cuoi-doan-van.html">
+🔎 Shopee – Tìm sản phẩm nhanh
+</a>
+
+<a class="purple" href="005-shopee-tim-san-pham-trang-tri-noi-that.html">
+🛍️ Sản phẩm trang trí – lợi nhuận cao
+</a>
+
+<div class="note">
+✅ Chữ to – dễ đọc trên điện thoại  
+✅ Mỗi tối chỉ cần mở trang này  
+✅ Copy link → dán Facebook, Zalo, TikTok
+</div>
+
 <hr>
+
+<!-- ===== BÁO THỨC ===== -->
 <h3>⏰ Báo thức đăng bài (FULL)</h3>
 
 <label>Giờ:</label>
@@ -106,18 +186,10 @@ function updateStats(){
 }
 
 function quickSchedule(){
-  const times = ["09:00","12:00","19:00"];
-  times.forEach(t=>{
-    alarms.push({
-      time:t,
-      type:"Shopee",
-      sound:"clock",
-      link:"",
-      fired:false
-    });
+  ["09:00","12:00","19:00"].forEach(t=>{
+    alarms.push({time:t,type:"Shopee",sound:"clock",link:"",fired:false});
   });
-  save();
-  render();
+  save(); render();
 }
 
 setInterval(()=>{
@@ -129,29 +201,12 @@ setInterval(()=>{
   alarms.forEach(a=>{
     if(a.time === current && !a.fired){
       document.getElementById("sound-"+a.sound).play();
-      if(a.link){
-        if(confirm("⏰ Đến giờ đăng bài " + a.type + "!\nMở link ngay?")){
-          window.open(a.link,"_blank");
-        }
-      }else{
-        alert("⏰ Đến giờ đăng bài " + a.type + "!");
-      }
+      alert("⏰ Đến giờ đăng bài " + a.type + "!");
       a.fired = true;
-      save();
-      render();
+      save(); render();
     }
   });
 },1000);
-
-/* Reset mỗi ngày lúc 00:00 */
-setInterval(()=>{
-  const now = new Date();
-  if(now.getHours()===0 && now.getMinutes()===0){
-    alarms.forEach(a=>a.fired=false);
-    save();
-    render();
-  }
-},60000);
 
 function exportReport(){
   let text = "📊 BÁO CÁO HÔM NAY\n";
@@ -163,64 +218,6 @@ function exportReport(){
 
 render();
 </script>
-
-  font-family: Arial, sans-serif;
-  background:#f4f6fa;
-  max-width:900px;
-  margin:auto;
-  padding:15px;
-}
-h1{
-  text-align:center;
-  font-size:30px;
-  color:#0b4f6c;
-}
-a{
-  display:block;
-  padding:18px;
-  margin:12px 0;
-  font-size:22px;
-  text-decoration:none;
-  color:#fff;
-  border-radius:10px;
-}
-.blue{background:#1565c0}
-.green{background:#2e7d32}
-.orange{background:#ef6c00}
-.purple{background:#6a1b9a}
-.note{
-  margin-top:20px;
-  font-size:18px;
-  color:#333;
-}
-</style>
-</head>
-
-<body>
-
-<h1>📌 AFFILIATE DASHBOARD</h1>
-
-<a class="blue" href="002-thoi-gian-bieu-lam-viec.html">
-🕒 Thời gian biểu & Báo giờ đăng bài
-</a>
-
-<a class="green" href="003-shopee-tu-dong-lam-hh.html">
-🤖 Shopee – Tự động làm hoa hồng
-</a>
-
-<a class="orange" href="004-shopee-tim-chu-cuoi-doan-van.html">
-🔎 Shopee – Tìm sản phẩm nhanh
-</a>
-
-<a class="purple" href="005-shopee-tim-san-pham-trang-tri-noi-that.html">
-🛍️ Sản phẩm trang trí – lợi nhuận cao
-</a>
-
-<div class="note">
-✅ Chữ to – dễ đọc trên điện thoại  
-✅ Mỗi tối chỉ cần mở trang này  
-✅ Copy link → dán Facebook, Zalo, TikTok
-</div>
 
 </body>
 </html>
