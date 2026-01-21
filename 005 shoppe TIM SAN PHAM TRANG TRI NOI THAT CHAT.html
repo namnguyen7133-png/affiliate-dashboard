@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Game Cuộc Sống & Thu Nhập</title>
+<style>
+body{font-family:Arial;background:#eef2f5;padding:20px}
+.card{background:#fff;max-width:1000px;margin:auto;border-radius:14px;padding:20px;box-shadow:0 8px 25px rgba(0,0,0,.15)}
+h1{text-align:center;color:#2c3e50}
+select,button{padding:10px;margin:6px 0;width:100%}
+button{background:#27ae60;color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}
+.box{background:#f7fbff;padding:10px;border-radius:10px}
+.log{background:#111;color:#0f0;font-family:monospace;padding:10px;height:220px;overflow:auto;border-radius:10px}
+.good{color:green;font-weight:bold}
+.warn{color:#c0392b;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>🎮 GAME CUỘC SỐNG – THU NHẬP – TỪ THIỆN</h1>
+
+<label>Hoàn cảnh xuất phát</label>
+<select id="start">
+<option value="1">Cấp 1 – Nghèo (làm thuê)</option>
+<option value="2">Cấp 2 – Trung lưu</option>
+<option value="3">Cấp 3 – Tự kinh doanh</option>
+</select>
+
+<button onclick="startGame()">Bắt đầu cuộc đời</button>
+
+<div class="stat">
+<div class="box">📆 Năm: <span id="year">0</span></div>
+<div class="box">💰 Thu nhập/tháng: <span id="income">0</span> triệu</div>
+<div class="box">🏦 Tài sản: <span id="asset">0</span> triệu</div>
+<div class="box">📈 Cấp độ sống: <span id="level">1</span></div>
+<div class="box">❤️ Từ thiện: <span id="charity">0</span> triệu</div>
+<div class="box">🧠 Kim Tứ Đồ: <span id="quad">E</span></div>
+</div>
+
+<button onclick="nextYear()">⏭️ Sang năm tiếp theo</button>
+
+<h3>👨‍👩‍👧‍👦 Nguồn lực gia đình & giáo dục</h3>
+<div class="stat">
+<div class="box">👨 Cha: <span id="father"></span></div>
+<div class="box">👩 Mẹ: <span id="mother"></span></div>
+<div class="box">🧑 Con trai: <span id="son"></span></div>
+<div class="box">👧 Con gái: <span id="daughter"></span></div>
+<div class="box">💍 Dâu/Rể: <span id="inlaw"></span></div>
+</div>
+
+<h3>🌐 Xu hướng hiện đại (AI – số hóa – bền vững)</h3>
+<div class="stat">
+<div class="box">🤖 Kỹ năng AI: <span id="aiSkill">Cơ bản</span></div>
+<div class="box">💻 Nghề số: <span id="digitalJob">Chưa</span></div>
+<div class="box">🧠 Sức khỏe tinh thần: <span id="mental">Ổn định</span></div>
+<div class="box">🌱 Bền vững: <span id="green">Thấp</span></div>
+<div class="box">🌍 Toàn cầu hóa: <span id="global">Nội địa</span></div>
+<div class="box">🧬 Công nghệ mới: <span id="tech">Theo dõi</span></div>
+</div>
+
+<h3>📜 Nhật ký cuộc đời</h3>
+<div id="log" class="log"></div>
+</div>
+
+<script>
+let year=0, income=0, asset=0, level=1, charity=0, quad='E';
+let aiSkill=1, digitalJob=false, mental=70, green=10, global=0;
+
+function startGame(){
+ level=Number(document.getElementById('start').value);
+ year=0; asset=0; charity=0;
+ income = level==1?8:level==2?15:35;
+ quad = level<=2?'E':'S';
+ log(`Bắt đầu ở cấp ${level}, thu nhập ${income} triệu/tháng`);
+ update();
+}
+
+function nextYear(){
+ year++;
+ if(year%2==0 && aiSkill<5) aiSkill++;
+ if(level>=3) digitalJob=true;
+ mental = Math.max(40, mental + (level>=3?2:-3));
+ green += level>=4?5:2;
+ global = level>=4?1:0;
+ year++;
+ let yearlyIncome = income*12;
+ // 6 lọ thông minh (tỷ lệ linh hoạt)
+ let need=yearlyIncome*0.55;
+ let save=yearlyIncome*0.1;
+ let invest=yearlyIncome*0.2;
+ let edu=yearlyIncome*0.1;
+ let enjoy=yearlyIncome*0.03;
+ let give=yearlyIncome*0.02;
+
+ asset += invest*1.3/12; // sinh lời
+ charity += give/12;
+
+ // nâng cấp cấp độ
+ if(asset>500 && level<3){level=3; quad='S'; income=40; log('🎯 Lên cấp 3 – Tự kinh doanh');}
+ if(asset>1500 && level<4){level=4; quad='B'; income=120; log('🚀 Lên cấp 4 – Chủ doanh nghiệp');}
+ if(asset>5000 && level<5){level=5; quad='I'; income=600; log('👑 Lên cấp 5 – Nhà đầu tư');}
+
+ log(`Năm ${year}: Tiêu dùng ${need.toFixed(0)} – Đầu tư ${invest.toFixed(0)} – Từ thiện ${give.toFixed(0)}`);
+ update();
+}
+
+function update(){
+ document.getElementById('year').innerText=year;
+ document.getElementById('income').innerText=income;
+ document.getElementById('asset').innerText=asset.toFixed(0);
+ document.getElementById('level').innerText=level;
+ document.getElementById('charity').innerText=charity.toFixed(0);
+ document.getElementById('quad').innerText=quad;
+
+ const edu={
+ 1:{f:'Lao động phổ thông',m:'Nội trợ/bán hàng',s:'Học nghề',d:'Học nghề',i:'Cấp 1'},
+ 2:{f:'Trung cấp – thợ lành nghề',m:'Dịch vụ',s:'CĐ/ĐH',d:'CĐ/ĐH',i:'Cấp 2'},
+ 3:{f:'ĐH – kinh doanh',m:'Quản lý gia đình',s:'ĐH chuyên môn',d:'ĐH chuyên môn',i:'Cấp 3'},
+ 4:{f:'CEO – quản trị',m:'Tài chính',s:'MBA/kỹ sư',d:'MBA/tài chính',i:'Cấp 4'},
+ 5:{f:'Nhà đầu tư',m:'Quản trị tài sản',s:'Quốc tế – lãnh đạo',d:'Quốc tế – ngoại giao',i:'Cấp 5'}
+ };
+
+ document.getElementById('father').innerText=edu[level].f;
+ document.getElementById('mother').innerText=edu[level].m;
+ document.getElementById('son').innerText=edu[level].s;
+ document.getElementById('daughter').innerText=edu[level].d;
+ document.getElementById('inlaw').innerText=edu[level].i;
+
+ document.getElementById('aiSkill').innerText=['Cơ bản','Khá','Tốt','Nâng cao','Chuyên gia'][aiSkill-1];
+ document.getElementById('digitalJob').innerText=digitalJob?'Có':'Chưa';
+ document.getElementById('mental').innerText=mental>70?'Tốt':mental>50?'Ổn định':'Căng thẳng';
+ document.getElementById('green').innerText=green+'%';
+ document.getElementById('global').innerText=global?'Quốc tế':'Nội địa';
+ document.getElementById('tech').innerText=level>=4?'AI/Fintech':'Theo dõi';
+}
+}
+
+function log(t){
+ let l=document.getElementById('log');
+ l.innerHTML+=`> ${t}<br>`;
+ l.scrollTop=l.scrollHeight;
+}
+</script>
+</body>
+</html>

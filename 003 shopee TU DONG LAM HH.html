@@ -1,0 +1,1655 @@
+<div class="percentage-controls">
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phân Tích Shopee Affiliate</title>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f4f6f8 0%, #e9edf0 100%);
+            margin: 0;
+            padding: 20px;
+            max-width: 1400px;
+            margin: auto;
+            color: #333;
+        }
+        
+        header {
+            background: linear-gradient(to right, #ff5722, #ee4d2d);
+            padding: 25px 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(238, 77, 45, 0.2);
+            color: white;
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        header p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+        }
+        
+        .analysis-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            color: #ff5722;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .percentage-input-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #28a745;
+        }
+        
+        .percentage-input-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #28a745;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .percentage-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .percentage-input-container {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .percentage-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .percentage-input {
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .percentage-input:focus {
+            outline: none;
+            border-color: #28a745;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
+        }
+        
+        .percentage-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .percentage-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .add-btn {
+            background: #28a745;
+            color: white;
+        }
+        
+        .add-btn:hover {
+            background: #218838;
+        }
+        
+        .clear-btn {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .clear-btn:hover {
+            background: #c82333;
+        }
+        
+        .preset-btn {
+            background: #007bff;
+            color: white;
+        }
+        
+        .preset-btn:hover {
+            background: #0056b3;
+        }
+        
+        .percentages-display {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .percentages-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .percentage-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .remove-percent {
+            cursor: pointer;
+            color: #dc3545;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        .mode-selector {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .mode-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .mode-option:hover {
+            background: #f0f0f0;
+        }
+        
+        .mode-option.active {
+            background: #e6f7ff;
+            border-color: #007bff;
+        }
+        
+        .mode-option input {
+            margin: 0;
+            cursor: pointer;
+        }
+        
+        .input-container {
+            margin-bottom: 20px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 14px 16px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #ff5722;
+            box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.2);
+        }
+        
+        .percent-analysis-container {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f0f7ff;
+            border-radius: 10px;
+            border-left: 5px solid #007bff;
+        }
+        
+        .percent-analysis-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .percent-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .percent-stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+        
+        .percent-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff5722;
+            text-align: center;
+        }
+        
+        .percent-label {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-top: 5px;
+        }
+        
+        .percent-bar-container {
+            margin-top: 10px;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .percent-bar {
+            height: 100%;
+            background: linear-gradient(to right, #4CAF50, #8BC34A);
+            border-radius: 5px;
+            transition: width 1s ease;
+        }
+        
+        .url-input-container {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+        
+        .file-input-container {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 2px dashed #ccc;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .file-input-container:hover {
+            border-color: #ff5722;
+            background: #fff5f2;
+        }
+        
+        .file-input-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .file-input-icon {
+            font-size: 24px;
+            color: #ff5722;
+        }
+        
+        .file-input-text {
+            font-size: 14px;
+        }
+        
+        #fileInfo, #urlInfo {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #28a745;
+            font-weight: 500;
+        }
+        
+        .buttons-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex: 1;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(to right, #ff5722, #ee4d2d);
+            color: white;
+        }
+        
+        .primary-btn:hover {
+            background: linear-gradient(to right, #e64a19, #d84315);
+            box-shadow: 0 5px 15px rgba(255, 87, 34, 0.3);
+        }
+        
+        .secondary-btn {
+            background: #f1f1f1;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .secondary-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .tertiary-btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 20px;
+            font-size: 14px;
+            flex: none;
+        }
+        
+        .tertiary-btn:hover {
+            background: #0056b3;
+        }
+        
+        #offers-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .offer-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .offer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .offer-card h3 {
+            color: #007bff;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .commission {
+            font-weight: bold;
+            color: #28a745;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .category {
+            color: #666;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .links {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .links a {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        
+        .primary-link {
+            background: #ff5722;
+            color: #fff;
+        }
+        
+        .primary-link:hover {
+            background: #e64a19;
+        }
+        
+        .secondary-link {
+            background: #f1f1f1;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+        
+        .secondary-link:hover {
+            background: #e0e0e0;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+        
+        .stats {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff5722;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff5722;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .commission-filter {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f0f7ff;
+            border-radius: 8px;
+            border: 1px solid #cce5ff;
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .filter-option {
+            padding: 8px 15px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        
+        .filter-option:hover {
+            background: #e6f7ff;
+            border-color: #007bff;
+        }
+        
+        .filter-option.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .info-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff3cd;
+            border-radius: 6px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .buttons-container {
+                flex-direction: column;
+            }
+            
+            #offers-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .percent-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-options {
+                justify-content: center;
+            }
+            
+            .percentage-controls {
+                flex-direction: column;
+            }
+            
+            .percentage-input-container {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🔍 Phân Tích Shopee Affiliate</h1>
+        <p>Nhập tỷ lệ phần trăm riêng và phân tích dữ liệu CSV</p>
+    </header>
+    
+    <div class="analysis-section">
+        <!-- PHẦN NHẬP TỶ LỆ PHẦN TRĂM -->
+        <div class="percentage-input-section">
+            <div class="percentage-input-title">
+                <span>📊</span> Nhập Tỷ Lệ Phần Trăm Để Phân Tích
+            </div>
+            
+            <div class="info-text">
+                💡 <strong>106</strong> là tổng số lượng đã bán được từ tất cả các tỷ lệ phần trăm
+            </div>
+            
+            <div class="percentage-controls"> 
+			<div class="input-container">
+    <label class="input-label">📦 Nhập số lượng sản phẩm đã bán:</label>
+    <div class="input-group">
+        <input type="number" id="soldInput" min="0" placeholder="Ví dụ: 106">
+    </div>
+</div>
+
+                <div class="percentage-input-container">
+                    <div class="input-label">Nhập tỷ lệ phần trăm (cách nhau bằng dấu phẩy hoặc từng cái):</div>
+                    <div class="percentage-input-group">
+                        <input type="text" id="percentInput" class="percentage-input" placeholder="Ví dụ: 14, 27, 6, 9, 5, 26, 22, 25, 7, 14, 24, 11, 23, 4, 37">
+                        <button class="tertiary-btn" onclick="addPercentages()">Thêm</button>
+                    </div>
+                    
+                    <div class="percentage-buttons">
+                        <button class="percentage-btn add-btn" onclick="addSinglePercentage()">Thêm từng %</button>
+                        <button class="percentage-btn clear-btn" onclick="clearPercentages()">Xóa tất cả</button>
+                        <button class="percentage-btn preset-btn" onclick="loadPresetPercentages()">Mẫu có sẵn</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="percentages-display">
+                <div class="input-label">Các tỷ lệ đã nhập (tự động loại bỏ trùng lặp):</div>
+                <div class="percentages-list" id="percentagesList">
+                    <!-- Danh sách phần trăm sẽ hiển thị ở đây -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- PHÂN TÍCH THỐNG KÊ -->
+        <div class="percent-analysis-container">
+            <div class="percent-analysis-title">
+                <span>📈</span> Phân Tích Tỷ Lệ Phần Trăm
+            </div>
+            <div class="percent-stats" id="percentStats">
+                <!-- Thống kê phần trăm sẽ được hiển thị ở đây -->
+            </div>
+        </div>
+        
+        <div class="section-title">
+            <span>🔍</span> Chọn kiểu tìm kiếm
+        </div>
+        
+        <div class="mode-selector">
+            <div class="mode-option active" onclick="selectMode('shop')">
+                <input type="radio" name="mode" value="shop" checked>
+                <span>Theo TÊN SHOP</span>
+            </div>
+            <div class="mode-option" onclick="selectMode('product')">
+                <input type="radio" name="mode" value="product">
+                <span>Theo SẢN PHẨM / NGÀNH</span>
+            </div>
+        </div>
+        
+        <div class="commission-filter">
+            <div class="input-label">Lọc theo tỷ lệ hoa hồng:</div>
+            <div class="filter-options" id="commissionFilter">
+                <!-- Các nút lọc sẽ được tạo động -->
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <label class="input-label">Nhập từ khóa tìm kiếm:</label>
+            <div class="input-group">
+                <input id="searchInput" placeholder="Ví dụ: BGHouse / mỹ phẩm / decor / túi xách">
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <label class="input-label">Hoặc nhập link CSV trực tiếp:</label>
+            <div class="url-input-container">
+                <div class="input-group">
+                    <input id="csvUrlInput" type="text" placeholder="https://example.com/data.csv">
+                    <button class="tertiary-btn" onclick="loadCSVFromUrl()">📥 Tải CSV</button>
+                </div>
+                <div id="urlInfo"></div>
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <label class="input-label">Hoặc tải tệp lên từ máy tính:</label>
+            <div class="file-input-container">
+                <label class="file-input-label">
+                    <input type="file" id="fileInput" accept=".txt,.csv,.json" style="display: none;">
+                    <div class="file-input-icon">📁</div>
+                    <div class="file-input-text">
+                        <strong>Nhấp để chọn tệp</strong><br>
+                        Hỗ trợ định dạng: TXT, CSV, JSON
+                    </div>
+                </label>
+            </div>
+            <div id="fileInfo"></div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Đang tải và phân tích dữ liệu...</p>
+        </div>
+        
+        <div class="buttons-container">
+            <button class="primary-btn" onclick="analyzeData()">
+                <span>🚀</span> TÌM KIẾM NGAY
+            </button>
+            <button class="secondary-btn" onclick="resetForm()">
+                <span>🔄</span> LÀM MỚI
+            </button>
+        </div>
+    </div>
+    
+    <div id="stats-container" style="display: none;"></div>
+    <div class="analysis-section">
+    <h2 class="section-title">📊 Bảng Phân Tích Giá & Hoa Hồng</h2>
+    <div id="priceTableContainer"></div>
+</div>
+
+<div class="analysis-section">
+    <h2 class="section-title">📈 Biểu Đồ Giá Theo %</h2>
+    <div id="priceChart"></div>
+</div>
+
+    <div id="offers-container"></div>
+    
+    <script>
+        // ================== BIẾN TOÀN CỤC ==================
+        let percentages = []; // Lưu danh sách phần trăm đã nhập
+        const totalClicks = 106; // Tổng số lượng đã bán
+        let shopeeOffers = []; // Dữ liệu từ CSV
+        let currentFilter = 'all'; // Lưu filter hiện tại
+        
+        // ================== QUẢN LÝ PHẦN TRĂM ==================
+        function addPercentages() {
+            const input = document.getElementById('percentInput').value.trim();
+            if (!input) {
+                alert('Vui lòng nhập tỷ lệ phần trăm');
+                return;
+            }
+            
+            // Tách các phần trăm bằng dấu phẩy hoặc khoảng trắng
+            const newPercentages = input.split(/[, ]+/)
+                .map(p => {
+                    // Loại bỏ ký tự % và khoảng trắng
+                    let num = p.replace('%', '').trim();
+                    // Chuyển đổi sang số
+                    return parseFloat(num);
+                })
+                .filter(p => !isNaN(p) && p > 0 && p <= 100); // Chỉ lấy số hợp lệ
+            
+            if (newPercentages.length === 0) {
+                alert('Không tìm thấy số phần trăm hợp lệ. Vui lòng nhập số (ví dụ: 14, 27, 6)');
+                return;
+            }
+            
+            // Thêm vào mảng, loại bỏ trùng lặp
+            percentages = [...new Set([...percentages, ...newPercentages])].sort((a, b) => a - b);
+            
+            // Cập nhật hiển thị
+            updatePercentagesDisplay();
+            
+            // Xóa ô nhập
+            document.getElementById('percentInput').value = '';
+            
+            // Cập nhật thống kê
+            updatePercentageStats();
+        }
+        
+        function addSinglePercentage() {
+            const input = document.getElementById('percentInput').value.trim();
+            if (!input) {
+                alert('Vui lòng nhập tỷ lệ phần trăm');
+                return;
+            }
+            
+            // Chỉ lấy số đầu tiên
+            const num = parseFloat(input.replace('%', '').trim());
+            
+            if (isNaN(num) || num <= 0 || num > 100) {
+                alert('Vui lòng nhập số phần trăm hợp lệ (từ 1 đến 100)');
+                return;
+            }
+            
+            // Thêm vào mảng, loại bỏ trùng lặp
+            percentages = [...new Set([...percentages, num])].sort((a, b) => a - b);
+            
+            // Cập nhật hiển thị
+            updatePercentagesDisplay();
+            
+            // Xóa ô nhập
+            document.getElementById('percentInput').value = '';
+            
+            // Cập nhật thống kê
+            updatePercentageStats();
+        }
+        
+        function loadPresetPercentages() {
+            // Mẫu phần trăm mặc định (có thêm 4%, 37%)
+            const preset = [14, 27, 6, 9, 5, 26, 22, 25, 7, 14, 24, 11, 23, 4, 37];
+            
+            // Thêm vào mảng, loại bỏ trùng lặp
+            percentages = [...new Set([...percentages, ...preset])].sort((a, b) => a - b);
+            
+            // Cập nhật hiển thị
+            updatePercentagesDisplay();
+            
+            // Cập nhật thống kê
+            updatePercentageStats();
+            
+            // Điền vào ô nhập để người dùng thấy
+            document.getElementById('percentInput').value = preset.join(', ');
+        }
+        
+        function clearPercentages() {
+            if (confirm('Bạn có chắc chắn muốn xóa tất cả tỷ lệ phần trăm?')) {
+                percentages = [];
+                updatePercentagesDisplay();
+                updatePercentageStats();
+                document.getElementById('percentInput').value = '';
+            }
+        }
+        
+        function removePercentage(index) {
+            percentages.splice(index, 1);
+            updatePercentagesDisplay();
+            updatePercentageStats();
+        }
+        
+        function updatePercentagesDisplay() {
+            const listContainer = document.getElementById('percentagesList');
+            
+            if (percentages.length === 0) {
+                listContainer.innerHTML = '<div style="color: #999; font-style: italic;">Chưa có tỷ lệ nào được nhập</div>';
+                return;
+            }
+            
+            let html = '';
+            percentages.forEach((percent, index) => {
+                html += `
+                    <div class="percentage-tag">
+                        ${percent}%
+                        <span class="remove-percent" onclick="removePercentage(${index})">×</span>
+                    </div>
+                `;
+            });
+            
+            listContainer.innerHTML = html;
+        }
+        
+        // ================== HIỂN THỊ THỐNG KÊ PHẦN TRĂM ==================
+        function updatePercentageStats() {
+            const statsContainer = document.getElementById('percentStats');
+            
+            if (percentages.length === 0) {
+                statsContainer.innerHTML = `
+                    <div class="percent-stat-item">
+                        <div class="percent-value">0</div>
+                        <div class="percent-label">Chưa có dữ liệu</div>
+                        <div class="percent-bar-container">
+                            <div class="percent-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Tính tổng
+            const sum = percentages.reduce((a, b) => a + b, 0);
+            
+            // Tính số lần xuất hiện của mỗi giá trị
+            const countMap = {};
+            percentages.forEach(p => {
+                countMap[p] = (countMap[p] || 0) + 1;
+            });
+            
+            // Tính phần trăm của mỗi giá trị
+            const percentagesData = Object.keys(countMap).map(key => ({
+                value: parseInt(key),
+                count: countMap[key],
+                percentage: ((countMap[key] / percentages.length) * 100).toFixed(1)
+            })).sort((a, b) => b.value - a.value);
+            
+            let statsHTML = '';
+            
+            // Hiển thị tổng quan
+            statsHTML += `
+                <div class="percent-stat-item">
+                    <div class="percent-value">${percentages.length}</div>
+                    <div class="percent-label">Số tỷ lệ (đã loại trùng)</div>
+                    <div class="percent-bar-container">
+                        <div class="percent-bar" style="width: ${Math.min(100, (percentages.length / 50) * 100)}%"></div>
+                    </div>
+                </div>
+                <div class="percent-stat-item">
+                    <div class="percent-value">${totalClicks}</div>
+                    <div class="percent-label">Tổng số lượng đã bán</div>
+                    <div class="percent-bar-container">
+                        <div class="percent-bar" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="percent-stat-item">
+                    <div class="percent-value">${(sum / percentages.length).toFixed(1)}%</div>
+                    <div class="percent-label">Trung bình các tỷ lệ</div>
+                    <div class="percent-bar-container">
+                        <div class="percent-bar" style="width: ${(sum / percentages.length)}%"></div>
+                    </div>
+                </div>
+                <div class="percent-stat-item">
+                    <div class="percent-value">${Math.max(...percentages)}%</div>
+                    <div class="percent-label">Tỷ lệ cao nhất</div>
+                    <div class="percent-bar-container">
+                        <div class="percent-bar" style="width: ${(Math.max(...percentages) / 100) * 100}%"></div>
+                    </div>
+                </div>
+            `;
+            
+            // Thêm các tỷ lệ cụ thể (tối đa 8 cái)
+            percentagesData.slice(0, 8).forEach((item, index) => {
+                const width = (item.value / Math.max(...percentages)) * 100;
+                statsHTML += `
+                    <div class="percent-stat-item">
+                        <div class="percent-value">${item.value}%</div>
+                        <div class="percent-label">${item.count} lần (${item.percentage}%)</div>
+                        <div class="percent-bar-container">
+                            <div class="percent-bar" style="width: ${width}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            statsContainer.innerHTML = statsHTML;
+            
+            // Tạo các nút lọc
+            createFilterButtons();
+        }
+        
+        function createFilterButtons() {
+            const filterContainer = document.getElementById('commissionFilter');
+            
+            if (percentages.length === 0) {
+                filterContainer.innerHTML = '<div style="color: #999;">Vui lòng nhập tỷ lệ phần trăm trước</div>';
+                return;
+            }
+            
+            const uniquePercentages = [...new Set(percentages)].sort((a, b) => a - b);
+            
+            let filterHTML = `
+                <div class="filter-option ${currentFilter === 'all' ? 'active' : ''}" onclick="setFilter('all')">
+                    Tất cả (${uniquePercentages.length} tỷ lệ)
+                </div>
+            `;
+            
+            uniquePercentages.forEach(percent => {
+                const count = percentages.filter(p => p === percent).length;
+                filterHTML += `
+                    <div class="filter-option ${currentFilter === percent.toString() ? 'active' : ''}" onclick="setFilter('${percent}')">
+                        ${percent}% (${count})
+                    </div>
+                `;
+            });
+            
+            filterContainer.innerHTML = filterHTML;
+        }
+        
+        function setFilter(filterValue) {
+            currentFilter = filterValue;
+            createFilterButtons();
+            renderOffers(shopeeOffers);
+        }
+        
+        // ================== HÀM PHÂN TÍCH CSV ==================
+        function parseCSV(csvText) {
+            const results = [];
+            const lines = csvText.split('\n');
+            
+            if (lines.length === 0) return results;
+            
+            // Loại bỏ BOM nếu có
+            let firstLine = lines[0];
+            if (firstLine.charCodeAt(0) === 0xFEFF) {
+                firstLine = firstLine.substring(1);
+                lines[0] = firstLine;
+            }
+            
+            // Lấy headers
+            const headers = parseCSVLine(lines[0]);
+            
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                const values = parseCSVLine(line);
+                if (values.length === 0) continue;
+                
+                const row = {};
+                for (let j = 0; j < headers.length; j++) {
+                    if (j < values.length) {
+                        row[headers[j]] = values[j];
+                    } else {
+                        row[headers[j]] = '';
+                    }
+                }
+                
+                results.push(row);
+            }
+            
+            return results;
+        }
+        
+        function parseCSVLine(line) {
+            const values = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                const nextChar = i + 1 < line.length ? line[i + 1] : '';
+                
+                if (char === '"' && !inQuotes) {
+                    inQuotes = true;
+                } else if (char === '"' && inQuotes && nextChar === '"') {
+                    current += '"';
+                    i++; // Bỏ qua dấu nháy kép tiếp theo
+                } else if (char === '"' && inQuotes) {
+                    inQuotes = false;
+                } else if (char === ',' && !inQuotes) {
+                    values.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            values.push(current);
+            return values.map(v => v.trim());
+        }
+        
+        // ================== TẢI CSV TỪ URL ==================
+        async function loadCSVFromUrl() {
+            const url = document.getElementById('csvUrlInput').value.trim();
+            const urlInfo = document.getElementById('urlInfo');
+            
+            if (!url) {
+                urlInfo.innerHTML = '<span style="color:red">⚠️ Vui lòng nhập URL CSV</span>';
+                return;
+            }
+            
+            try {
+                document.getElementById('loading').style.display = 'block';
+                urlInfo.innerHTML = '⏳ Đang tải dữ liệu từ URL...';
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const csvText = await response.text();
+                
+                if (!csvText || csvText.trim().length === 0) {
+                    throw new Error('File CSV trống');
+                }
+                
+                const csvData = parseCSV(csvText);
+                
+                if (csvData.length === 0) {
+                    throw new Error('Không tìm thấy dữ liệu trong CSV');
+                }
+                
+                const offersFromCSV = convertCSVToOffers(csvData);
+                
+                if (offersFromCSV.length === 0) {
+                    throw new Error('Không thể chuyển đổi dữ liệu CSV');
+                }
+                
+                shopeeOffers = offersFromCSV;
+                
+                showStats(offersFromCSV.length, true);
+                
+                urlInfo.innerHTML = `✅ Đã tải thành công: <strong>${offersFromCSV.length}</strong> mục từ CSV`;
+                
+                renderOffers(shopeeOffers);
+                
+            } catch (error) {
+                console.error("Lỗi tải CSV từ URL:", error);
+                urlInfo.innerHTML = `<span style="color:red">❌ Lỗi: ${error.message}</span>`;
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+        
+        function convertCSVToOffers(csvData) {
+            return csvData.map(row => {
+                let name = '';
+                let commission = '';
+                let link = '';
+                let category = '';
+                let productName = '';
+                
+                for (const key in row) {
+                    const value = row[key];
+                    if (value && typeof value === 'string') {
+                        if (key.toLowerCase().includes('tên') || key.toLowerCase().includes('name')) {
+                            if (key.toLowerCase().includes('sản phẩm')) {
+                                productName = value;
+                            } else if (key.toLowerCase().includes('cửa hàng') || key.toLowerCase().includes('shop')) {
+                                name = value;
+                            } else if (!name && !productName) {
+                                name = value;
+                            }
+                        }
+                        
+                        if (key.toLowerCase().includes('hoa hồng') || 
+                            key.toLowerCase().includes('commission') || 
+                            key.toLowerCase().includes('tỉ lệ') ||
+                            key.toLowerCase().includes('%')) {
+                            commission = extractCommission(value);
+                        }
+                        
+                        if (key.toLowerCase().includes('tracking link') || 
+                            key.toLowerCase().includes('tracking') ||
+                            key.toLowerCase().includes('ưu đãi') ||
+                            key.toLowerCase().includes('link ngắn')) {
+                            link = value;
+                        }
+                        
+                        if (!link && value.includes('shopee')) {
+                            link = value;
+                        }
+                        
+                        if (key.toLowerCase().includes('doanh thu') || key.toLowerCase().includes('giá')) {
+                            category = 'Sản phẩm';
+                        }
+                    }
+                }
+                
+                if (!name && !productName && Object.keys(row).length > 0) {
+                    const firstKey = Object.keys(row)[0];
+                    const firstValue = row[firstKey];
+                    if (firstValue && typeof firstValue === 'string') {
+                        name = firstValue;
+                    }
+                }
+                
+                if (!link) {
+                    link = 'https://shopee.vn';
+                }
+                
+                const displayName = productName || name || 'Không có tên';
+                
+                return {
+                    name: displayName,
+                    commission: commission || '0%',
+                    category: category || 'Từ CSV',
+                    link: link,
+                    originalName: name,
+                    productName: productName
+                };
+            }).filter(offer => offer.name && offer.name !== 'Không có tên');
+        }
+        
+        // ================== HÀM XỬ LÝ MODE ==================
+        function selectMode(mode) {
+            document.querySelectorAll('input[name="mode"]').forEach(radio => {
+                radio.checked = (radio.value === mode);
+            });
+            
+            document.querySelectorAll('.mode-option').forEach(option => {
+                if (option.querySelector('input').value === mode) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+            
+            const input = document.getElementById('searchInput');
+            if (mode === 'shop') {
+                input.placeholder = "Ví dụ: BGHouse, Unilever, BJIAX...";
+            } else {
+                input.placeholder = "Ví dụ: mỹ phẩm, decor, túi xách, gia dụng...";
+            }
+        }
+        
+        // ================== XỬ LÝ TỆP TẢI LÊN ==================
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const fileInfo = document.getElementById('fileInfo');
+            
+            if (file) {
+                fileInfo.innerHTML = `✅ Đã chọn: <strong>${file.name}</strong> (${formatFileSize(file.size)})`;
+                
+                document.getElementById('loading').style.display = 'block';
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    processFileContent(content, file.name);
+                };
+                
+                reader.readAsText(file, 'UTF-8');
+            } else {
+                fileInfo.innerHTML = "";
+            }
+        });
+        
+        function formatFileSize(bytes) {
+            if (!bytes) return '0 bytes';
+            if (bytes < 1024) return bytes + ' bytes';
+            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            else return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+        
+        function processFileContent(content, fileName) {
+            try {
+                if (fileName.endsWith('.csv')) {
+                    console.log("Bắt đầu phân tích file CSV:", fileName);
+                    const csvData = parseCSV(content);
+                    console.log("Dữ liệu CSV đã phân tích:", csvData.length, "dòng");
+                    
+                    if (csvData.length > 0) {
+                        const offersFromCSV = convertCSVToOffers(csvData);
+                        console.log("Đã chuyển đổi thành:", offersFromCSV.length, "offer");
+                        
+                        shopeeOffers = offersFromCSV;
+                        
+                        showStats(offersFromCSV.length, true);
+                        
+                        document.getElementById('fileInfo').innerHTML += 
+                            `<br>📊 Đã tải: <strong>${offersFromCSV.length}</strong> mục từ file CSV`;
+                        
+                        renderOffers(shopeeOffers);
+                    } else {
+                        console.log("CSV rỗng hoặc không có dữ liệu");
+                        document.getElementById('fileInfo').innerHTML += 
+                            '<br><span style="color:orange">⚠️ File CSV không có dữ liệu</span>';
+                    }
+                } else if (fileName.endsWith('.txt')) {
+                    const lines = content.split('\n')
+                        .map(line => line.trim())
+                        .filter(line => line.length > 0);
+                    
+                    if (lines.length > 0) {
+                        document.getElementById('searchInput').value = lines[0];
+                        document.getElementById('fileInfo').innerHTML += 
+                            `<br>📝 Tìm kiếm theo: <strong>"${lines[0]}"</strong>`;
+                    }
+                }
+            } catch (e) {
+                console.error("Lỗi xử lý file:", e);
+                document.getElementById('fileInfo').innerHTML += 
+                    '<br><span style="color:red">❌ Lỗi đọc file: ' + e.message + '</span>';
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+        
+        function extractCommission(text) {
+            console.log("Trích xuất commission từ:", text);
+            
+            const match = text.match(/(\d+[.,]?\d*)%/);
+            if (match) {
+                const num = parseFloat(match[1].replace(',', '.'));
+                console.log("Tìm thấy số:", num);
+                return num + '%';
+            }
+            
+            const numberMatch = text.match(/(\d+[.,]?\d*)/);
+            if (numberMatch) {
+                const num = parseFloat(numberMatch[1].replace(',', '.'));
+                console.log("Tìm thấy số (không có %):", num);
+                return num + '%';
+            }
+            
+            console.log("Không tìm thấy commission, trả về 0%");
+            return '0%';
+        }
+        
+        function showStats(totalCount, fromCSV = false) {
+            const statsContainer = document.getElementById('stats-container');
+            
+            const matchingCount = getPercentageMatchCount();
+            const averageCommission = calculateAverageCommission();
+            
+            statsContainer.innerHTML = `
+                <div class="stats">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">${totalCount}</div>
+                            <div class="stat-label">Tổng số mục</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${matchingCount}</div>
+                            <div class="stat-label">Phù hợp tỷ lệ %</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${averageCommission}%</div>
+                            <div class="stat-label">Hoa hồng TB</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${fromCSV ? 'CSV' : 'Gốc'}</div>
+                            <div class="stat-label">Nguồn dữ liệu</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            statsContainer.style.display = 'block';
+        }
+        
+        function calculateAverageCommission() {
+            if (shopeeOffers.length === 0) return 0;
+            
+            const total = shopeeOffers.reduce((sum, offer) => {
+                const commission = parseFloat(offer.commission) || 0;
+                return sum + commission;
+            }, 0);
+            
+            return (total / shopeeOffers.length).toFixed(1);
+        }
+        
+        function getPercentageMatchCount() {
+            if (percentages.length === 0) return 0;
+            
+            let count = 0;
+            shopeeOffers.forEach(offer => {
+                const commission = parseFloat(offer.commission) || 0;
+                if (percentages.includes(Math.round(commission))) {
+                    count++;
+                }
+            });
+            
+            return count;
+        }
+        
+        // ================== HIỂN THỊ ==================
+        function renderOffers(list) {
+            const container = document.getElementById('offers-container');
+            
+            if (!list || list.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">😕</div>
+                        <h3>Không tìm thấy kết quả phù hợp</h3>
+                        <p>Thử với từ khóa khác hoặc nhập link CSV</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Lọc theo tỷ lệ hoa hồng nếu có filter
+            let filteredList = list;
+            if (currentFilter !== 'all') {
+                const filterPercent = parseInt(currentFilter);
+                filteredList = list.filter(offer => {
+                    const commission = parseFloat(offer.commission) || 0;
+                    return Math.round(commission) === filterPercent;
+                });
+            }
+            
+            // Lọc chỉ hiển thị các mục có hoa hồng từ danh sách phần trăm
+            if (percentages.length > 0) {
+                filteredList = filteredList.filter(offer => {
+                    const commission = parseFloat(offer.commission) || 0;
+                    return percentages.includes(Math.round(commission));
+                });
+            }
+            
+            if (filteredList.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <h3>Không tìm thấy mục phù hợp</h3>
+                        ${percentages.length === 0 ? 
+                            '<p>Vui lòng nhập tỷ lệ phần trăm để lọc dữ liệu</p>' : 
+                            `<p>Tiêu chí phần trăm: ${percentages.sort((a,b)=>a-b).join('%, ')}%</p>`}
+                        <p>Tổng số lượng đã bán: ${totalClicks}</p>
+                        ${currentFilter !== 'all' ? `<p>Đang lọc: ${currentFilter}%</p>` : ''}
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            // Sắp xếp theo hoa hồng giảm dần
+            filteredList.sort((a, b) => {
+                const aCommission = parseFloat(a.commission) || 0;
+                const bCommission = parseFloat(b.commission) || 0;
+                return bCommission - aCommission;
+            });
+            
+            filteredList.forEach(offer => {
+                if (!offer || !offer.name) return;
+                
+                const card = document.createElement('div');
+                card.className = 'offer-card';
+                card.innerHTML = `
+                    <h3>${offer.name}</h3>
+                    <p class="commission">💰 Hoa hồng: ${offer.commission || '0%'}</p>
+                    <p class="category">📦 Nguồn: ${offer.category || 'Không xác định'}</p>
+                    ${offer.originalName ? `<p><small>Shop: ${offer.originalName}</small></p>` : ''}
+                    <div class="links">
+                        <a class="primary-link" href="${offer.link || '#'}" target="_blank">Link Affiliate</a>
+                        <a class="secondary-link" href="${offer.link || '#'}" target="_blank">Xem chi tiết</a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        // ================== PHÂN TÍCH ==================
+        function analyzeData() {
+            const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+            
+            if (!keyword && shopeeOffers.length === 0) {
+                alert("⚠️ Vui lòng nhập từ khóa hoặc tải dữ liệu CSV");
+                return;
+            }
+            
+            const mode = document.querySelector('input[name="mode"]:checked').value;
+            let result = [];
+            
+            if (keyword) {
+                if (mode === "shop") {
+                    result = shopeeOffers.filter(o => 
+                        o && (o.name && o.name.toLowerCase().includes(keyword) ||
+                             o.originalName && o.originalName.toLowerCase().includes(keyword))
+                    );
+                } else {
+                    result = shopeeOffers.filter(o => 
+                        o && o.category && o.category.toLowerCase().includes(keyword)
+                    );
+                }
+            } else {
+                result = [...shopeeOffers];
+            }
+            
+            renderOffers(result);renderPriceTable();
+renderPriceChart();
+renderBestPercentSuggestion();
+
+        }
+		
+        
+        // ================== LÀM MỚI FORM ==================
+        function resetForm() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('csvUrlInput').value = '';
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileInfo').innerHTML = '';
+            document.getElementById('urlInfo').innerHTML = '';
+            document.getElementById('percentInput').value = '';
+            document.getElementById('stats-container').style.display = 'none';
+            currentFilter = 'all';
+            
+            // Không reset phần trăm đã nhập
+            // Chỉ reset dữ liệu CSV
+            shopeeOffers = [];
+            
+            renderOffers(shopeeOffers);
+            createFilterButtons();
+        }
+        
+        // ================== KHỞI TẠO BAN ĐẦU ==================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cập nhật hiển thị phần trăm
+            updatePercentagesDisplay();
+            updatePercentageStats();
+            
+            // Hiển thị trạng thái ban đầu
+            renderOffers(shopeeOffers);
+            
+            // Thêm hiệu ứng focus cho ô input
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('focus', function() {
+                    this.style.borderColor = '#ff5722';
+                    this.style.boxShadow = '0 0 0 3px rgba(255, 87, 34, 0.2)';
+                });
+                
+                searchInput.addEventListener('blur', function() {
+                    this.style.borderColor = '#ddd';
+                    this.style.boxShadow = 'none';
+                });
+                
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        analyzeData();
+                    }
+                });
+            }
+            
+            // Thêm sự kiện Enter cho ô URL CSV
+            const csvUrlInput = document.getElementById('csvUrlInput');
+            if (csvUrlInput) {
+                csvUrlInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        loadCSVFromUrl();
+                    }
+                });
+            }
+            
+            // Thêm sự kiện Enter cho ô nhập phần trăm
+            const percentInput = document.getElementById('percentInput');
+            if (percentInput) {
+                percentInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        addPercentages();
+                    }
+                });
+            }
+        });
+		function calculatePriceRange(percent, sold) {
+    const base = Math.pow(percent, 2) + sold;
+    return {
+        base,
+        min: Math.round(base * 0.95),
+        max: Math.round(base * 1.05)
+    };
+}
+function renderPriceTable() {
+    const sold = parseInt(document.getElementById('soldInput')?.value) || 0;
+    const box = document.getElementById('priceTableContainer');
+
+    if (!sold || percentages.length === 0) {
+        box.innerHTML = '<i>Nhập % và số lượng bán để xem bảng</i>';
+        return;
+    }
+
+    let html = `
+    <table style="width:100%;border-collapse:collapse">
+        <tr style="background:#ff5722;color:#fff">
+            <th>%</th><th>Số bán</th><th>Giá gốc</th><th>Giá ±5%</th><th>Hoa hồng</th>
+        </tr>`;
+
+    percentages.forEach(p => {
+        const price = calculatePriceRange(p, sold);
+        const avg = (price.min + price.max) / 2;
+        const commission = Math.round(avg * p / 100);
+
+        html += `
+        <tr style="text-align:center">
+            <td>${p}%</td>
+            <td>${sold}</td>
+            <td>${price.base}</td>
+            <td>${price.min} – ${price.max}</td>
+            <td style="color:green"><b>${commission}</b></td>
+        </tr>`;
+    });
+
+    html += '</table>';
+    box.innerHTML = html;
+}
+function renderPriceChart() {
+    const sold = parseInt(document.getElementById('soldInput')?.value) || 0;
+    const chart = document.getElementById('priceChart');
+
+    if (!sold || percentages.length === 0) {
+        chart.innerHTML = '';
+        return;
+    }
+
+    const max = Math.max(...percentages.map(p => Math.pow(p,2)+sold));
+
+    chart.innerHTML = percentages.map(p => {
+        const v = Math.pow(p,2)+sold;
+        return `
+        <div style="margin-bottom:8px">
+            <b>${p}%</b>
+            <div style="background:#eee;border-radius:6px">
+                <div style="width:${(v/max)*100}%;background:#4caf50;color:#fff;padding-left:6px">
+                    ${v}
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+function renderBestPercentSuggestion() {
+    const sold = parseInt(document.getElementById('soldInput')?.value) || 0;
+    if (!sold || percentages.length === 0) return;
+
+    let best = {p:0, v:0};
+
+    percentages.forEach(p => {
+        const price = calculatePriceRange(p, sold);
+        const avg = (price.min + price.max) / 2;
+        const com = avg * p / 100;
+        if (com > best.v) best = {p, v: com};
+    });
+
+    alert(`🚀 Nên ưu tiên ${best.p}% – Hoa hồng cao nhất ~ ${Math.round(best.v)}`);
+}
+
+    </script>
+</body>
+</html>
