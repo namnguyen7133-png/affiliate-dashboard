@@ -170,17 +170,36 @@ priorityBox.innerHTML = next
   : "🎉 Không còn việc gấp hôm nay";
 
 /* ===== ALARM CHECK ===== */
+/* ===== ALARM CHECK (OPEN SAVED LINK) ===== */
 setInterval(()=>{
   const n=new Date();
-  const cur=n.getHours().toString().padStart(2,"0")+":"+
-            n.getMinutes().toString().padStart(2,"0");
+  const cur =
+    n.getHours().toString().padStart(2,"0") + ":" +
+    n.getMinutes().toString().padStart(2,"0");
+
   for(const f in alarmMap){
-    if(alarmMap[f]===cur && !doneMap[f]){
+    if(alarmMap[f] === cur && !doneMap[f]){
       alarmSound.play();
-      alert("⏰ Đến giờ làm: "+f.replace(".html",""));
+
+      const raw = localStorage.getItem("post-" + f);
+      let link = "";
+
+      if(raw){
+        const data = JSON.parse(raw);
+        link = data.link || "";
+      }
+
+      if(link){
+        if(confirm("⏰ Đến giờ làm: " + f.replace(".html","") + "\nMở link ngay?")){
+          window.open(link, "_blank");
+        }
+      }else{
+        alert("⏰ Đến giờ làm: " + f.replace(".html",""));
+      }
     }
   }
 },1000);
+
 
 /* ===== HISTORY ===== */
 function saveHistory(){
