@@ -3,57 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Affiliate Dashboard – Trung tâm làm việc</title>
+<title>Affiliate Dashboard</title>
 
 <style>
 body{
-  font-family: Arial, sans-serif;
+  font-family:Arial,sans-serif;
   background:#f4f6fa;
-  max-width:900px;
+  max-width:1000px;
   margin:auto;
   padding:15px;
 }
-h1{
-  text-align:center;
-  font-size:30px;
-  color:#0b4f6c;
-}
-h3{
-  margin-top:25px;
-  color:#333;
-}
-a{
-  display:block;
-  padding:18px;
-  margin:12px 0;
-  font-size:22px;
+h1{text-align:center;color:#0b4f6c}
+h3{margin-top:25px}
+.menu a{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px;
+  margin:10px 0;
+  font-size:17px;
   text-decoration:none;
   color:#fff;
   border-radius:10px;
 }
+.menu small{font-size:13px}
+.menu button{margin-left:4px}
+.done{opacity:.6;text-decoration:line-through}
 .blue{background:#1565c0}
 .green{background:#2e7d32}
 .orange{background:#ef6c00}
 .purple{background:#6a1b9a}
-.note{
-  margin-top:20px;
-  font-size:18px;
-  color:#333;
+.progress{background:#ddd;border-radius:20px;overflow:hidden}
+.bar{height:18px;background:#2e7d32;color:#fff;font-size:13px;text-align:center}
+.card{
+  background:#fff;
+  padding:12px;
+  border-radius:10px;
+  margin:10px 0;
 }
-label{
-  display:block;
-  margin-top:10px;
-}
-input, select, button, textarea{
-  font-size:16px;
-  padding:6px;
-  margin-top:4px;
-}
-button{
-  margin-right:6px;
-}
-ul{
-  padding-left:18px;
+textarea{width:100%;height:150px}
+input{padding:5px}
+.highlight{
+  background:#fff3cd;
+  border-left:6px solid #ff9800;
 }
 </style>
 </head>
@@ -62,161 +54,150 @@ ul{
 
 <h1>📌 AFFILIATE DASHBOARD</h1>
 
+<!-- ===== ƯU TIÊN ===== -->
+<h3>⭐ Việc ưu tiên hôm nay</h3>
+<div class="card highlight" id="priorityBox">Đang phân tích…</div>
+
 <!-- ===== MENU ===== -->
-<a class="blue" href="002-thoi-gian-bieu-lam-viec.html">
-🕒 Thời gian biểu & Báo giờ đăng bài
-</a>
+<h3>📂 Công việc</h3>
+<div class="menu" id="menu"></div>
 
-<a class="green" href="003-shopee-tu-dong-lam-hh.html">
-🤖 Shopee – Tự động làm hoa hồng
-</a>
+<!-- ===== TIẾN ĐỘ ===== -->
+<h3>📊 Tiến độ</h3>
+<div class="progress"><div class="bar" id="progressBar">0%</div></div>
+<p>✅ Đã làm: <b id="doneCount">0</b> | ⏳ Còn: <b id="leftCount">0</b></p>
 
-<a class="orange" href="004-shopee-tim-chu-cuoi-doan-van.html">
-🔎 Shopee – Tìm sản phẩm nhanh
-</a>
+<!-- ===== THỐNG KÊ ===== -->
+<h3>📅 Thống kê</h3>
+<div class="card" id="statToday"></div>
+<div class="card" id="statWeek"></div>
+<div class="card" id="statMonth"></div>
 
-<a class="purple" href="005-shopee-tim-san-pham-trang-tri-noi-that.html">
-🛍️ Sản phẩm trang trí – lợi nhuận cao
-</a>
+<!-- ===== BÁO CÁO ===== -->
+<h3>📄 Báo cáo</h3>
+<button onclick="exportReport()">📋 Xuất báo cáo</button>
+<textarea id="reportBox"></textarea>
 
-<div class="note">
-✅ Chữ to – dễ đọc trên điện thoại  
-✅ Mỗi tối chỉ cần mở trang này  
-✅ Copy link → dán Facebook, Zalo, TikTok
-</div>
-
-<hr>
-
-<!-- ===== BÁO THỨC ===== -->
-<h3>⏰ Báo thức đăng bài (FULL)</h3>
-
-<label>Giờ:</label>
-<input type="time" id="alarmTime">
-
-<label>Nền tảng:</label>
-<select id="alarmType">
-  <option value="Shopee">🛒 Shopee</option>
-  <option value="Facebook">📘 Facebook</option>
-  <option value="TikTok">🎵 TikTok</option>
-</select>
-
-<label>Âm thanh:</label>
-<select id="alarmSoundSelect">
-  <option value="clock">⏰ Đồng hồ</option>
-  <option value="bell">🔔 Chuông</option>
-  <option value="beep">📢 Beep</option>
-</select>
-
-<label>Link đăng bài / Shopee:</label>
-<input type="text" id="alarmLink" placeholder="https://s.shopee.vn/...">
-
-<br><br>
-<button onclick="addAlarm()">➕ Thêm báo</button>
-<button onclick="quickSchedule()">📅 Lịch đăng chuẩn</button>
-
-<h3>📊 Thống kê hôm nay</h3>
-<p>✅ Đã đăng: <b id="doneCount">0</b></p>
-<p>⏳ Còn lại: <b id="leftCount">0</b></p>
-
-<ul id="alarmList"></ul>
-
-<button onclick="exportReport()">📋 Xuất báo cáo hôm nay</button>
-<textarea id="reportBox" style="width:100%;height:120px;margin-top:8px"></textarea>
-
-<audio id="sound-clock" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"></audio>
-<audio id="sound-bell" src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg"></audio>
-<audio id="sound-beep" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+<audio id="alarmSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"></audio>
 
 <script>
-let alarms = JSON.parse(localStorage.getItem("alarms") || "[]");
+/* ===== FILES ===== */
+const files=[
+ "001-tim-ten-nguoi.html",
+ "002-thoi-gian-bieu-lam-viec.html",
+ "003-shopee-tu-dong-lam-hh.html",
+ "004-shopee-tim-chu-cuoi-doan-van.html",
+ "005-shopee-tim-san-pham-trang-tri-noi-that.html",
+ "006-shopee-tim-san-pham-hot.html",
+ "007-shopee-tim-theo-chu-cai.html"
+];
+const colors=["blue","green","orange","purple"];
 
-function save(){
-  localStorage.setItem("alarms", JSON.stringify(alarms));
+const doneMap=JSON.parse(localStorage.getItem("doneMap")||"{}");
+const alarmMap=JSON.parse(localStorage.getItem("alarmMap")||"{}");
+const history=JSON.parse(localStorage.getItem("history")||"{}");
+
+const menu=document.getElementById("menu");
+
+/* ===== RENDER ===== */
+files.forEach((f,i)=>{
+  const a=document.createElement("a");
+  a.href=f;
+  a.className=colors[i%4]+(doneMap[f]?" done":"");
+  a.innerHTML=`
+    <span>
+      ${f.replace(".html","")}
+      <br><small>⏰ ${alarmMap[f]||"--:--"}</small>
+    </span>
+    <span>
+      <input type="time" value="${alarmMap[f]||""}"
+        onchange="setAlarm('${f}',this.value)">
+      <button onclick="toggleDone(event,'${f}')">
+        ${doneMap[f]?"↩":"✔"}
+      </button>
+    </span>
+  `;
+  menu.appendChild(a);
+});
+
+/* ===== DONE ===== */
+function toggleDone(e,f){
+  e.preventDefault();
+  doneMap[f]=!doneMap[f];
+  saveHistory();
+  localStorage.setItem("doneMap",JSON.stringify(doneMap));
+  location.reload();
 }
 
-function render(){
-  const ul = document.getElementById("alarmList");
-  ul.innerHTML = "";
-  alarms.forEach((a,i)=>{
-    const li = document.createElement("li");
-    li.innerHTML = `
-      ${a.fired ? "✅" : "⏰"}
-      <b>${a.time}</b> | ${a.type}
-      ${a.link ? `🔗 <a href="${a.link}" target="_blank">Mở</a>` : ""}
-      <button onclick="done(${i})">✔</button>
-      <button onclick="removeAlarm(${i})">❌</button>
-    `;
-    ul.appendChild(li);
-  });
-  updateStats();
+/* ===== ALARM ===== */
+function setAlarm(f,t){
+  alarmMap[f]=t;
+  localStorage.setItem("alarmMap",JSON.stringify(alarmMap));
 }
 
-function addAlarm(){
-  const time = alarmTime.value;
-  if(!time){ alert("Chưa chọn giờ"); return; }
+/* ===== PROGRESS ===== */
+const doneCount=files.filter(f=>doneMap[f]).length;
+doneCountEl.innerText=doneCount;
+leftCount.innerText=files.length-doneCount;
+const percent=Math.round(doneCount/files.length*100);
+progressBar.style.width=percent+"%";
+progressBar.innerText=percent+"%";
 
-  alarms.push({
-    time,
-    type: alarmType.value,
-    sound: alarmSoundSelect.value,
-    link: alarmLink.value || "",
-    fired:false
-  });
-  save();
-  render();
-  alarmLink.value = "";
-}
+/* ===== PRIORITY ===== */
+let next=null;
+files.forEach(f=>{
+  if(!doneMap[f] && alarmMap[f]){
+    if(!next || alarmMap[f]<alarmMap[next]) next=f;
+  }
+});
+priorityBox.innerHTML = next
+  ? `🔔 <b>${next.replace(".html","")}</b><br>⏰ ${alarmMap[next]}`
+  : "🎉 Không còn việc gấp hôm nay";
 
-function removeAlarm(i){
-  alarms.splice(i,1);
-  save();
-  render();
-}
-
-function done(i){
-  alarms[i].fired = true;
-  save();
-  render();
-}
-
-function updateStats(){
-  const done = alarms.filter(a => a.fired).length;
-  document.getElementById("doneCount").innerText = done;
-  document.getElementById("leftCount").innerText = alarms.length - done;
-}
-
-function quickSchedule(){
-  ["09:00","12:00","19:00"].forEach(t=>{
-    alarms.push({time:t,type:"Shopee",sound:"clock",link:"",fired:false});
-  });
-  save(); render();
-}
-
+/* ===== ALARM CHECK ===== */
 setInterval(()=>{
-  const now = new Date();
-  const current =
-    now.getHours().toString().padStart(2,"0")+":"+
-    now.getMinutes().toString().padStart(2,"0");
-
-  alarms.forEach(a=>{
-    if(a.time === current && !a.fired){
-      document.getElementById("sound-"+a.sound).play();
-      alert("⏰ Đến giờ đăng bài " + a.type + "!");
-      a.fired = true;
-      save(); render();
+  const n=new Date();
+  const cur=n.getHours().toString().padStart(2,"0")+":"+
+            n.getMinutes().toString().padStart(2,"0");
+  for(const f in alarmMap){
+    if(alarmMap[f]===cur && !doneMap[f]){
+      alarmSound.play();
+      alert("⏰ Đến giờ làm: "+f.replace(".html",""));
     }
-  });
+  }
 },1000);
 
-function exportReport(){
-  let text = "📊 BÁO CÁO HÔM NAY\n";
-  alarms.forEach(a=>{
-    text += `${a.fired ? "✅" : "⏳"} ${a.time} - ${a.type}\n`;
-  });
-  reportBox.value = text;
+/* ===== HISTORY ===== */
+function saveHistory(){
+  const d=new Date().toISOString().slice(0,10);
+  history[d]=(history[d]||0)+(doneMap?1:0);
+  localStorage.setItem("history",JSON.stringify(history));
 }
 
-render();
+/* ===== STATS ===== */
+function stat(days){
+  const now=new Date();
+  let sum=0;
+  for(let i=0;i<days;i++){
+    const d=new Date(now);
+    d.setDate(now.getDate()-i);
+    const k=d.toISOString().slice(0,10);
+    sum+=history[k]||0;
+  }
+  return sum;
+}
+statToday.innerHTML="📅 Hôm nay hoàn thành: <b>"+stat(1)+"</b>";
+statWeek.innerHTML="🗓️ 7 ngày: <b>"+stat(7)+"</b>";
+statMonth.innerHTML="📆 30 ngày: <b>"+stat(30)+"</b>";
+
+/* ===== REPORT ===== */
+function exportReport(){
+  let t="📊 BÁO CÁO\n";
+  files.forEach(f=>{
+    t+=`${doneMap[f]?"✅":"⏳"} ${f.replace(".html","")} (${alarmMap[f]||"--:--"})\n`;
+  });
+  reportBox.value=t;
+}
 </script>
 
 </body>
