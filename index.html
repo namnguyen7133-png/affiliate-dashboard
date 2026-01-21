@@ -7,6 +7,163 @@
 
 <style>
 body{
+<hr>
+<h3>⏰ Báo thức đăng bài (FULL)</h3>
+
+<label>Giờ:</label>
+<input type="time" id="alarmTime">
+
+<label>Nền tảng:</label>
+<select id="alarmType">
+  <option value="Shopee">🛒 Shopee</option>
+  <option value="Facebook">📘 Facebook</option>
+  <option value="TikTok">🎵 TikTok</option>
+</select>
+
+<label>Âm thanh:</label>
+<select id="alarmSoundSelect">
+  <option value="clock">⏰ Đồng hồ</option>
+  <option value="bell">🔔 Chuông</option>
+  <option value="beep">📢 Beep</option>
+</select>
+
+<label>Link đăng bài / Shopee:</label>
+<input type="text" id="alarmLink" placeholder="https://s.shopee.vn/...">
+
+<br><br>
+<button onclick="addAlarm()">➕ Thêm báo</button>
+<button onclick="quickSchedule()">📅 Lịch đăng chuẩn</button>
+
+<h3>📊 Thống kê hôm nay</h3>
+<p>✅ Đã đăng: <b id="doneCount">0</b></p>
+<p>⏳ Còn lại: <b id="leftCount">0</b></p>
+
+<ul id="alarmList"></ul>
+
+<button onclick="exportReport()">📋 Xuất báo cáo hôm nay</button>
+<textarea id="reportBox" style="width:100%;height:120px;margin-top:8px"></textarea>
+
+<audio id="sound-clock" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"></audio>
+<audio id="sound-bell" src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg"></audio>
+<audio id="sound-beep" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+<script>
+let alarms = JSON.parse(localStorage.getItem("alarms") || "[]");
+
+function save(){
+  localStorage.setItem("alarms", JSON.stringify(alarms));
+}
+
+function render(){
+  const ul = document.getElementById("alarmList");
+  ul.innerHTML = "";
+  alarms.forEach((a,i)=>{
+    const li = document.createElement("li");
+    li.innerHTML = `
+      ${a.fired ? "✅" : "⏰"}
+      <b>${a.time}</b> | ${a.type}
+      ${a.link ? `🔗 <a href="${a.link}" target="_blank">Mở</a>` : ""}
+      <button onclick="done(${i})">✔</button>
+      <button onclick="removeAlarm(${i})">❌</button>
+    `;
+    ul.appendChild(li);
+  });
+  updateStats();
+}
+
+function addAlarm(){
+  const time = alarmTime.value;
+  if(!time){ alert("Chưa chọn giờ"); return; }
+
+  alarms.push({
+    time,
+    type: alarmType.value,
+    sound: alarmSoundSelect.value,
+    link: alarmLink.value || "",
+    fired:false
+  });
+  save();
+  render();
+  alarmLink.value = "";
+}
+
+function removeAlarm(i){
+  alarms.splice(i,1);
+  save();
+  render();
+}
+
+function done(i){
+  alarms[i].fired = true;
+  save();
+  render();
+}
+
+function updateStats(){
+  const done = alarms.filter(a => a.fired).length;
+  document.getElementById("doneCount").innerText = done;
+  document.getElementById("leftCount").innerText = alarms.length - done;
+}
+
+function quickSchedule(){
+  const times = ["09:00","12:00","19:00"];
+  times.forEach(t=>{
+    alarms.push({
+      time:t,
+      type:"Shopee",
+      sound:"clock",
+      link:"",
+      fired:false
+    });
+  });
+  save();
+  render();
+}
+
+setInterval(()=>{
+  const now = new Date();
+  const current =
+    now.getHours().toString().padStart(2,"0")+":"+
+    now.getMinutes().toString().padStart(2,"0");
+
+  alarms.forEach(a=>{
+    if(a.time === current && !a.fired){
+      document.getElementById("sound-"+a.sound).play();
+      if(a.link){
+        if(confirm("⏰ Đến giờ đăng bài " + a.type + "!\nMở link ngay?")){
+          window.open(a.link,"_blank");
+        }
+      }else{
+        alert("⏰ Đến giờ đăng bài " + a.type + "!");
+      }
+      a.fired = true;
+      save();
+      render();
+    }
+  });
+},1000);
+
+/* Reset mỗi ngày lúc 00:00 */
+setInterval(()=>{
+  const now = new Date();
+  if(now.getHours()===0 && now.getMinutes()===0){
+    alarms.forEach(a=>a.fired=false);
+    save();
+    render();
+  }
+},60000);
+
+function exportReport(){
+  let text = "📊 BÁO CÁO HÔM NAY\n";
+  alarms.forEach(a=>{
+    text += `${a.fired ? "✅" : "⏳"} ${a.time} - ${a.type}\n`;
+  });
+  reportBox.value = text;
+}
+
+render();
+</script>
+
   font-family: Arial, sans-serif;
   background:#f4f6fa;
   max-width:900px;
