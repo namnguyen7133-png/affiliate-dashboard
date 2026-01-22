@@ -38,6 +38,10 @@ button.export{
   border-radius:8px;
   cursor:pointer;
 }
+#suggestBox{
+  background:#fff3e0;
+  border-left:6px solid #fb8c00;
+}
 canvas{max-width:100%}
 </style>
 </head>
@@ -45,6 +49,12 @@ canvas{max-width:100%}
 <body>
 
 <h1>📊 AFFILIATE DASHBOARD</h1>
+
+<!-- BƯỚC 7: GỢI Ý -->
+<div class="card" id="suggestBox">
+  <h3>🤖 Gợi ý bài nên đăng hôm nay</h3>
+  <div id="suggestContent">Đang phân tích dữ liệu…</div>
+</div>
 
 <div class="tabs">
   <button onclick="setPlatform('all')" class="active">🌐 Tất cả</button>
@@ -78,6 +88,7 @@ function setPlatform(p){
     .forEach(b=>b.classList.remove("active"));
   event.target.classList.add("active");
   renderCharts();
+  suggestToday();
 }
 
 fetch("data/hoa-hong.csv")
@@ -88,6 +99,7 @@ fetch("data/hoa-hong.csv")
       return {date,commission:Number(commission),platform,link};
     });
     renderCharts();
+    suggestToday();
   });
 
 function renderCharts(){
@@ -103,25 +115,8 @@ function renderCharts(){
     monthMap[m]=(monthMap[m]||0)+r.commission;
   });
 
-  renderChart(
-    "chartDay",
-    "Hoa hồng theo ngày",
-    dayMap,
-    "date",
-    data,
-    chartDay,
-    c=>chartDay=c
-  );
-
-  renderChart(
-    "chartMonth",
-    "Hoa hồng theo tháng",
-    monthMap,
-    "month",
-    data,
-    chartMonth,
-    c=>chartMonth=c
-  );
+  renderChart("chartDay","Hoa hồng theo ngày",dayMap,"date",data,chartDay,c=>chartDay=c);
+  renderChart("chartMonth","Hoa hồng theo tháng",monthMap,"month",data,chartMonth,c=>chartMonth=c);
 }
 
 function renderChart(id,label,map,mode,data,oldChart,setChart){
@@ -136,36 +131,61 @@ function renderChart(id,label,map,mode,data,oldChart,setChart){
   const chart=new Chart(document.getElementById(id),{
     type:"bar",
     data:{
-      labels:labels,
-      datasets:[{
-        label:label,
-        data:values,
-        backgroundColor:colors
-      }]
+      labels,
+      datasets:[{label,data:values,backgroundColor:colors}]
     },
     options:{
       onClick:(e,els)=>{
         if(!els.length) return;
         const key=labels[els[0].index];
-        const item=data.find(r=>
-          mode==="date"?r.date===key:r.date.startsWith(key)
-        );
+        const item=data.find(r=>mode==="date"?r.date===key:r.date.startsWith(key));
         if(item?.link) window.open(item.link,"_blank");
       },
       plugins:{
-        tooltip:{
-          callbacks:{
-            label:c=>c.raw.toLocaleString("vi-VN")+" ₫"
-          }
-        }
+        tooltip:{callbacks:{label:c=>c.raw.toLocaleString("vi-VN")+" ₫"}}
       },
-      scales:{
-        y:{ticks:{callback:v=>v.toLocaleString("vi-VN")+" ₫"}}
-      }
+      scales:{y:{ticks:{callback:v=>v.toLocaleString("vi-VN")+" ₫"}}}
     }
   });
 
   setChart(chart);
+}
+
+/* ===== BƯỚC 7: GỢI Ý ===== */
+function suggestToday(){
+  const box=document.getElementById("suggestContent");
+
+  const data=currentPlatform==="all"
+    ? rawData
+    : rawData.filter(r=>r.platform===currentPlatform);
+
+  if(!data.length){
+    box.innerText="Chưa có dữ liệu để gợi ý.";
+    return;
+  }
+
+  const last7=data.filter(r=>{
+    const d=new Date(r.date);
+    return (Date.now()-d)/86400000<=7;
+  });
+
+  if(!last7.length){
+    box.innerText="⚠️ 7 ngày gần đây chưa có đơn → nên thử sản phẩm mới.";
+    return;
+  }
+
+  const linkMap={};
+  last7.forEach(r=>{
+    linkMap[r.link]=(linkMap[r.link]||0)+r.commission;
+  });
+
+  const best=Object.entries(linkMap).sort((a,b)=>b[1]-a[1])[0];
+
+  box.innerHTML=`
+    🔥 <b>NÊN ĐĂNG LẠI</b><br>
+    💰 7 ngày qua: <b>${best[1].toLocaleString("vi-VN")} ₫</b><br>
+    🔗 <a href="${best[0]}" target="_blank">Mở link bán tốt</a>
+  `;
 }
 
 function exportCSV(){
@@ -174,9 +194,7 @@ function exportCSV(){
     : rawData.filter(r=>r.platform===currentPlatform);
 
   let csv="date,commission,platform\n";
-  data.forEach(r=>{
-    csv+=`${r.date},${r.commission},${r.platform}\n`;
-  });
+  data.forEach(r=>csv+=`${r.date},${r.commission},${r.platform}\n`);
 
   const blob=new Blob([csv],{type:"text/csv"});
   const a=document.createElement("a");
