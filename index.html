@@ -21,7 +21,7 @@ h3{margin-top:25px}
   align-items:center;
   padding:14px;
   margin:10px 0;
-  font-size:17px;
+  font-size:16px;
   text-decoration:none;
   color:#fff;
   border-radius:10px;
@@ -40,12 +40,11 @@ h3{margin-top:25px}
   border-radius:10px;
   margin:10px 0;
 }
-textarea{width:100%;height:150px}
-input,select{padding:5px}
 .highlight{
   background:#fff3cd;
   border-left:6px solid #ff9800;
 }
+button{cursor:pointer}
 </style>
 </head>
 
@@ -54,9 +53,17 @@ input,select{padding:5px}
 <h1>📌 AFFILIATE DASHBOARD</h1>
 
 <h3>⭐ Việc ưu tiên hôm nay</h3>
-<div class="card highlight" id="priorityBox">Đang phân tích…</div>
+<div class="card highlight" id="priorityBox">Đang tải…</div>
 
 <h3>📂 Công việc</h3>
+
+<!-- TAB -->
+<div style="margin-bottom:10px">
+  <button onclick="renderMenu('all')">📂 Tất cả</button>
+  <button onclick="renderMenu('shopee')">🛒 Shopee</button>
+  <button onclick="renderMenu('tool')">🧰 Tool</button>
+</div>
+
 <div class="menu" id="menu"></div>
 
 <h3>📊 Tiến độ</h3>
@@ -66,19 +73,9 @@ input,select{padding:5px}
 <audio id="alarmSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"></audio>
 
 <script>
-const files=[
- "001-tim-ten-nguoi.html",
- "002-thoi-gian-bieu-lam-viec.html",
- "003-shopee-tu-dong-lam-hh.html",
- "004-shopee-tim-chu-cuoi-doan-van.html",
- "005-shopee-tim-san-pham-trang-tri-noi-that.html",
- "006-shopee-tim-san-pham-hot.html",
- "007-shopee-tim-theo-chu-cai.html"
-];
-const colors=["blue","green","orange","purple"];
+let FILES = [];
 
-const doneMap=JSON.parse(localStorage.getItem("doneMap")||"{}");
-const alarmMap=JSON.parse(localStorage.getItem("alarmMap")||"{}");
+const colors=["blue","green","orange","purple"];
 
 const menu=document.getElementById("menu");
 const doneCountEl=document.getElementById("doneCount");
@@ -86,54 +83,83 @@ const leftCountEl=document.getElementById("leftCount");
 const progressBar=document.getElementById("progressBar");
 const priorityBox=document.getElementById("priorityBox");
 
-menu.innerHTML="";
-files.forEach((f,i)=>{
-  const a=document.createElement("a");
-  a.href=f;
-  a.className=colors[i%4]+(doneMap[f]?" done":"");
-  a.innerHTML=`
-    <span>
-      ${f.replace(".html","")}
-      <br><small>⏰ ${alarmMap[f]||"--:--"}</small>
-    </span>
-    <span>
-      <input type="time" value="${alarmMap[f]||""}"
-        onchange="setAlarm('${f}',this.value)">
-      <button onclick="toggleDone(event,'${f}')">
-        ${doneMap[f]?"↩":"✔"}
-      </button>
-    </span>
-  `;
-  menu.appendChild(a);
-});
+const doneMap=JSON.parse(localStorage.getItem("doneMap")||"{}");
+const alarmMap=JSON.parse(localStorage.getItem("alarmMap")||"{}");
 
-function toggleDone(e,f){
-  e.preventDefault();
-  doneMap[f]=!doneMap[f];
-  localStorage.setItem("doneMap",JSON.stringify(doneMap));
-  location.reload();
+fetch("files.json")
+  .then(r => r.json())
+  .then(list => {
+    FILES = list.filter(f => f.active);
+    renderMenu("all");
+    updateProgress();
+    updatePriority();
+  })
+  .catch(()=>{
+    priorityBox.innerText="❌ Không đọc được files.json";
+  });
+
+function renderMenu(type){
+  menu.innerHTML="";
+  const show = FILES.filter(f => type==="all" || f.platform===type);
+
+  show.forEach((f,i)=>{
+    const key=f.file;
+    const a=document.createElement("a");
+    a.href=f.file;
+    a.className=colors[i%4]+(doneMap[key]?" done":"");
+    a.innerHTML=`
+      <span>
+        ${f.name}
+        <br><small>⏰ ${alarmMap[key]||"--:--"}</small>
+      </span>
+      <span>
+        <input type="time" value="${alarmMap[key]||""}"
+          onchange="setAlarm('${key}',this.value)">
+        <button onclick="toggleDone(event,'${key}')">
+          ${doneMap[key]?"↩":"✔"}
+        </button>
+      </span>
+    `;
+    menu.appendChild(a);
+  });
 }
-function setAlarm(f,t){
-  alarmMap[f]=t;
+
+function toggleDone(e,key){
+  e.preventDefault();
+  doneMap[key]=!doneMap[key];
+  localStorage.setItem("doneMap",JSON.stringify(doneMap));
+  updateProgress();
+  updatePriority();
+  renderMenu("all");
+}
+
+function setAlarm(key,t){
+  alarmMap[key]=t;
   localStorage.setItem("alarmMap",JSON.stringify(alarmMap));
 }
 
-const doneCount=files.filter(f=>doneMap[f]).length;
-doneCountEl.innerText=doneCount;
-leftCountEl.innerText=files.length-doneCount;
-const percent=Math.round(doneCount/files.length*100);
-progressBar.style.width=percent+"%";
-progressBar.innerText=percent+"%";
+function updateProgress(){
+  const keys=FILES.map(f=>f.file);
+  const done=keys.filter(k=>doneMap[k]).length;
+  doneCountEl.innerText=done;
+  leftCountEl.innerText=keys.length-done;
+  const percent=keys.length?Math.round(done/keys.length*100):0;
+  progressBar.style.width=percent+"%";
+  progressBar.innerText=percent+"%";
+}
 
-let next=null;
-files.forEach(f=>{
-  if(!doneMap[f] && alarmMap[f]){
-    if(!next || alarmMap[f]<alarmMap[next]) next=f;
-  }
-});
-priorityBox.innerHTML = next
-  ? `🔔 <b>${next.replace(".html","")}</b><br>⏰ ${alarmMap[next]}`
-  : "🎉 Không còn việc gấp hôm nay";
+function updatePriority(){
+  let next=null;
+  FILES.forEach(f=>{
+    const k=f.file;
+    if(!doneMap[k] && alarmMap[k]){
+      if(!next || alarmMap[k]<alarmMap[next]) next=k;
+    }
+  });
+  priorityBox.innerHTML = next
+    ? `🔔 <b>${next.replace(".html","")}</b><br>⏰ ${alarmMap[next]}`
+    : "🎉 Không còn việc gấp hôm nay";
+}
 </script>
 
 </body>
