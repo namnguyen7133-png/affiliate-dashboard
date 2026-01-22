@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Affiliate Tracker Pro</title>
+
+<style>
+body{font-family:Arial;background:#f4f6fa;padding:10px}
+h2{margin:5px 0}
+input,select,button{padding:6px;margin:4px}
+table{width:100%;border-collapse:collapse;margin-top:10px;background:#fff}
+th,td{border:1px solid #ccc;padding:6px;text-align:center}
+.good{background:#c8f7c5}
+.bad{background:#f7c5c5}
+.hide{display:none}
+.summary{background:#fff;padding:10px;border-radius:6px;margin-top:10px}
+canvas{background:#fff;margin-top:15px}
+</style>
+</head>
+
+<body>
+
+<h2>📊 Theo dõi Affiliate Shopee</h2>
+
+<!-- FORM -->
+<div>
+<input type="date" id="date">
+<select id="platform">
+<option>Facebook</option>
+<option>Zalo</option>
+</select>
+<input id="post" placeholder="Tên bài">
+<input id="subid" placeholder="Sub ID">
+<input type="number" id="click" placeholder="Click">
+<input type="number" id="order" placeholder="Đơn">
+<input type="number" id="commission" placeholder="Hoa hồng">
+<button onclick="add()">➕ Thêm</button>
+</div>
+
+<!-- LỌC -->
+<div>
+<select onchange="setFilter(this.value)">
+<option value="all">📆 Tất cả</option>
+<option value="7">7 ngày</option>
+<option value="30">30 ngày</option>
+</select>
+</div>
+
+<table id="table">
+<tr>
+<th>Ngày</th><th>Nền tảng</th><th>Bài</th><th>Click</th><th>Đơn</th><th>Hoa hồng</th><th>Trạng thái</th>
+</tr>
+</table>
+
+<div class="summary">
+<p>Tổng click: <b id="tC">0</b></p>
+<p>Tổng đơn: <b id="tO">0</b></p>
+<p>Tổng hoa hồng: <b id="tM">0</b> đ</p>
+</div>
+
+<canvas id="chart" width="350" height="200"></canvas>
+
+<script>
+let data=JSON.parse(localStorage.getItem("aff"))||[];
+let filterDays="all";
+
+function add(){
+data.push({
+date:date.value,
+platform:platform.value,
+post:post.value,
+subid:subid.value,
+click:+click.value,
+order:+order.value,
+commission:+commission.value
+});
+localStorage.setItem("aff",JSON.stringify(data));
+render();
+}
+
+function daysBetween(d){
+return (new Date()-new Date(d))/(1000*3600*24);
+}
+
+function setFilter(v){filterDays=v;render();}
+
+function render(){
+let t=document.getElementById("table");
+t.innerHTML=t.rows[0].outerHTML;
+let tc=0,to=0,tm=0;
+let sales=[];
+
+data.forEach(d=>{
+if(filterDays!="all" && daysBetween(d.date)>filterDays) return;
+
+let status="THEO DÕI";
+let cls="";
+if(d.order>0){status="GIỮ";cls="good";sales.push(d);}
+else if(daysBetween(d.date)>30){return;} // tự ẩn sau 30 ngày
+
+tc+=d.click; to+=d.order; tm+=d.commission;
+
+t.innerHTML+=`
+<tr class="${cls}">
+<td>${d.date}</td>
+<td>${d.platform}</td>
+<td>${d.post}</td>
+<td>${d.click}</td>
+<td>${d.order}</td>
+<td>${d.commission}</td>
+<td>${status}</td>
+</tr>`;
+});
+
+tC.innerText=tc;
+tO.innerText=to;
+tM.innerText=tm.toLocaleString();
+drawChart(sales);
+}
+
+function drawChart(arr){
+let c=document.getElementById("chart");
+let ctx=c.getContext("2d");
+ctx.clearRect(0,0,c.width,c.height);
+let max=Math.max(...arr.map(a=>a.commission),1);
+arr.forEach((a,i)=>{
+let h=a.commission/max*150;
+ctx.fillRect(i*60+30,180-h,30,h);
+ctx.fillText(a.post,i*60+30,195);
+});
+}
+
+render();
+</script>
+
+</body>
+</html>
