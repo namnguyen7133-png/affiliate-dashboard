@@ -3,7 +3,7 @@
     "name": "001 – Tìm tên người",
     "file": "001-tim-ten-nguoi.html",
     "tag": "text",
-    "active": true
+    "active": false
   },
   {
     "name": "002 – Thời gian biểu làm việc",
