@@ -27,7 +27,6 @@ h3{margin-top:25px}
   border-radius:10px;
 }
 .menu small{font-size:13px}
-.menu button{margin-left:4px}
 .done{opacity:.6;text-decoration:line-through}
 .blue{background:#1565c0}
 .green{background:#2e7d32}
@@ -42,7 +41,7 @@ h3{margin-top:25px}
   margin:10px 0;
 }
 textarea{width:100%;height:150px}
-input{padding:5px}
+input,select{padding:5px}
 .highlight{
   background:#fff3cd;
   border-left:6px solid #ff9800;
@@ -54,49 +53,19 @@ input{padding:5px}
 
 <h1>📌 AFFILIATE DASHBOARD</h1>
 
-<!-- ===== ƯU TIÊN ===== -->
 <h3>⭐ Việc ưu tiên hôm nay</h3>
 <div class="card highlight" id="priorityBox">Đang phân tích…</div>
 
-<!-- ===== MENU ===== -->
 <h3>📂 Công việc</h3>
 <div class="menu" id="menu"></div>
-<!-- ===== NỘI DUNG & LINK ===== -->
-<h3>📝 Link & Nội dung cho từng công việc</h3>
 
-<div class="card">
-  <label>📂 Chọn công việc:</label>
-  <select id="postFile"></select>
-
-  <label>🔗 Link:</label>
-  <input id="postLink" placeholder="Dán link Shopee / Facebook / TikTok">
-
-  <label>✍ Nội dung:</label>
-  <textarea id="postContent" placeholder="Viết sẵn nội dung để copy đăng bài"></textarea>
-
-  <button onclick="savePost()">💾 Lưu (30 ngày)</button>
-</div>
-
-<!-- ===== TIẾN ĐỘ ===== -->
 <h3>📊 Tiến độ</h3>
 <div class="progress"><div class="bar" id="progressBar">0%</div></div>
 <p>✅ Đã làm: <b id="doneCount">0</b> | ⏳ Còn: <b id="leftCount">0</b></p>
 
-<!-- ===== THỐNG KÊ ===== -->
-<h3>📅 Thống kê</h3>
-<div class="card" id="statToday"></div>
-<div class="card" id="statWeek"></div>
-<div class="card" id="statMonth"></div>
-
-<!-- ===== BÁO CÁO ===== -->
-<h3>📄 Báo cáo</h3>
-<button onclick="exportReport()">📋 Xuất báo cáo</button>
-<textarea id="reportBox"></textarea>
-
 <audio id="alarmSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"></audio>
 
 <script>
-/* ===== FILES ===== */
 const files=[
  "001-tim-ten-nguoi.html",
  "002-thoi-gian-bieu-lam-viec.html",
@@ -110,11 +79,14 @@ const colors=["blue","green","orange","purple"];
 
 const doneMap=JSON.parse(localStorage.getItem("doneMap")||"{}");
 const alarmMap=JSON.parse(localStorage.getItem("alarmMap")||"{}");
-const history=JSON.parse(localStorage.getItem("history")||"{}");
 
 const menu=document.getElementById("menu");
+const doneCountEl=document.getElementById("doneCount");
+const leftCountEl=document.getElementById("leftCount");
+const progressBar=document.getElementById("progressBar");
+const priorityBox=document.getElementById("priorityBox");
 
-/* ===== RENDER ===== */
+menu.innerHTML="";
 files.forEach((f,i)=>{
   const a=document.createElement("a");
   a.href=f;
@@ -135,30 +107,24 @@ files.forEach((f,i)=>{
   menu.appendChild(a);
 });
 
-/* ===== DONE ===== */
 function toggleDone(e,f){
   e.preventDefault();
   doneMap[f]=!doneMap[f];
-  saveHistory();
   localStorage.setItem("doneMap",JSON.stringify(doneMap));
   location.reload();
 }
-
-/* ===== ALARM ===== */
 function setAlarm(f,t){
   alarmMap[f]=t;
   localStorage.setItem("alarmMap",JSON.stringify(alarmMap));
 }
 
-/* ===== PROGRESS ===== */
 const doneCount=files.filter(f=>doneMap[f]).length;
 doneCountEl.innerText=doneCount;
-leftCount.innerText=files.length-doneCount;
+leftCountEl.innerText=files.length-doneCount;
 const percent=Math.round(doneCount/files.length*100);
 progressBar.style.width=percent+"%";
 progressBar.innerText=percent+"%";
 
-/* ===== PRIORITY ===== */
 let next=null;
 files.forEach(f=>{
   if(!doneMap[f] && alarmMap[f]){
@@ -168,121 +134,6 @@ files.forEach(f=>{
 priorityBox.innerHTML = next
   ? `🔔 <b>${next.replace(".html","")}</b><br>⏰ ${alarmMap[next]}`
   : "🎉 Không còn việc gấp hôm nay";
-
-/* ===== ALARM CHECK ===== */
-/* ===== ALARM CHECK (OPEN SAVED LINK) ===== */
-setInterval(()=>{
-  const n=new Date();
-  const cur =
-    n.getHours().toString().padStart(2,"0") + ":" +
-    n.getMinutes().toString().padStart(2,"0");
-
-  for(const f in alarmMap){
-    if(alarmMap[f] === cur && !doneMap[f]){
-      alarmSound.play();
-
-      const raw = localStorage.getItem("post-" + f);
-      let link = "";
-
-      if(raw){
-        const data = JSON.parse(raw);
-        link = data.link || "";
-      }
-
-      if(link){
-        if(confirm("⏰ Đến giờ làm: " + f.replace(".html","") + "\nMở link ngay?")){
-          window.open(link, "_blank");
-        }
-      }else{
-        alert("⏰ Đến giờ làm: " + f.replace(".html",""));
-      }
-    }
-  }
-},1000);
-
-
-/* ===== HISTORY ===== */
-function saveHistory(){
-  const d=new Date().toISOString().slice(0,10);
-  history[d]=(history[d]||0)+(doneMap?1:0);
-  localStorage.setItem("history",JSON.stringify(history));
-}
-
-/* ===== STATS ===== */
-function stat(days){
-  const now=new Date();
-  let sum=0;
-  for(let i=0;i<days;i++){
-    const d=new Date(now);
-    d.setDate(now.getDate()-i);
-    const k=d.toISOString().slice(0,10);
-    sum+=history[k]||0;
-  }
-  return sum;
-}
-statToday.innerHTML="📅 Hôm nay hoàn thành: <b>"+stat(1)+"</b>";
-statWeek.innerHTML="🗓️ 7 ngày: <b>"+stat(7)+"</b>";
-statMonth.innerHTML="📆 30 ngày: <b>"+stat(30)+"</b>";
-
-/* ===== REPORT ===== */
-function exportReport(){
-  let t="📊 BÁO CÁO\n";
-  files.forEach(f=>{
-    t+=`${doneMap[f]?"✅":"⏳"} ${f.replace(".html","")} (${alarmMap[f]||"--:--"})\n`;
-  });
-  reportBox.value=t;
-}
-</script>
-<script>
-/* ===== POST CONTENT (30 DAYS) ===== */
-const POST_DAYS = 30*24*60*60*1000;
-
-const postFile = document.getElementById("postFile");
-const postLink = document.getElementById("postLink");
-const postContent = document.getElementById("postContent");
-
-/* Đổ danh sách file vào select */
-files.forEach(f=>{
-  const opt=document.createElement("option");
-  opt.value=f;
-  opt.innerText=f.replace(".html","");
-  postFile.appendChild(opt);
-});
-
-/* Load khi chọn file */
-postFile.onchange = ()=>{
-  const raw = localStorage.getItem("post-"+postFile.value);
-  if(!raw){
-    postLink.value="";
-    postContent.value="";
-    return;
-  }
-  const data = JSON.parse(raw);
-
-  if(Date.now() - data.time > POST_DAYS){
-    localStorage.removeItem("post-"+postFile.value);
-    postLink.value="";
-    postContent.value="";
-    return;
-  }
-
-  postLink.value=data.link;
-  postContent.value=data.content;
-};
-
-/* Save */
-function savePost(){
-  const data={
-    link: postLink.value,
-    content: postContent.value,
-    time: Date.now()
-  };
-  localStorage.setItem("post-"+postFile.value, JSON.stringify(data));
-  alert("✅ Đã lưu cho: "+postFile.value);
-}
-
-/* Load file đầu */
-postFile.dispatchEvent(new Event("change"));
 </script>
 
 </body>
