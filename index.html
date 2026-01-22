@@ -11,7 +11,7 @@
 body{
   font-family:Arial,sans-serif;
   background:#f4f6fa;
-  max-width:1000px;
+  max-width:1100px;
   margin:auto;
   padding:15px;
 }
@@ -38,11 +38,11 @@ button.export{
   border-radius:8px;
   cursor:pointer;
 }
-#suggestBox{
-  background:#fff3e0;
-  border-left:6px solid #fb8c00;
-}
+textarea{width:100%;min-height:70px}
 canvas{max-width:100%}
+.bad{color:#d32f2f}
+.ok{color:#f57c00}
+.good{color:#2e7d32}
 </style>
 </head>
 
@@ -50,9 +50,8 @@ canvas{max-width:100%}
 
 <h1>📊 AFFILIATE DASHBOARD</h1>
 
-<!-- BƯỚC 7: GỢI Ý -->
 <div class="card" id="suggestBox">
-  <h3>🤖 Gợi ý bài nên đăng hôm nay</h3>
+  <h3>🤖 Gợi ý hôm nay</h3>
   <div id="suggestContent">Đang phân tích dữ liệu…</div>
 </div>
 
@@ -74,132 +73,136 @@ canvas{max-width:100%}
 </div>
 
 <div class="card">
+  <h3>📅 Lịch đăng 7 ngày</h3>
+  <div id="schedule"></div>
+</div>
+
+<div class="card">
   <button class="export" onclick="exportCSV()">📤 Xuất báo cáo CSV</button>
 </div>
 
 <script>
-let currentPlatform="all";
 let rawData=[];
+let currentPlatform="all";
 let chartDay, chartMonth;
 
+/* ===== GIỜ ĐĂNG ===== */
+function bestPostTime(p){
+  return {
+    facebook:["07:30","12:00","20:00"],
+    zalo:["07:00","20:30"],
+    shopee:["10:00","15:00","21:00"]
+  }[p]||["08:00"];
+}
+
+/* ===== AI CAPTION ===== */
+function caption(platform,category,link){
+  const map={
+    "gia-dung":"🏠 Đồ gia dụng nhà mình đang dùng thấy rất tiện",
+    "lam-dep":"✨ Dùng thử rồi thấy ổn nên chia sẻ",
+    "me-be":"👶 Mẹ bỉm nên tham khảo món này",
+    "cong-nghe":"📱 Món công nghệ này đang được quan tâm"
+  };
+  return `${map[category]||"Sản phẩm đang bán tốt"}\n👉 Xem chi tiết: ${link}`;
+}
+
+/* ===== LOAD DATA ===== */
+fetch("data/hoa-hong.csv")
+.then(r=>r.text())
+.then(t=>{
+  rawData=t.trim().split("\n").slice(1).map(r=>{
+    const [date,commission,platform,link,category]=r.split(",");
+    return {date,commission:+commission,platform,link,category};
+  });
+  renderAll();
+});
+
+/* ===== RENDER ===== */
 function setPlatform(p){
   currentPlatform=p;
-  document.querySelectorAll(".tabs button")
-    .forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
   event.target.classList.add("active");
-  renderCharts();
-  suggestToday();
+  renderAll();
 }
 
-fetch("data/hoa-hong.csv")
-  .then(r=>r.text())
-  .then(t=>{
-    rawData=t.trim().split("\n").slice(1).map(r=>{
-      const [date,commission,platform,link]=r.split(",");
-      return {date,commission:Number(commission),platform,link};
-    });
-    renderCharts();
-    suggestToday();
-  });
-
-function renderCharts(){
+function renderAll(){
   const data=currentPlatform==="all"
     ? rawData
     : rawData.filter(r=>r.platform===currentPlatform);
 
-  const dayMap={}, monthMap={};
+  renderCharts(data);
+  suggest(data);
+  renderSchedule(data);
+}
+
+/* ===== BIỂU ĐỒ ===== */
+function renderCharts(data){
+  const day={},month={};
 
   data.forEach(r=>{
-    dayMap[r.date]=(dayMap[r.date]||0)+r.commission;
-    const m=r.date.slice(0,7);
-    monthMap[m]=(monthMap[m]||0)+r.commission;
+    day[r.date]=(day[r.date]||0)+r.commission;
+    month[r.date.slice(0,7)]=(month[r.date.slice(0,7)]||0)+r.commission;
   });
 
-  renderChart("chartDay","Hoa hồng theo ngày",dayMap,"date",data,chartDay,c=>chartDay=c);
-  renderChart("chartMonth","Hoa hồng theo tháng",monthMap,"month",data,chartMonth,c=>chartMonth=c);
+  draw("chartDay",day,"Hoa hồng ngày",c=>chartDay=c,chartDay);
+  draw("chartMonth",month,"Hoa hồng tháng",c=>chartMonth=c,chartMonth);
 }
 
-function renderChart(id,label,map,mode,data,oldChart,setChart){
-  if(oldChart) oldChart.destroy();
-
-  const labels=Object.keys(map);
-  const values=Object.values(map);
-  const max=Math.max(...values);
-
-  const colors=values.map(v=>v===max?"#d32f2f":"#1976d2");
-
+function draw(id,map,label,set,old){
+  if(old) old.destroy();
   const chart=new Chart(document.getElementById(id),{
     type:"bar",
-    data:{
-      labels,
-      datasets:[{label,data:values,backgroundColor:colors}]
-    },
-    options:{
-      onClick:(e,els)=>{
-        if(!els.length) return;
-        const key=labels[els[0].index];
-        const item=data.find(r=>mode==="date"?r.date===key:r.date.startsWith(key));
-        if(item?.link) window.open(item.link,"_blank");
-      },
-      plugins:{
-        tooltip:{callbacks:{label:c=>c.raw.toLocaleString("vi-VN")+" ₫"}}
-      },
-      scales:{y:{ticks:{callback:v=>v.toLocaleString("vi-VN")+" ₫"}}}
-    }
+    data:{labels:Object.keys(map),datasets:[{label,data:Object.values(map)}]},
+    options:{scales:{y:{ticks:{callback:v=>v.toLocaleString()+" ₫"}}}}
   });
-
-  setChart(chart);
+  set(chart);
 }
 
-/* ===== BƯỚC 7: GỢI Ý ===== */
-function suggestToday(){
+/* ===== GỢI Ý ===== */
+function suggest(data){
   const box=document.getElementById("suggestContent");
+  if(!data.length){box.innerText="Chưa có dữ liệu";return;}
 
-  const data=currentPlatform==="all"
-    ? rawData
-    : rawData.filter(r=>r.platform===currentPlatform);
-
-  if(!data.length){
-    box.innerText="Chưa có dữ liệu để gợi ý.";
-    return;
-  }
-
-  const last7=data.filter(r=>{
-    const d=new Date(r.date);
-    return (Date.now()-d)/86400000<=7;
+  const m={};
+  data.forEach(r=>{
+    if(!m[r.link]) m[r.link]={sum:0,platform:r.platform,category:r.category};
+    m[r.link].sum+=r.commission;
   });
 
-  if(!last7.length){
-    box.innerText="⚠️ 7 ngày gần đây chưa có đơn → nên thử sản phẩm mới.";
-    return;
-  }
+  const top=Object.entries(m).sort((a,b)=>b[1].sum-a[1].sum).slice(0,3);
 
-  const linkMap={};
-  last7.forEach(r=>{
-    linkMap[r.link]=(linkMap[r.link]||0)+r.commission;
+  let html="<b>🔥 TOP 3 LINK NÊN ĐĂNG</b><hr>";
+  top.forEach(([link,i],idx)=>{
+    const score=i.sum>50000?"A":i.sum>20000?"B":"C";
+    html+=`
+    <b>#${idx+1} – Điểm ${score}</b><br>
+    💰 ${i.sum.toLocaleString()} ₫<br>
+    ⏰ ${bestPostTime(i.platform).join(", ")}<br>
+    <textarea>${caption(i.platform,i.category,link)}</textarea>
+    <hr>`;
   });
-
-  const best=Object.entries(linkMap).sort((a,b)=>b[1]-a[1])[0];
-
-  box.innerHTML=`
-    🔥 <b>NÊN ĐĂNG LẠI</b><br>
-    💰 7 ngày qua: <b>${best[1].toLocaleString("vi-VN")} ₫</b><br>
-    🔗 <a href="${best[0]}" target="_blank">Mở link bán tốt</a>
-  `;
+  box.innerHTML=html;
 }
 
+/* ===== LỊCH 7 NGÀY ===== */
+function renderSchedule(data){
+  const box=document.getElementById("schedule");
+  let html="";
+  for(let i=0;i<7;i++){
+    const d=new Date();
+    d.setDate(d.getDate()+i);
+    html+=`📅 ${d.toISOString().slice(0,10)} – Đăng bài lúc 20:00<br>`;
+  }
+  box.innerHTML=html;
+}
+
+/* ===== EXPORT ===== */
 function exportCSV(){
-  const data=currentPlatform==="all"
-    ? rawData
-    : rawData.filter(r=>r.platform===currentPlatform);
-
-  let csv="date,commission,platform\n";
-  data.forEach(r=>csv+=`${r.date},${r.commission},${r.platform}\n`);
-
-  const blob=new Blob([csv],{type:"text/csv"});
+  let csv="date,commission,platform,link,category\n";
+  rawData.forEach(r=>csv+=`${r.date},${r.commission},${r.platform},${r.link},${r.category}\n`);
   const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="bao-cao-hoa-hong.csv";
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download="bao-cao-affiliate.csv";
   a.click();
 }
 </script>
