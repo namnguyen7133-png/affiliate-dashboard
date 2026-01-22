@@ -2,10 +2,203 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Affiliate Hub</title>
+  <title>Affiliate Hub – Giới thiệu sản phẩm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6fa;
+      margin: 0;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .desc {
+      text-align: center;
+      color: #555;
+      margin-bottom: 25px;
+    }
+
+    .filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+
+    .filter input, .filter select {
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card h3 {
+      font-size: 16px;
+      margin: 0 0 8px;
+    }
+
+    .tag {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+
+    .score {
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .price {
+      color: #e53935;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .card a {
+      margin-top: auto;
+      text-decoration: none;
+      background: #0d6efd;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .card a:hover {
+      background: #084298;
+    }
+
+    .note {
+      margin-top: 30px;
+      background: #fff3cd;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Affiliate Hub</h1>
-  <p>File đã tạo thành công 🎉</p>
+
+<h1>🔥 Affiliate Hub</h1>
+<p class="desc">
+  Trang giới thiệu & theo dõi link affiliate – chia sẻ cho ai có link đều xem được
+</p>
+
+<div class="filter">
+  <input type="text" id="search" placeholder="🔍 Tìm sản phẩm..." oninput="render()">
+  <select id="platform" onchange="render()">
+    <option value="">Tất cả nền tảng</option>
+    <option value="Shopee">Shopee</option>
+    <option value="Facebook">Facebook</option>
+    <option value="Zalo">Zalo</option>
+  </select>
+  <select id="grade" onchange="render()">
+    <option value="">Tất cả điểm</option>
+    <option value="A">Link A</option>
+    <option value="B">Link B</option>
+    <option value="C">Link C</option>
+  </select>
+</div>
+
+<div class="grid" id="list"></div>
+
+<div class="note">
+  <b>📌 Gợi ý sử dụng:</b><br>
+  • Link <b>A</b>: đẩy mạnh – đăng giờ vàng<br>
+  • Link <b>B</b>: test caption / test giờ<br>
+  • Link <b>C</b>: sắp chết – ưu tiên xả hoặc bỏ<br><br>
+  👉 Trang này giống Google Doc: <b>ai có link đều xem được</b>
+</div>
+
+<script>
+const products = [
+  {
+    name: "Nước Giặt Dnee Cho Bé 3000ml",
+    category: "Mẹ & Bé",
+    platform: "Shopee",
+    price: "279.000đ",
+    grade: "A",
+    link: "https://s.shopee.vn/xxxx"
+  },
+  {
+    name: "Thảm Nỉ Lau Chân Lông Cừu",
+    category: "Gia dụng",
+    platform: "Shopee",
+    price: "79.000đ",
+    grade: "B",
+    link: "https://s.shopee.vn/yyyy"
+  },
+  {
+    name: "Trà Dưỡng Nhan 7 Vị",
+    category: "Sức khỏe",
+    platform: "Facebook",
+    price: "189.000đ",
+    grade: "A",
+    link: "https://s.shopee.vn/zzzz"
+  },
+  {
+    name: "Vòng Hoa Treo Tết Phúc Lộc Thọ",
+    category: "Trang trí",
+    platform: "Zalo",
+    price: "129.000đ",
+    grade: "C",
+    link: "https://s.shopee.vn/aaaa"
+  }
+];
+
+function render() {
+  const kw = search.value.toLowerCase();
+  const pf = platform.value;
+  const gr = grade.value;
+
+  list.innerHTML = "";
+
+  products
+    .filter(p =>
+      (!kw || p.name.toLowerCase().includes(kw)) &&
+      (!pf || p.platform === pf) &&
+      (!gr || p.grade === gr)
+    )
+    .forEach(p => {
+      list.innerHTML += `
+        <div class="card">
+          <h3>${p.name}</h3>
+          <div class="tag">Ngành: ${p.category}</div>
+          <div class="tag">Nền tảng: ${p.platform}</div>
+          <div class="score">Chấm điểm link: <b>${p.grade}</b></div>
+          <div class="price">${p.price}</div>
+          <a href="${p.link}" target="_blank">👉 Mua / Xem sản phẩm</a>
+        </div>
+      `;
+    });
+}
+
+render();
+</script>
+
 </body>
 </html>
