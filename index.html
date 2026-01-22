@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Affiliate Dashboard</title>
 
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 body{
   font-family:Arial,sans-serif;
@@ -14,152 +17,79 @@ body{
   padding:15px;
 }
 h1{text-align:center;color:#0b4f6c}
-h3{margin-top:25px}
-.menu a{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px;
-  margin:10px 0;
-  font-size:16px;
-  text-decoration:none;
-  color:#fff;
-  border-radius:10px;
-}
-.menu small{font-size:13px}
-.done{opacity:.6;text-decoration:line-through}
-.blue{background:#1565c0}
-.green{background:#2e7d32}
-.orange{background:#ef6c00}
-.purple{background:#6a1b9a}
-.progress{background:#ddd;border-radius:20px;overflow:hidden}
-.bar{height:18px;background:#2e7d32;color:#fff;font-size:13px;text-align:center}
 .card{
   background:#fff;
-  padding:12px;
-  border-radius:10px;
-  margin:10px 0;
+  padding:15px;
+  border-radius:12px;
+  margin:15px 0;
 }
-.highlight{
-  background:#fff3cd;
-  border-left:6px solid #ff9800;
+canvas{
+  max-width:100%;
 }
-button{cursor:pointer}
 </style>
 </head>
 
 <body>
 
-<h1>📌 AFFILIATE DASHBOARD</h1>
+<h1>📊 AFFILIATE DASHBOARD</h1>
 
-<h3>⭐ Việc ưu tiên hôm nay</h3>
-<div class="card highlight" id="priorityBox">Đang tải…</div>
-
-<h3>📂 Công việc</h3>
-
-<!-- TAB -->
-<div style="margin-bottom:10px">
-  <button onclick="renderMenu('all')">📂 Tất cả</button>
-  <button onclick="renderMenu('shopee')">🛒 Shopee</button>
-  <button onclick="renderMenu('tool')">🧰 Tool</button>
+<div class="card">
+  <h3>💰 Hoa hồng theo ngày</h3>
+  <canvas id="commissionChart" height="120"></canvas>
 </div>
 
-<div class="menu" id="menu"></div>
-
-<h3>📊 Tiến độ</h3>
-<div class="progress"><div class="bar" id="progressBar">0%</div></div>
-<p>✅ Đã làm: <b id="doneCount">0</b> | ⏳ Còn: <b id="leftCount">0</b></p>
-
-<audio id="alarmSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"></audio>
-
 <script>
-let FILES = [];
+fetch("data/hoa-hong.csv")
+  .then(res => res.text())
+  .then(text => {
 
-const colors=["blue","green","orange","purple"];
+    const rows = text.trim().split("\n").slice(1);
 
-const menu=document.getElementById("menu");
-const doneCountEl=document.getElementById("doneCount");
-const leftCountEl=document.getElementById("leftCount");
-const progressBar=document.getElementById("progressBar");
-const priorityBox=document.getElementById("priorityBox");
+    const labels = [];
+    const values = [];
 
-const doneMap=JSON.parse(localStorage.getItem("doneMap")||"{}");
-const alarmMap=JSON.parse(localStorage.getItem("alarmMap")||"{}");
+    rows.forEach(row => {
+      const [date, commission] = row.split(",");
+      labels.push(date);
+      values.push(Number(commission));
+    });
 
-fetch("files.json")
-  .then(r => r.json())
-  .then(list => {
-    FILES = list.filter(f => f.active);
-    renderMenu("all");
-    updateProgress();
-    updatePriority();
-  })
-  .catch(()=>{
-    priorityBox.innerText="❌ Không đọc được files.json";
+    const ctx = document
+      .getElementById("commissionChart")
+      .getContext("2d");
+
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Hoa hồng (VNĐ)",
+          data: values,
+          borderWidth: 2,
+          tension: 0.35
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: ctx =>
+                ctx.raw.toLocaleString("vi-VN") + " ₫"
+            }
+          }
+        },
+        scales: {
+          y: {
+            ticks: {
+              callback: v =>
+                v.toLocaleString("vi-VN") + " ₫"
+            }
+          }
+        }
+      }
+    });
   });
-
-function renderMenu(type){
-  menu.innerHTML="";
-  const show = FILES.filter(f => type==="all" || f.platform===type);
-
-  show.forEach((f,i)=>{
-    const key=f.file;
-    const a=document.createElement("a");
-    a.href=f.file;
-    a.className=colors[i%4]+(doneMap[key]?" done":"");
-    a.innerHTML=`
-      <span>
-        ${f.name}
-        <br><small>⏰ ${alarmMap[key]||"--:--"}</small>
-      </span>
-      <span>
-        <input type="time" value="${alarmMap[key]||""}"
-          onchange="setAlarm('${key}',this.value)">
-        <button onclick="toggleDone(event,'${key}')">
-          ${doneMap[key]?"↩":"✔"}
-        </button>
-      </span>
-    `;
-    menu.appendChild(a);
-  });
-}
-
-function toggleDone(e,key){
-  e.preventDefault();
-  doneMap[key]=!doneMap[key];
-  localStorage.setItem("doneMap",JSON.stringify(doneMap));
-  updateProgress();
-  updatePriority();
-  renderMenu("all");
-}
-
-function setAlarm(key,t){
-  alarmMap[key]=t;
-  localStorage.setItem("alarmMap",JSON.stringify(alarmMap));
-}
-
-function updateProgress(){
-  const keys=FILES.map(f=>f.file);
-  const done=keys.filter(k=>doneMap[k]).length;
-  doneCountEl.innerText=done;
-  leftCountEl.innerText=keys.length-done;
-  const percent=keys.length?Math.round(done/keys.length*100):0;
-  progressBar.style.width=percent+"%";
-  progressBar.innerText=percent+"%";
-}
-
-function updatePriority(){
-  let next=null;
-  FILES.forEach(f=>{
-    const k=f.file;
-    if(!doneMap[k] && alarmMap[k]){
-      if(!next || alarmMap[k]<alarmMap[next]) next=k;
-    }
-  });
-  priorityBox.innerHTML = next
-    ? `🔔 <b>${next.replace(".html","")}</b><br>⏰ ${alarmMap[next]}`
-    : "🎉 Không còn việc gấp hôm nay";
-}
 </script>
 
 </body>
