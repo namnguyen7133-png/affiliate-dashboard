@@ -23,9 +23,7 @@ h1{text-align:center;color:#0b4f6c}
   border-radius:12px;
   margin:15px 0;
 }
-canvas{
-  max-width:100%;
-}
+canvas{max-width:100%}
 </style>
 </head>
 
@@ -35,7 +33,17 @@ canvas{
 
 <div class="card">
   <h3>💰 Hoa hồng theo ngày</h3>
-  <canvas id="commissionChart" height="120"></canvas>
+  <canvas id="commissionDayChart" height="120"></canvas>
+</div>
+
+<div class="card">
+  <h3>📆 Hoa hồng theo tuần</h3>
+  <canvas id="commissionWeekChart" height="120"></canvas>
+</div>
+
+<div class="card">
+  <h3>🗓️ Hoa hồng theo tháng</h3>
+  <canvas id="commissionMonthChart" height="120"></canvas>
 </div>
 
 <script>
@@ -45,50 +53,94 @@ fetch("data/hoa-hong.csv")
 
     const rows = text.trim().split("\n").slice(1);
 
-    const labels = [];
-    const values = [];
+    const dayLabels = [];
+    const dayValues = [];
+
+    const weekMap = {};
+    const monthMap = {};
 
     rows.forEach(row => {
       const [date, commission] = row.split(",");
-      labels.push(date);
-      values.push(Number(commission));
+      const value = Number(commission);
+
+      /* NGÀY */
+      dayLabels.push(date);
+      dayValues.push(value);
+
+      const d = new Date(date);
+      const year = d.getFullYear();
+
+      /* TUẦN */
+      const week = Math.ceil(
+        ((d - new Date(year,0,1)) / 86400000 + new Date(year,0,1).getDay()+1) / 7
+      );
+      const weekKey = `${year}-W${week}`;
+      weekMap[weekKey] = (weekMap[weekKey] || 0) + value;
+
+      /* THÁNG */
+      const monthKey = `${year}-${String(d.getMonth()+1).padStart(2,"0")}`;
+      monthMap[monthKey] = (monthMap[monthKey] || 0) + value;
     });
 
-    const ctx = document
-      .getElementById("commissionChart")
-      .getContext("2d");
+    const chartOption = {
+      responsive: true,
+      plugins:{
+        tooltip:{
+          callbacks:{
+            label:c=>c.raw.toLocaleString("vi-VN")+" ₫"
+          }
+        }
+      },
+      scales:{
+        y:{
+          ticks:{
+            callback:v=>v.toLocaleString("vi-VN")+" ₫"
+          }
+        }
+      }
+    };
 
-    new Chart(ctx, {
+    /* BIỂU ĐỒ NGÀY */
+    new Chart(document.getElementById("commissionDayChart"), {
       type: "line",
       data: {
-        labels: labels,
+        labels: dayLabels,
         datasets: [{
-          label: "Hoa hồng (VNĐ)",
-          data: values,
+          label: "Hoa hồng theo ngày",
+          data: dayValues,
           borderWidth: 2,
           tension: 0.35
         }]
       },
-      options: {
-        responsive: true,
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: ctx =>
-                ctx.raw.toLocaleString("vi-VN") + " ₫"
-            }
-          }
-        },
-        scales: {
-          y: {
-            ticks: {
-              callback: v =>
-                v.toLocaleString("vi-VN") + " ₫"
-            }
-          }
-        }
-      }
+      options: chartOption
     });
+
+    /* BIỂU ĐỒ TUẦN */
+    new Chart(document.getElementById("commissionWeekChart"), {
+      type: "bar",
+      data: {
+        labels: Object.keys(weekMap),
+        datasets: [{
+          label: "Hoa hồng theo tuần",
+          data: Object.values(weekMap)
+        }]
+      },
+      options: chartOption
+    });
+
+    /* BIỂU ĐỒ THÁNG */
+    new Chart(document.getElementById("commissionMonthChart"), {
+      type: "bar",
+      data: {
+        labels: Object.keys(monthMap),
+        datasets: [{
+          label: "Hoa hồng theo tháng",
+          data: Object.values(monthMap)
+        }]
+      },
+      options: chartOption
+    });
+
   });
 </script>
 
