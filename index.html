@@ -30,6 +30,14 @@ h1{text-align:center;color:#0b4f6c}
   cursor:pointer;
 }
 .tabs .active{background:#0b4f6c;color:#fff}
+button.export{
+  background:#2e7d32;
+  color:#fff;
+  padding:8px 12px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
 canvas{max-width:100%}
 </style>
 </head>
@@ -55,13 +63,17 @@ canvas{max-width:100%}
   <canvas id="chartMonth" height="120"></canvas>
 </div>
 
+<div class="card">
+  <button class="export" onclick="exportCSV()">📤 Xuất báo cáo CSV</button>
+</div>
+
 <script>
-let currentPlatform = "all";
-let rawData = [];
+let currentPlatform="all";
+let rawData=[];
 let chartDay, chartMonth;
 
 function setPlatform(p){
-  currentPlatform = p;
+  currentPlatform=p;
   document.querySelectorAll(".tabs button")
     .forEach(b=>b.classList.remove("active"));
   event.target.classList.add("active");
@@ -71,82 +83,106 @@ function setPlatform(p){
 fetch("data/hoa-hong.csv")
   .then(r=>r.text())
   .then(t=>{
-    rawData = t.trim().split("\n").slice(1).map(r=>{
-      const [date,commission,platform,link] = r.split(",");
+    rawData=t.trim().split("\n").slice(1).map(r=>{
+      const [date,commission,platform,link]=r.split(",");
       return {date,commission:Number(commission),platform,link};
     });
     renderCharts();
   });
 
 function renderCharts(){
-  const filtered = currentPlatform==="all"
+  const data=currentPlatform==="all"
     ? rawData
     : rawData.filter(r=>r.platform===currentPlatform);
 
   const dayMap={}, monthMap={};
 
-  filtered.forEach(r=>{
+  data.forEach(r=>{
     dayMap[r.date]=(dayMap[r.date]||0)+r.commission;
     const m=r.date.slice(0,7);
     monthMap[m]=(monthMap[m]||0)+r.commission;
   });
 
-  if(chartDay) chartDay.destroy();
-  if(chartMonth) chartMonth.destroy();
+  renderChart(
+    "chartDay",
+    "Hoa hồng theo ngày",
+    dayMap,
+    "date",
+    data,
+    chartDay,
+    c=>chartDay=c
+  );
 
-  chartDay = new Chart(chartDayCtx(),{
-    type:"bar",
-    data:{
-      labels:Object.keys(dayMap),
-      datasets:[{
-        label:"Hoa hồng theo ngày",
-        data:Object.values(dayMap)
-      }]
-    },
-    options:chartOpt(filtered,"date")
-  });
-
-  chartMonth = new Chart(chartMonthCtx(),{
-    type:"bar",
-    data:{
-      labels:Object.keys(monthMap),
-      datasets:[{
-        label:"Hoa hồng theo tháng",
-        data:Object.values(monthMap)
-      }]
-    },
-    options:chartOpt(filtered,"month")
-  });
+  renderChart(
+    "chartMonth",
+    "Hoa hồng theo tháng",
+    monthMap,
+    "month",
+    data,
+    chartMonth,
+    c=>chartMonth=c
+  );
 }
 
-function chartOpt(data,mode){
-  return {
-    onClick:(e,els)=>{
-      if(!els.length) return;
-      const label=e.chart.data.labels[els[0].index];
-      const item=data.find(r=>
-        mode==="date" ? r.date===label : r.date.startsWith(label)
-      );
-      if(item && item.link) window.open(item.link,"_blank");
+function renderChart(id,label,map,mode,data,oldChart,setChart){
+  if(oldChart) oldChart.destroy();
+
+  const labels=Object.keys(map);
+  const values=Object.values(map);
+  const max=Math.max(...values);
+
+  const colors=values.map(v=>v===max?"#d32f2f":"#1976d2");
+
+  const chart=new Chart(document.getElementById(id),{
+    type:"bar",
+    data:{
+      labels:labels,
+      datasets:[{
+        label:label,
+        data:values,
+        backgroundColor:colors
+      }]
     },
-    plugins:{
-      tooltip:{
-        callbacks:{
-          label:c=>c.raw.toLocaleString("vi-VN")+" ₫"
+    options:{
+      onClick:(e,els)=>{
+        if(!els.length) return;
+        const key=labels[els[0].index];
+        const item=data.find(r=>
+          mode==="date"?r.date===key:r.date.startsWith(key)
+        );
+        if(item?.link) window.open(item.link,"_blank");
+      },
+      plugins:{
+        tooltip:{
+          callbacks:{
+            label:c=>c.raw.toLocaleString("vi-VN")+" ₫"
+          }
         }
+      },
+      scales:{
+        y:{ticks:{callback:v=>v.toLocaleString("vi-VN")+" ₫"}}
       }
-    },
-    scales:{
-      y:{ticks:{callback:v=>v.toLocaleString("vi-VN")+" ₫"}}
     }
-  };
+  });
+
+  setChart(chart);
 }
 
-function chartDayCtx(){
-  return document.getElementById("chartDay");
-}
-function chartMonthCtx(){
-  return document.getElementById("chartMonth");
+function exportCSV(){
+  const data=currentPlatform==="all"
+    ? rawData
+    : rawData.filter(r=>r.platform===currentPlatform);
+
+  let csv="date,commission,platform\n";
+  data.forEach(r=>{
+    csv+=`${r.date},${r.commission},${r.platform}\n`;
+  });
+
+  const blob=new Blob([csv],{type:"text/csv"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="bao-cao-hoa-hong.csv";
+  a.click();
 }
 </script>
 
