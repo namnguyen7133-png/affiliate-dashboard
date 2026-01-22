@@ -1,0 +1,26 @@
+[
+  {
+    "name": "001 – Tìm tên người",
+    "file": "001-tim-ten-nguoi.html",
+    "tag": "text",
+    "active": true
+  },
+  {
+    "name": "002 – Thời gian biểu làm việc",
+    "file": "002-thoi-gian-bieu-lam-viec.html",
+    "tag": "work",
+    "active": true
+  },
+  {
+    "name": "003 – Shopee tự động làm hoa hồng",
+    "file": "003-shopee-tu-dong-lam-hh.html",
+    "tag": "shopee",
+    "active": true
+  },
+  {
+    "name": "004 – Shopee tìm chữ cuối đoạn văn",
+    "file": "004-shopee-tim-chu-cuoi-doan-van.html",
+    "tag": "shopee",
+    "active": true
+  }
+]
