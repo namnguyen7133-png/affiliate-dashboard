@@ -2,138 +2,585 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Affiliate Hub – Xem tuần tự + Nhật ký</title>
+<title>Affiliate Hub – Quản lý xem tuần tự & Nhật ký đăng bài</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-body{
-  font-family:Arial,sans-serif;
-  background:#f4f6fa;
-  max-width:1200px;
-  margin:auto;
-  padding:10px;
-}
-h1{text-align:center;color:#0b4f6c}
-h2{margin:10px 0;color:#333}
-.container{display:flex;gap:10px}
-.list{
-  width:30%;
-  background:#fff;
-  border-radius:10px;
-  padding:10px;
-  overflow:auto;
-  max-height:80vh;
-}
-.list a{
-  display:block;
-  padding:8px;
-  margin:4px 0;
-  border-radius:6px;
-  text-decoration:none;
-  color:#333;
-}
-.list a.active{background:#0b4f6c;color:#fff}
-.list a.done{opacity:.5}
-
-.viewer{
-  width:45%;
-  background:#fff;
-  border-radius:10px;
-  padding:5px;
-}
-iframe{
-  width:100%;
-  height:60vh;
-  border:none;
-}
-.controls{
-  display:flex;
-  justify-content:space-between;
-  margin:6px 0;
-}
-button{
-  padding:6px 10px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  background:#1976d2;
-  color:#fff;
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --secondary: #0f766e;
+  --light: #f8fafc;
+  --dark: #1e293b;
+  --gray: #64748b;
+  --gray-light: #e2e8f0;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --radius: 12px;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --transition: all 0.3s ease;
 }
 
-/* NHẬT KÝ */
-.diary{
-  width:25%;
-  background:#fff;
-  border-radius:10px;
-  padding:10px;
-  max-height:80vh;
-  overflow:auto;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-.diary input, .diary select, .diary textarea{
-  width:100%;
-  margin:4px 0;
-  padding:6px;
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  color: var(--dark);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding: 20px;
 }
-.log{
-  border-bottom:1px dashed #ddd;
-  padding:6px 0;
-  font-size:13px;
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
 }
-.log small{color:#666}
+
+/* HEADER */
+header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+header h1 {
+  color: var(--primary);
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+header h1 i {
+  color: var(--secondary);
+}
+
+.subtitle {
+  color: var(--gray);
+  font-size: 1.1rem;
+}
+
+/* MAIN LAYOUT */
+.main-content {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+@media (max-width: 1200px) {
+  .main-content {
+    flex-direction: column;
+  }
+}
+
+/* PANEL STYLES */
+.panel {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  transition: var(--transition);
+}
+
+.panel:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--primary);
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--gray-light);
+  font-size: 1.3rem;
+}
+
+/* FILE LIST */
+.file-list {
+  flex: 1;
+  min-width: 300px;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.file-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-item {
+  padding: 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--dark);
+  background: var(--light);
+  border-left: 4px solid var(--gray);
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.file-item:hover {
+  background: #f1f5f9;
+  transform: translateX(5px);
+}
+
+.file-item.active {
+  background: var(--primary);
+  color: white;
+  border-left-color: var(--primary-dark);
+}
+
+.file-item.done {
+  opacity: 0.7;
+  background: #dcfce7;
+  border-left-color: var(--success);
+}
+
+.file-item.done .file-icon {
+  color: var(--success);
+}
+
+.file-item.active .file-icon {
+  color: white;
+}
+
+.file-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.file-icon {
+  color: var(--gray);
+  margin-right: 10px;
+}
+
+.file-status {
+  font-size: 0.8rem;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: #e2e8f0;
+  color: var(--gray);
+}
+
+.file-item.active .file-status {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.file-item.done .file-status {
+  background: var(--success);
+  color: white;
+}
+
+/* VIEWER */
+.viewer {
+  flex: 2;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewer-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.btn-success {
+  background: var(--success);
+  color: white;
+}
+
+.btn-success:hover {
+  background: #0da271;
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  background: white;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+
+.btn-outline:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.viewer-frame {
+  flex: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f8fafc;
+  border: 1px solid var(--gray-light);
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* DIARY */
+.diary {
+  flex: 1;
+  min-width: 300px;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.diary-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.form-control {
+  padding: 12px;
+  border: 1px solid var(--gray-light);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+textarea.form-control {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* LOGS */
+.logs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.log-entry {
+  padding: 15px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border-left: 4px solid var(--primary);
+  transition: var(--transition);
+}
+
+.log-entry:hover {
+  background: #f1f5f9;
+}
+
+.log-entry:nth-child(4n+1) {
+  border-left-color: var(--primary);
+}
+
+.log-entry:nth-child(4n+2) {
+  border-left-color: var(--secondary);
+}
+
+.log-entry:nth-child(4n+3) {
+  border-left-color: var(--success);
+}
+
+.log-entry:nth-child(4n+4) {
+  border-left-color: var(--warning);
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.log-platform {
+  font-weight: 600;
+  color: var(--primary);
+  background: #dbeafe;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.log-time {
+  color: var(--gray);
+  font-size: 0.9rem;
+}
+
+.log-product {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: var(--dark);
+}
+
+.log-note {
+  color: var(--gray);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* PROGRESS */
+.progress-container {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.progress-bar {
+  height: 12px;
+  background: var(--gray-light);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--gray);
+}
+
+/* UTILITIES */
+.empty-state {
+  text-align: center;
+  padding: 30px;
+  color: var(--gray);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  color: var(--gray-light);
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
 </style>
 </head>
 
 <body>
-
-<h1>📂 AFFILIATE HUB – XEM + NHẬT KÝ ĐĂNG BÀI</h1>
-
 <div class="container">
+  <header>
+    <h1><i class="fas fa-hub"></i> AFFILIATE HUB</h1>
+    <p class="subtitle">Quản lý xem tuần tự tài liệu & Nhật ký đăng bài affiliate</p>
+  </header>
 
-  <!-- DANH SÁCH FILE -->
-  <div class="list" id="list"></div>
-
-  <!-- XEM FILE -->
-  <div class="viewer">
-    <div class="controls">
-      <button onclick="prev()">⬅ Trước</button>
-      <button onclick="markDone()">✅ Đã xem</button>
-      <button onclick="next()">Sau ➡</button>
+  <div class="main-content">
+    <!-- DANH SÁCH FILE -->
+    <div class="panel file-list">
+      <div class="panel-title">
+        <i class="fas fa-folder-open"></i>
+        <span>Danh sách tài liệu</span>
+      </div>
+      <div class="file-list-container" id="list"></div>
     </div>
-    <iframe id="frame"></iframe>
+
+    <!-- XEM FILE -->
+    <div class="panel viewer">
+      <div class="panel-title">
+        <i class="fas fa-file-alt"></i>
+        <span>Xem tài liệu</span>
+      </div>
+      
+      <div class="viewer-controls">
+        <div class="controls-left">
+          <button class="btn btn-outline" onclick="prev()">
+            <i class="fas fa-chevron-left"></i>
+            Trước
+          </button>
+        </div>
+        
+        <div class="controls-center">
+          <button class="btn btn-success" onclick="markDone()">
+            <i class="fas fa-check-circle"></i>
+            Đánh dấu đã xem
+          </button>
+        </div>
+        
+        <div class="controls-right">
+          <button class="btn btn-outline" onclick="next()">
+            Sau
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="viewer-frame">
+        <iframe id="frame"></iframe>
+      </div>
+    </div>
+
+    <!-- NHẬT KÝ -->
+    <div class="panel diary">
+      <div class="panel-title">
+        <i class="fas fa-book"></i>
+        <span>Nhật ký đăng bài</span>
+      </div>
+      
+      <form class="diary-form" onsubmit="event.preventDefault(); saveLog();">
+        <div class="form-group">
+          <label for="time"><i class="far fa-calendar-alt"></i> Ngày / Giờ</label>
+          <input type="datetime-local" id="time" class="form-control" value="">
+        </div>
+        
+        <div class="form-group">
+          <label for="platform"><i class="fas fa-globe"></i> Nền tảng</label>
+          <select id="platform" class="form-control">
+            <option>Facebook</option>
+            <option>Zalo</option>
+            <option>TikTok</option>
+            <option>Reel</option>
+            <option>Instagram</option>
+            <option>X (Twitter)</option>
+            <option>YouTube</option>
+            <option>Website</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="product"><i class="fas fa-link"></i> Sản phẩm / Link</label>
+          <input id="product" class="form-control" placeholder="Tên sản phẩm hoặc link affiliate">
+        </div>
+        
+        <div class="form-group">
+          <label for="note"><i class="far fa-sticky-note"></i> Ghi chú</label>
+          <textarea id="note" class="form-control" rows="3" placeholder="Ghi chú về chiến dịch, hiệu quả, ý tưởng..."></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-plus-circle"></i>
+          Lưu nhật ký
+        </button>
+      </form>
+      
+      <div class="panel-title">
+        <i class="fas fa-history"></i>
+        <span>Lịch sử đăng bài</span>
+      </div>
+      
+      <div class="logs-container" id="logs"></div>
+      
+      <div id="empty-logs" class="empty-state" style="display:none;">
+        <i class="far fa-clipboard"></i>
+        <p>Chưa có nhật ký nào. Hãy thêm nhật ký đầu tiên!</p>
+      </div>
+    </div>
   </div>
 
-  <!-- NHẬT KÝ -->
-  <div class="diary">
-    <h2>📔 Nhật ký đăng bài</h2>
-
-    <label>Ngày / Giờ</label>
-    <input type="datetime-local" id="time">
-
-    <label>Nền tảng</label>
-    <select id="platform">
-      <option>Facebook</option>
-      <option>Zalo</option>
-      <option>TikTok</option>
-      <option>Reel</option>
-      <option>X</option>
-    </select>
-
-    <label>Sản phẩm / Link</label>
-    <input id="product" placeholder="Tên hoặc link">
-
-    <label>Ghi chú</label>
-    <textarea id="note" rows="2"></textarea>
-
-    <button onclick="saveLog()">➕ Lưu nhật ký</button>
-
-    <h3>🕒 Đã đăng</h3>
-    <div id="logs"></div>
+  <!-- PROGRESS -->
+  <div class="progress-container">
+    <div class="progress-header">
+      <div class="panel-title">
+        <i class="fas fa-chart-line"></i>
+        <span>Tiến độ học tập</span>
+      </div>
+      <span id="progress-percent">0%</span>
+    </div>
+    
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+    </div>
+    
+    <div class="progress-text">
+      <span id="progress-text">Đã xem 0/12 tài liệu</span>
+      <span id="remaining-text">Còn lại 12 tài liệu</span>
+    </div>
   </div>
-
 </div>
 
 <script>
 const files = [
-   "affiliate-hub.html",
+  "affiliate-hub.html",
   "001-tim-ten-nguoi.html",
   "002-thoi-gian-bieu-lam-viec.html",
   "003-shopee-tu-dong-lam-hh.html",
@@ -147,74 +594,197 @@ const files = [
   "012-Quan-ly-link.html"
 ];
 
-];
-
 let index = +localStorage.getItem("current") || 0;
 let done = JSON.parse(localStorage.getItem("done") || "[]");
 let logs = JSON.parse(localStorage.getItem("logs") || "[]");
 
-const list = document.getElementById("list");
-const frame = document.getElementById("frame");
-const logsDiv = document.getElementById("logs");
+// Set current time to now
+document.getElementById('time').value = new Date().toISOString().slice(0, 16);
 
-function renderList(){
-  list.innerHTML="";
-  files.forEach((f,i)=>{
-    const a=document.createElement("a");
-    a.textContent=f;
-    if(i===index) a.classList.add("active");
-    if(done.includes(i)) a.classList.add("done");
-    a.onclick=()=>openFile(i);
-    list.appendChild(a);
+function renderList() {
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+  
+  if (files.length === 0) {
+    list.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>Không có tài liệu nào</p></div>';
+    return;
+  }
+  
+  files.forEach((file, i) => {
+    const fileItem = document.createElement("a");
+    fileItem.href = "#";
+    fileItem.className = "file-item";
+    
+    if (i === index) fileItem.classList.add("active");
+    if (done.includes(i)) fileItem.classList.add("done");
+    
+    const fileName = file.replace('.html', '').replace(/-/g, ' ');
+    const statusText = done.includes(i) ? "Đã xem" : "Chưa xem";
+    
+    fileItem.innerHTML = `
+      <div>
+        <i class="file-icon fas ${i === index ? 'fa-play-circle' : done.includes(i) ? 'fa-check-circle' : 'fa-file'}"></i>
+        <span class="file-name">${fileName}</span>
+      </div>
+      <span class="file-status">${statusText}</span>
+    `;
+    
+    fileItem.onclick = (e) => {
+      e.preventDefault();
+      openFile(i);
+    };
+    
+    list.appendChild(fileItem);
   });
+  
+  updateProgress();
 }
 
-function openFile(i){
-  index=i;
-  frame.src=files[i];
-  localStorage.setItem("current",i);
+function openFile(i) {
+  index = i;
+  const frame = document.getElementById("frame");
+  frame.src = files[i];
+  localStorage.setItem("current", i);
   renderList();
 }
 
-function next(){ if(index<files.length-1) openFile(index+1); }
-function prev(){ if(index>0) openFile(index-1); }
-
-function markDone(){
-  if(!done.includes(index)) done.push(index);
-  localStorage.setItem("done",JSON.stringify(done));
-  renderList();
+function next() { 
+  if (index < files.length - 1) openFile(index + 1); 
 }
 
-/* NHẬT KÝ */
-function saveLog(){
-  const log={
-    time:document.getElementById("time").value || new Date().toISOString(),
-    platform:platform.value,
-    product:product.value,
-    note:note.value
+function prev() { 
+  if (index > 0) openFile(index - 1); 
+}
+
+function markDone() {
+  if (!done.includes(index)) {
+    done.push(index);
+    localStorage.setItem("done", JSON.stringify(done));
+    renderList();
+    
+    // Show notification effect
+    const btn = document.querySelector('.btn-success');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check"></i> Đã đánh dấu!';
+    btn.style.background = '#10b981';
+    
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+    }, 1500);
+  }
+}
+
+function updateProgress() {
+  const progressPercent = document.getElementById("progress-percent");
+  const progressFill = document.getElementById("progress-fill");
+  const progressText = document.getElementById("progress-text");
+  const remainingText = document.getElementById("remaining-text");
+  
+  const viewed = done.length;
+  const total = files.length;
+  const percentage = Math.round((viewed / total) * 100);
+  
+  progressPercent.textContent = `${percentage}%`;
+  progressFill.style.width = `${percentage}%`;
+  progressText.textContent = `Đã xem ${viewed}/${total} tài liệu`;
+  remainingText.textContent = `Còn lại ${total - viewed} tài liệu`;
+}
+
+function saveLog() {
+  const timeInput = document.getElementById("time");
+  const platformInput = document.getElementById("platform");
+  const productInput = document.getElementById("product");
+  const noteInput = document.getElementById("note");
+  
+  // Use current time if not set
+  const timeValue = timeInput.value || new Date().toISOString().slice(0, 16);
+  
+  if (!productInput.value.trim()) {
+    alert("Vui lòng nhập tên sản phẩm hoặc link!");
+    productInput.focus();
+    return;
+  }
+  
+  const log = {
+    time: timeValue,
+    platform: platformInput.value,
+    product: productInput.value,
+    note: noteInput.value
   };
+  
   logs.unshift(log);
-  localStorage.setItem("logs",JSON.stringify(logs));
+  localStorage.setItem("logs", JSON.stringify(logs));
+  
+  // Reset form
+  productInput.value = "";
+  noteInput.value = "";
+  timeInput.value = new Date().toISOString().slice(0, 16);
+  
   renderLogs();
+  
+  // Show confirmation
+  const saveBtn = document.querySelector('.diary-form .btn');
+  const originalText = saveBtn.innerHTML;
+  saveBtn.innerHTML = '<i class="fas fa-check"></i> Đã lưu!';
+  saveBtn.style.background = '#10b981';
+  
+  setTimeout(() => {
+    saveBtn.innerHTML = originalText;
+    saveBtn.style.background = '';
+  }, 1500);
 }
 
-function renderLogs(){
-  logsDiv.innerHTML="";
-  logs.forEach(l=>{
-    const d=document.createElement("div");
-    d.className="log";
-    d.innerHTML=`<b>${l.platform}</b><br>
-    ${l.product}<br>
-    <small>${l.time}</small><br>
-    ${l.note||""}`;
-    logsDiv.appendChild(d);
+function renderLogs() {
+  const logsDiv = document.getElementById("logs");
+  const emptyLogs = document.getElementById("empty-logs");
+  
+  if (logs.length === 0) {
+    emptyLogs.style.display = 'block';
+    logsDiv.innerHTML = '';
+    return;
+  }
+  
+  emptyLogs.style.display = 'none';
+  logsDiv.innerHTML = '';
+  
+  logs.forEach(log => {
+    const logEntry = document.createElement("div");
+    logEntry.className = "log-entry";
+    
+    // Format time
+    const time = new Date(log.time);
+    const timeStr = time.toLocaleString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    
+    logEntry.innerHTML = `
+      <div class="log-header">
+        <span class="log-platform">${log.platform}</span>
+        <span class="log-time">${timeStr}</span>
+      </div>
+      <div class="log-product">${log.product}</div>
+      <div class="log-note">${log.note || ""}</div>
+    `;
+    
+    logsDiv.appendChild(logEntry);
   });
 }
 
+// Initialize
 renderList();
 openFile(index);
 renderLogs();
-</script>
 
+// Add keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft') prev();
+  if (e.key === 'ArrowRight') next();
+  if (e.key === ' ' || e.key === 'Enter') markDone();
+});
+</script>
 </body>
 </html>
