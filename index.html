@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Affiliate Hub – Xem tuần tự</title>
+<title>Affiliate Hub – Xem tuần tự + Nhật ký</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body{
@@ -13,9 +13,10 @@ body{
   padding:10px;
 }
 h1{text-align:center;color:#0b4f6c}
+h2{margin:10px 0;color:#333}
 .container{display:flex;gap:10px}
 .list{
-  width:35%;
+  width:30%;
   background:#fff;
   border-radius:10px;
   padding:10px;
@@ -32,15 +33,16 @@ h1{text-align:center;color:#0b4f6c}
 }
 .list a.active{background:#0b4f6c;color:#fff}
 .list a.done{opacity:.5}
+
 .viewer{
-  width:65%;
+  width:45%;
   background:#fff;
   border-radius:10px;
   padding:5px;
 }
 iframe{
   width:100%;
-  height:70vh;
+  height:60vh;
   border:none;
 }
 .controls{
@@ -53,17 +55,43 @@ button{
   border:none;
   border-radius:6px;
   cursor:pointer;
+  background:#1976d2;
+  color:#fff;
 }
+
+/* NHẬT KÝ */
+.diary{
+  width:25%;
+  background:#fff;
+  border-radius:10px;
+  padding:10px;
+  max-height:80vh;
+  overflow:auto;
+}
+.diary input, .diary select, .diary textarea{
+  width:100%;
+  margin:4px 0;
+  padding:6px;
+}
+.log{
+  border-bottom:1px dashed #ddd;
+  padding:6px 0;
+  font-size:13px;
+}
+.log small{color:#666}
 </style>
 </head>
 
 <body>
 
-<h1>📂 AFFILIATE – XEM TỪ 001 → HẾT</h1>
+<h1>📂 AFFILIATE HUB – XEM + NHẬT KÝ ĐĂNG BÀI</h1>
 
 <div class="container">
+
+  <!-- DANH SÁCH FILE -->
   <div class="list" id="list"></div>
 
+  <!-- XEM FILE -->
   <div class="viewer">
     <div class="controls">
       <button onclick="prev()">⬅ Trước</button>
@@ -72,6 +100,35 @@ button{
     </div>
     <iframe id="frame"></iframe>
   </div>
+
+  <!-- NHẬT KÝ -->
+  <div class="diary">
+    <h2>📔 Nhật ký đăng bài</h2>
+
+    <label>Ngày / Giờ</label>
+    <input type="datetime-local" id="time">
+
+    <label>Nền tảng</label>
+    <select id="platform">
+      <option>Facebook</option>
+      <option>Zalo</option>
+      <option>TikTok</option>
+      <option>Reel</option>
+      <option>X</option>
+    </select>
+
+    <label>Sản phẩm / Link</label>
+    <input id="product" placeholder="Tên hoặc link">
+
+    <label>Ghi chú</label>
+    <textarea id="note" rows="2"></textarea>
+
+    <button onclick="saveLog()">➕ Lưu nhật ký</button>
+
+    <h3>🕒 Đã đăng</h3>
+    <div id="logs"></div>
+  </div>
+
 </div>
 
 <script>
@@ -91,16 +148,17 @@ const files = [
 
 let index = +localStorage.getItem("current") || 0;
 let done = JSON.parse(localStorage.getItem("done") || "[]");
+let logs = JSON.parse(localStorage.getItem("logs") || "[]");
 
 const list = document.getElementById("list");
 const frame = document.getElementById("frame");
+const logsDiv = document.getElementById("logs");
 
 function renderList(){
   list.innerHTML="";
   files.forEach((f,i)=>{
     const a=document.createElement("a");
     a.textContent=f;
-    a.href="#";
     if(i===index) a.classList.add("active");
     if(done.includes(i)) a.classList.add("done");
     a.onclick=()=>openFile(i);
@@ -115,13 +173,8 @@ function openFile(i){
   renderList();
 }
 
-function next(){
-  if(index<files.length-1) openFile(index+1);
-}
-
-function prev(){
-  if(index>0) openFile(index-1);
-}
+function next(){ if(index<files.length-1) openFile(index+1); }
+function prev(){ if(index>0) openFile(index-1); }
 
 function markDone(){
   if(!done.includes(index)) done.push(index);
@@ -129,7 +182,35 @@ function markDone(){
   renderList();
 }
 
+/* NHẬT KÝ */
+function saveLog(){
+  const log={
+    time:document.getElementById("time").value || new Date().toISOString(),
+    platform:platform.value,
+    product:product.value,
+    note:note.value
+  };
+  logs.unshift(log);
+  localStorage.setItem("logs",JSON.stringify(logs));
+  renderLogs();
+}
+
+function renderLogs(){
+  logsDiv.innerHTML="";
+  logs.forEach(l=>{
+    const d=document.createElement("div");
+    d.className="log";
+    d.innerHTML=`<b>${l.platform}</b><br>
+    ${l.product}<br>
+    <small>${l.time}</small><br>
+    ${l.note||""}`;
+    logsDiv.appendChild(d);
+  });
+}
+
+renderList();
 openFile(index);
+renderLogs();
 </script>
 
 </body>
