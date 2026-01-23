@@ -2,210 +2,46 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<title>Danh sách nội dung Affiliate</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Affiliate Dashboard</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
 body{
   font-family:Arial,sans-serif;
   background:#f4f6fa;
-  max-width:1100px;
+  max-width:900px;
   margin:auto;
   padding:15px;
 }
 h1{text-align:center;color:#0b4f6c}
-.card{
+a{
+  display:block;
   background:#fff;
-  padding:15px;
-  border-radius:12px;
-  margin:15px 0;
-}
-.tabs button{
-  padding:8px 12px;
-  margin-right:5px;
-  border:none;
+  padding:10px;
+  margin:6px 0;
   border-radius:8px;
-  cursor:pointer;
+  text-decoration:none;
+  color:#333;
 }
-.tabs .active{background:#0b4f6c;color:#fff}
-button.export{
-  background:#2e7d32;
-  color:#fff;
-  padding:8px 12px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-}
-textarea{width:100%;min-height:70px}
-canvas{max-width:100%}
-.bad{color:#d32f2f}
-.ok{color:#f57c00}
-.good{color:#2e7d32}
+a:hover{background:#e3f2fd}
+.num{font-weight:bold;color:#0b4f6c}
 </style>
 </head>
 
 <body>
 
-<h1>📊 AFFILIATE DASHBOARD</h1>
+<h1>📂 Xem nội dung theo thứ tự</h1>
 
-<div class="card" id="suggestBox">
-  <h3>🤖 Gợi ý hôm nay</h3>
-  <div id="suggestContent">Đang phân tích dữ liệu…</div>
-</div>
-
-<div class="tabs">
-  <button onclick="setPlatform('all')" class="active">🌐 Tất cả</button>
-  <button onclick="setPlatform('shopee')">🛒 Shopee</button>
-  <button onclick="setPlatform('facebook')">📘 Facebook</button>
-  <button onclick="setPlatform('zalo')">💬 Zalo</button>
-</div>
-
-<div class="card">
-  <h3>💰 Hoa hồng theo ngày</h3>
-  <canvas id="chartDay" height="120"></canvas>
-</div>
-
-<div class="card">
-  <h3>🗓️ Hoa hồng theo tháng</h3>
-  <canvas id="chartMonth" height="120"></canvas>
-</div>
-
-<div class="card">
-  <h3>📅 Lịch đăng 7 ngày</h3>
-  <div id="schedule"></div>
-</div>
-
-<div class="card">
-  <button class="export" onclick="exportCSV()">📤 Xuất báo cáo CSV</button>
-</div>
-
-<script>
-let rawData=[];
-let currentPlatform="all";
-let chartDay, chartMonth;
-
-/* ===== GIỜ ĐĂNG ===== */
-function bestPostTime(p){
-  return {
-    facebook:["07:30","12:00","20:00"],
-    zalo:["07:00","20:30"],
-    shopee:["10:00","15:00","21:00"]
-  }[p]||["08:00"];
-}
-
-/* ===== AI CAPTION ===== */
-function caption(platform,category,link){
-  const map={
-    "gia-dung":"🏠 Đồ gia dụng nhà mình đang dùng thấy rất tiện",
-    "lam-dep":"✨ Dùng thử rồi thấy ổn nên chia sẻ",
-    "me-be":"👶 Mẹ bỉm nên tham khảo món này",
-    "cong-nghe":"📱 Món công nghệ này đang được quan tâm"
-  };
-  return `${map[category]||"Sản phẩm đang bán tốt"}\n👉 Xem chi tiết: ${link}`;
-}
-
-/* ===== LOAD DATA ===== */
-fetch("data/hoa-hong.csv")
-.then(r=>r.text())
-.then(t=>{
-  rawData=t.trim().split("\n").slice(1).map(r=>{
-    const [date,commission,platform,link,category]=r.split(",");
-    return {date,commission:+commission,platform,link,category};
-  });
-  renderAll();
-});
-
-/* ===== RENDER ===== */
-function setPlatform(p){
-  currentPlatform=p;
-  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
-  event.target.classList.add("active");
-  renderAll();
-}
-
-function renderAll(){
-  const data=currentPlatform==="all"
-    ? rawData
-    : rawData.filter(r=>r.platform===currentPlatform);
-
-  renderCharts(data);
-  suggest(data);
-  renderSchedule(data);
-}
-
-/* ===== BIỂU ĐỒ ===== */
-function renderCharts(data){
-  const day={},month={};
-
-  data.forEach(r=>{
-    day[r.date]=(day[r.date]||0)+r.commission;
-    month[r.date.slice(0,7)]=(month[r.date.slice(0,7)]||0)+r.commission;
-  });
-
-  draw("chartDay",day,"Hoa hồng ngày",c=>chartDay=c,chartDay);
-  draw("chartMonth",month,"Hoa hồng tháng",c=>chartMonth=c,chartMonth);
-}
-
-function draw(id,map,label,set,old){
-  if(old) old.destroy();
-  const chart=new Chart(document.getElementById(id),{
-    type:"bar",
-    data:{labels:Object.keys(map),datasets:[{label,data:Object.values(map)}]},
-    options:{scales:{y:{ticks:{callback:v=>v.toLocaleString()+" ₫"}}}}
-  });
-  set(chart);
-}
-
-/* ===== GỢI Ý ===== */
-function suggest(data){
-  const box=document.getElementById("suggestContent");
-  if(!data.length){box.innerText="Chưa có dữ liệu";return;}
-
-  const m={};
-  data.forEach(r=>{
-    if(!m[r.link]) m[r.link]={sum:0,platform:r.platform,category:r.category};
-    m[r.link].sum+=r.commission;
-  });
-
-  const top=Object.entries(m).sort((a,b)=>b[1].sum-a[1].sum).slice(0,3);
-
-  let html="<b>🔥 TOP 3 LINK NÊN ĐĂNG</b><hr>";
-  top.forEach(([link,i],idx)=>{
-    const score=i.sum>50000?"A":i.sum>20000?"B":"C";
-    html+=`
-    <b>#${idx+1} – Điểm ${score}</b><br>
-    💰 ${i.sum.toLocaleString()} ₫<br>
-    ⏰ ${bestPostTime(i.platform).join(", ")}<br>
-    <textarea>${caption(i.platform,i.category,link)}</textarea>
-    <hr>`;
-  });
-  box.innerHTML=html;
-}
-
-/* ===== LỊCH 7 NGÀY ===== */
-function renderSchedule(data){
-  const box=document.getElementById("schedule");
-  let html="";
-  for(let i=0;i<7;i++){
-    const d=new Date();
-    d.setDate(d.getDate()+i);
-    html+=`📅 ${d.toISOString().slice(0,10)} – Đăng bài lúc 20:00<br>`;
-  }
-  box.innerHTML=html;
-}
-
-/* ===== EXPORT ===== */
-function exportCSV(){
-  let csv="date,commission,platform,link,category\n";
-  rawData.forEach(r=>csv+=`${r.date},${r.commission},${r.platform},${r.link},${r.category}\n`);
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-  a.download="bao-cao-affiliate.csv";
-  a.click();
-}
-</script>
+<a href="001-tim-ten-nguoi.html"><span class="num">001</span> – Tìm tên người</a>
+<a href="002-thoi-gian-bieu-lam-viec.html"><span class="num">002</span> – Thời gian biểu làm việc</a>
+<a href="003-shopee-tu-dong-lam-hh.html"><span class="num">003</span> – Shopee tự động làm hoa hồng</a>
+<a href="004-shopee-tim-chu-cuoi-doan-van.html"><span class="num">004</span> – Shopee tìm chữ cuối đoạn</a>
+<a href="005-shopee-tim-san-pham-trang-tri-noi-that.html"><span class="num">005</span> – Shopee tìm SP trang trí nội thất</a>
+<a href="007-shope-tim-theo-chu-cai-đau-giua.html"><span class="num">007</span> – Shopee tìm theo chữ cái</a>
+<a href="008 SÁCH GIÁO KHOA Cach lam tiep thi.html"><span class="num">008</span> – Sách giáo khoa</a>
+<a href="009-shoppe-luu-ten-link.html"><span class="num">009</span> – Lưu tên link</a>
+<a href="010-Theo-doi-ban-nang-cao.html"><span class="num">010</span> – Theo dõi bán nâng cao</a>
+<a href="011-theo-doi-ban-hang-nang-cao-2.html"><span class="num">011</span> – Theo dõi bán hàng nâng cao 2</a>
+<a href="012-Quan-ly-link.html"><span class="num">012</span> – Quản lý link</a>
 
 </body>
 </html>
