@@ -2,46 +2,135 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Danh sách nội dung Affiliate</title>
+<title>Affiliate Hub – Xem tuần tự</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body{
   font-family:Arial,sans-serif;
   background:#f4f6fa;
-  max-width:900px;
+  max-width:1200px;
   margin:auto;
-  padding:15px;
+  padding:10px;
 }
 h1{text-align:center;color:#0b4f6c}
-a{
-  display:block;
+.container{display:flex;gap:10px}
+.list{
+  width:35%;
   background:#fff;
+  border-radius:10px;
   padding:10px;
-  margin:6px 0;
-  border-radius:8px;
+  overflow:auto;
+  max-height:80vh;
+}
+.list a{
+  display:block;
+  padding:8px;
+  margin:4px 0;
+  border-radius:6px;
   text-decoration:none;
   color:#333;
 }
-a:hover{background:#e3f2fd}
-.num{font-weight:bold;color:#0b4f6c}
+.list a.active{background:#0b4f6c;color:#fff}
+.list a.done{opacity:.5}
+.viewer{
+  width:65%;
+  background:#fff;
+  border-radius:10px;
+  padding:5px;
+}
+iframe{
+  width:100%;
+  height:70vh;
+  border:none;
+}
+.controls{
+  display:flex;
+  justify-content:space-between;
+  margin:6px 0;
+}
+button{
+  padding:6px 10px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
 </style>
 </head>
 
 <body>
 
-<h1>📂 Xem nội dung theo thứ tự</h1>
+<h1>📂 AFFILIATE – XEM TỪ 001 → HẾT</h1>
 
-<a href="001-tim-ten-nguoi.html"><span class="num">001</span> – Tìm tên người</a>
-<a href="002-thoi-gian-bieu-lam-viec.html"><span class="num">002</span> – Thời gian biểu làm việc</a>
-<a href="003-shopee-tu-dong-lam-hh.html"><span class="num">003</span> – Shopee tự động làm hoa hồng</a>
-<a href="004-shopee-tim-chu-cuoi-doan-van.html"><span class="num">004</span> – Shopee tìm chữ cuối đoạn</a>
-<a href="005-shopee-tim-san-pham-trang-tri-noi-that.html"><span class="num">005</span> – Shopee tìm SP trang trí nội thất</a>
-<a href="007-shope-tim-theo-chu-cai-đau-giua.html"><span class="num">007</span> – Shopee tìm theo chữ cái</a>
-<a href="008 SÁCH GIÁO KHOA Cach lam tiep thi.html"><span class="num">008</span> – Sách giáo khoa</a>
-<a href="009-shoppe-luu-ten-link.html"><span class="num">009</span> – Lưu tên link</a>
-<a href="010-Theo-doi-ban-nang-cao.html"><span class="num">010</span> – Theo dõi bán nâng cao</a>
-<a href="011-theo-doi-ban-hang-nang-cao-2.html"><span class="num">011</span> – Theo dõi bán hàng nâng cao 2</a>
-<a href="012-Quan-ly-link.html"><span class="num">012</span> – Quản lý link</a>
+<div class="container">
+  <div class="list" id="list"></div>
+
+  <div class="viewer">
+    <div class="controls">
+      <button onclick="prev()">⬅ Trước</button>
+      <button onclick="markDone()">✅ Đã xem</button>
+      <button onclick="next()">Sau ➡</button>
+    </div>
+    <iframe id="frame"></iframe>
+  </div>
+</div>
+
+<script>
+const files = [
+  "001-tim-ten-nguoi.html",
+  "002-thoi-gian-bieu-lam-viec.html",
+  "003-shopee-tu-dong-lam-hh.html",
+  "004-shopee-tim-chu-cuoi-doan-van.html",
+  "005-shopee-tim-san-pham-trang-tri-noi-that.html",
+  "007-shope-tim-theo-chu-cai-đau-giua.html",
+  "008 SÁCH GIÁO KHOA Cach lam tiep thi.html",
+  "009-shoppe-luu-ten-link.html",
+  "010-Theo-doi-ban-nang-cao.html",
+  "011-theo-doi-ban-hang-nang-cao-2.html",
+  "012-Quan-ly-link.html"
+];
+
+let index = +localStorage.getItem("current") || 0;
+let done = JSON.parse(localStorage.getItem("done") || "[]");
+
+const list = document.getElementById("list");
+const frame = document.getElementById("frame");
+
+function renderList(){
+  list.innerHTML="";
+  files.forEach((f,i)=>{
+    const a=document.createElement("a");
+    a.textContent=f;
+    a.href="#";
+    if(i===index) a.classList.add("active");
+    if(done.includes(i)) a.classList.add("done");
+    a.onclick=()=>openFile(i);
+    list.appendChild(a);
+  });
+}
+
+function openFile(i){
+  index=i;
+  frame.src=files[i];
+  localStorage.setItem("current",i);
+  renderList();
+}
+
+function next(){
+  if(index<files.length-1) openFile(index+1);
+}
+
+function prev(){
+  if(index>0) openFile(index-1);
+}
+
+function markDone(){
+  if(!done.includes(index)) done.push(index);
+  localStorage.setItem("done",JSON.stringify(done));
+  renderList();
+}
+
+openFile(index);
+</script>
 
 </body>
 </html>
