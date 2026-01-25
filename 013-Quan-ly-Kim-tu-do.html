@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Shopee Affiliate - Kim Tứ Đồ Pro Max</title>
+    <style>
+        :root { 
+            --color-L: #dc3545; --color-T: #007bff; 
+            --color-C: #6f42c1; --color-D: #ffc107; 
+            --bg: #f4f7f6; --text-dark: #333; --text-light: #555;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; color: var(--text-dark); }
+        .container { max-width: 1200px; margin: auto; }
+        .header { background: #2c3e50; color: white; padding: 25px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+        
+        /* Menu Tầng Kim Tứ Đồ */
+        .quadrant-menu { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .q-btn { 
+            padding: 15px; border: none; border-radius: 10px; color: white; 
+            font-weight: bold; cursor: pointer; opacity: 0.5; transition: 0.3s;
+            font-size: 14px; line-height: 1.2;
+        }
+        .q-btn.active { opacity: 1; transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); border: 2px solid white; }
+        .btn-L { background: var(--color-L); }
+        .btn-T { background: var(--color-T); }
+        .btn-C { background: var(--color-C); }
+        .btn-D { background: var(--color-D); color: #000; }
+
+        .config-panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        
+        .upload-zone { 
+            border: 2px dashed #ccc; padding: 15px; text-align: center; border-radius: 10px; 
+            margin-bottom: 15px; cursor: pointer; background: #fafafa;
+        }
+        .upload-zone:hover { border-color: var(--color-T); background: #f0f7ff; }
+        
+        .input-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 13px; }
+        label { font-size: 12px; font-weight: bold; color: var(--text-light); display: block; margin-bottom: 5px; }
+
+        .btn-run { background: #28a745; color: white; width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 18px; transition: 0.3s; }
+        .btn-run:hover { background: #218838; transform: translateY(-2px); }
+
+        /* MỚI: Thanh lọc nhanh và Thống kê dự toán */
+        .summary-bar { 
+            background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 15px; 
+            border-left: 5px solid #28a745; display: flex; justify-content: space-between; 
+            align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .quick-filter-btns button { 
+            padding: 6px 12px; border-radius: 20px; border: 1px solid #ddd; 
+            background: #fff; cursor: pointer; font-size: 12px; transition: 0.2s; 
+        }
+        .quick-filter-btns button:hover { background: #e9ecef; border-color: #bbb; }
+        .revenue-stats { text-align: right; font-size: 14px; color: #2c3e50; }
+
+        /* Kết quả lọc */
+        #resultGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 25px; }
+        .card { 
+            background: white; border-radius: 12px; padding: 15px; border-top: 8px solid #ccc; 
+            display: flex; flex-direction: column; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: 0.2s;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .card-L { border-top-color: var(--color-L); } .card-T { border-top-color: var(--color-T); }
+        .card-C { border-top-color: var(--color-C); } .card-D { border-top-color: var(--color-D); }
+        
+        .price-tag { color: #ee4d2d; font-size: 1.2em; font-weight: bold; margin: 5px 0; }
+        .stats { background: #f0f2f5; padding: 10px; border-radius: 8px; font-size: 12px; margin: 10px 0; border-left: 4px solid #333; }
+        .card .links { display: flex; gap: 8px; margin-top: 10px; }
+        .card .links a { flex: 1; text-align: center; padding: 8px; border-radius: 5px; text-decoration: none; color: white; font-size: 11px; font-weight: bold; }
+        .btn-save { 
+            background: #6c757d; color: white; border: none; padding: 8px 12px; border-radius: 5px; 
+            cursor: pointer; font-size: 11px; margin-top: 5px; display: block; width: 100%; transition: 0.2s;
+        }
+        .btn-save:hover { background: #5a6268; }
+
+        /* Kho hàng */
+        .warehouse-section { margin-top: 40px; padding-top: 20px; border-top: 1px dashed #ccc; }
+        .warehouse-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+        .warehouse-item { 
+            background: white; border-radius: 8px; padding: 15px; box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+            border-left: 5px solid #ccc; position: relative;
+        }
+        .warehouse-item.L { border-left-color: var(--color-L); }
+        .warehouse-item.T { border-left-color: var(--color-T); }
+        .warehouse-item.C { border-left-color: var(--color-C); }
+        .warehouse-item.D { border-left-color: var(--color-D); }
+        .btn-delete { background: none; border: none; color: #dc3545; font-size: 18px; position: absolute; top: 8px; right: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>💎 HỆ THỐNG QUẢN LÝ AFFILIATE KIM TỨ ĐỒ</h1>
+        <p id="target-desc">L (Làm thuê): Hàng dưới 200k. Dễ mua, cần số lượng đơn nhiều.</p>
+    </div>
+
+    <div class="quadrant-menu">
+        <button class="q-btn btn-L active" onclick="setQuadrant('L')">L (NGÀY)<br>&lt; 200k</button>
+        <button class="q-btn btn-T" onclick="setQuadrant('T')">T (TUẦN)<br>200k-1tr</button>
+        <button class="q-btn btn-C" onclick="setQuadrant('C')">C (THÁNG)<br>1tr-5tr</button>
+        <button class="q-btn btn-D" onclick="setQuadrant('D')">Đ (NĂM)<br>&gt; 5tr</button>
+    </div>
+
+    <div class="config-panel">
+        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+            <b id="fileName">📁 Chọn File CSV</b> <small>hoặc dán dữ liệu vào ô bên dưới</small>
+            <input type="file" id="fileInput" accept=".csv" style="display:none">
+        </div>
+        
+        <div class="input-row">
+            <div><label>Giá từ (VNĐ):</label><input type="number" id="minPrice" value="0"></div>
+            <div><label>Giá đến (VNĐ):</label><input type="number" id="maxPrice" value="200000"></div>
+            <div><label>Hoa hồng Min (%):</label><input type="number" id="minComm" value="5"></div>
+            <div><label>Mục tiêu (VNĐ):</label><input type="number" id="targetMoney" value="100000"></div>
+        </div>
+        <textarea id="csvData" style="height:60px; margin-bottom:15px;" placeholder="Dán dữ liệu CSV từ Shopee vào đây..."></textarea>
+        <button class="btn-run" onclick="execute()">🚀 LỌC & PHÂN TÍCH SẢN PHẨM</button>
+    </div>
+
+    <div class="summary-bar">
+        <div class="quick-filter-btns">
+            <strong>Lọc nhanh theo giá:</strong>
+            <button onclick="quickFilter(0, 9000)">Dưới 9k</button>
+            <button onclick="quickFilter(0, 50000)">Dưới 50k</button>
+            <button onclick="quickFilter(0, 200000)">Dưới 200k</button>
+            <button onclick="quickFilter(200001, 1000000)">200k - 1tr</button>
+            <button onclick="quickFilter(1000001, 999999999)">Trên 1tr</button>
+        </div>
+        <div id="revenue-stats" class="revenue-stats">
+            <i>Chưa có dữ liệu dự toán.</i>
+        </div>
+    </div>
+
+    <div id="status" style="font-weight:bold; color: var(--color-T); margin-bottom: 10px;"></div>
+    <div id="resultGrid"></div>
+
+    <div class="warehouse-section">
+        <h2>📦 KHO HÀNG CỦA BẠN (Đã Lưu)</h2>
+        <div id="warehouseStats" style="background: #e9ecef; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 14px;"></div>
+        <button id="exportBtn" onclick="exportWarehouse()" style="background:#007bff; color:white; padding:10px 15px; border:none; border-radius:5px; cursor:pointer; font-size:14px;">📁 Xuất ra CSV</button>
+        <button onclick="clearWarehouse()" style="background:#dc3545; color:white; padding:10px 15px; border:none; border-radius:5px; cursor:pointer; font-size:14px; margin-left:10px;">Xóa toàn bộ kho</button>
+        <div id="warehouseGrid" class="warehouse-grid" style="margin-top: 20px;"></div>
+    </div>
+</div>
+
+<script>
+    let currentQ = 'L';
+    let myWarehouse = JSON.parse(localStorage.getItem('shopee_warehouse')) || [];
+
+    const configs = {
+        'L': { minP: 0, maxP: 200000, money: 100000, desc: "L (Làm thuê): Hàng dưới 200k. Dễ mua, cần số lượng đơn nhiều." },
+        'T': { minP: 200001, maxP: 1000000, money: 1000000, desc: "T (Làm tự do): Hàng từ 200k - 1tr. Đủ mua sắm cá nhân/công cụ." },
+        'C': { minP: 1000001, maxP: 5000000, money: 5000000, desc: "C (Chủ hệ thống): Hàng từ 1tr - 5tr. Xây dựng thu nhập tháng." },
+        'D': { minP: 5000001, maxP: 999999999, money: 20000000, desc: "Đ (Đầu tư): Hàng trên 5 triệu. Săn đơn lớn, ăn hoa hồng đậm." }
+    };
+
+    function setQuadrant(q) {
+        currentQ = q;
+        document.querySelectorAll('.q-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('.btn-' + q).classList.add('active');
+        document.getElementById('minPrice').value = configs[q].minP;
+        document.getElementById('maxPrice').value = configs[q].maxP;
+        document.getElementById('targetMoney').value = configs[q].money;
+        document.getElementById('target-desc').innerText = configs[q].desc;
+        execute();
+    }
+
+    function quickFilter(min, max) {
+        document.getElementById('minPrice').value = min;
+        document.getElementById('maxPrice').value = max;
+        execute();
+    }
+
+    function execute() {
+        const raw = document.getElementById('csvData').value.trim();
+        if (!raw) {
+            document.getElementById('status').innerText = "Vui lòng dán dữ liệu CSV!";
+            return;
+        }
+
+        const minP = parseFloat(document.getElementById('minPrice').value) || 0;
+        const maxP = parseFloat(document.getElementById('maxPrice').value) || 999999999;
+        const minC = parseFloat(document.getElementById('minComm').value) || 0;
+        const targetM = parseFloat(document.getElementById('targetMoney').value) || 0;
+        
+        const lines = raw.split('\n');
+        const grid = document.getElementById('resultGrid');
+        grid.innerHTML = '';
+        
+        let count = 0;
+        let totalPotentialComm = 0; 
+        const regex = /(".*?"|[^",\s]+)(?=\s*,|\s*$)/g;
+
+        for (let i = 1; i < lines.length; i++) {
+            const m = lines[i].match(regex);
+            if (!m || m.length < 8) continue;
+
+            const name = m[1].replace(/"/g, '');
+            const price = parseFloat(m[2].replace(/"/g, '').replace(/\./g, '').replace(/,/g, '')) || 0;
+            const rate = parseFloat(m[5].replace(/"/g, '').replace('%', '')) || 0;
+            const linkGoc = m[7].replace(/"/g, '');
+            const linkAff = m[8] ? m[8].replace(/"/g, '') : linkGoc;
+
+            if (price >= minP && price <= maxP && rate >= minC) {
+                const comm = (price * rate) / 100;
+                const units = Math.ceil(targetM / comm);
+                
+                // Thu nhập tiềm năng = Hoa hồng x Số đơn cần để đạt mục tiêu
+                totalPotentialComm += (comm * units);
+
+                const card = document.createElement('div');
+                card.className = `card card-${currentQ}`;
+                card.innerHTML = `
+                    <div style="font-weight:bold; font-size:13px; height:35px; overflow:hidden;">${name}</div>
+                    <div class="price-tag">${price.toLocaleString()} đ</div>
+                    <div class="stats">
+                        💰 Hoa hồng: ${rate}% (<b>${comm.toLocaleString()}đ</b>)<br>
+                        🚩 Mục tiêu: <b style="color:red; font-size:15px;">${units} đơn</b>
+                    </div>
+                    <div class="links">
+                        <a href="${linkGoc}" target="_blank" style="background:#6c757d;">Gốc</a>
+                        <a href="${linkAff}" target="_blank" style="background:#ee4d2d;">Link AFF</a>
+                    </div>
+                    <button class="btn-save" onclick="addToWarehouse('${name.replace(/'/g, "\\'")}', ${price}, ${rate}, '${linkAff.replace(/'/g, "\\'")}', '${currentQ}')">Lưu vào Tầng ${currentQ}</button>
+                `;
+                grid.appendChild(card);
+                count++;
+            }
+        }
+        document.getElementById('status').innerText = `Tìm thấy ${count} sản phẩm phù hợp.`;
+        
+        // Cập nhật bảng dự toán
+        const revStats = document.getElementById('revenue-stats');
+        if (count > 0) {
+            revStats.innerHTML = `
+                Dự toán cho ${count} mã hàng:<br>
+                Tổng thu nhập nếu đạt mục tiêu: <b style="color:#28a745; font-size:18px;">${totalPotentialComm.toLocaleString()}đ</b>
+            `;
+        } else {
+            revStats.innerHTML = `<i>Không có dữ liệu phù hợp để dự toán.</i>`;
+        }
+    }
+
+    function addToWarehouse(name, price, rate, link, tier) {
+        if (myWarehouse.some(item => item.link === link && item.tier === tier)) {
+            alert("Sản phẩm đã có trong kho!"); return;
+        }
+        myWarehouse.push({ name, price, rate, link, tier, date: new Date().toLocaleDateString('vi-VN') });
+        localStorage.setItem('shopee_warehouse', JSON.stringify(myWarehouse));
+        renderWarehouse();
+        alert("Đã lưu vào kho hàng!");
+    }
+
+    function renderWarehouse() {
+        const grid = document.getElementById('warehouseGrid');
+        grid.innerHTML = '';
+        let stats = { L: 0, T: 0, C: 0, D: 0, total: 0 };
+
+        myWarehouse.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = `warehouse-item ${item.tier}`;
+            div.innerHTML = `
+                <button class="btn-delete" onclick="deleteItem(${index})">×</button>
+                <h4>[${item.tier}] ${item.name}</h4>
+                <p class="price">${item.price.toLocaleString()}đ (${item.rate}%)</p>
+                <a href="${item.link}" target="_blank" style="font-size:11px; color:#ee4d2d;">Link AFF</a>
+            `;
+            grid.appendChild(div);
+            stats[item.tier]++; stats.total++;
+        });
+
+        document.getElementById('warehouseStats').innerHTML = `
+            <strong>Thống kê kho:</strong> Tổng ${stats.total} SP | L:${stats.L} | T:${stats.T} | C:${stats.C} | D:${stats.D}
+        `;
+    }
+
+    function deleteItem(index) {
+        if (confirm("Xóa sản phẩm này?")) {
+            myWarehouse.splice(index, 1);
+            localStorage.setItem('shopee_warehouse', JSON.stringify(myWarehouse));
+            renderWarehouse();
+        }
+    }
+
+    function clearWarehouse() {
+        if (confirm("Xóa sạch toàn bộ kho?")) {
+            myWarehouse = [];
+            localStorage.setItem('shopee_warehouse', JSON.stringify(myWarehouse));
+            renderWarehouse();
+        }
+    }
+
+    function exportWarehouse() {
+        if (myWarehouse.length === 0) return alert("Kho trống!");
+        const headers = ["Tầng", "Tên", "Giá", "HoaHồng", "Link"];
+        const csv = [headers.join(','), ...myWarehouse.map(i => `${i.tier},"${i.name}",${i.price},${i.rate},"${i.link}"`)].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Kho_Shopee_${new Date().getTime()}.csv`;
+        link.click();
+    }
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            document.getElementById('fileName').innerText = "✅ " + file.name;
+            const reader = new FileReader();
+            reader.onload = (ev) => { document.getElementById('csvData').value = ev.target.result; execute(); };
+            reader.readAsText(file);
+        }
+    });
+
+    window.onload = () => { setQuadrant('L'); renderWarehouse(); };
+</script>
+</body>
+</html>

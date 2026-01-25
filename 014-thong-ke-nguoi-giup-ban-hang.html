@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Thống kê khách & nhắc chăm sóc người quen</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    padding: 20px;
+    max-width: 420px;
+    margin: auto;
+  }
+  h2 { text-align: center; }
+  .box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  .count {
+    font-size: 48px;
+    margin: 20px 0;
+  }
+  button {
+    font-size: 18px;
+    padding: 12px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .add { background: #28a745; color: white; }
+  .reset { background: #dc3545; color: white; }
+  .alert {
+    margin-top: 20px;
+    padding: 15px;
+    background: #fff3cd;
+    border-radius: 8px;
+    color: #856404;
+    display: none;
+  }
+</style>
+</head>
+
+<body>
+
+<h2>📊 Thống kê khách giới thiệu</h2>
+
+<div class="box">
+  <div>👥 Số khách hiện tại</div>
+  <div class="count" id="count">0</div>
+
+  <button class="add" onclick="addCustomer()">+1 khách</button>
+  <button class="reset" onclick="resetCount()">Reset</button>
+
+  <div class="alert" id="alertBox">
+    ☕ Đã đủ khách rồi!  
+    <br><br>
+    👉 Nhắc bạn:
+    <ul style="text-align:left">
+      <li>Chăm sóc người quen</li>
+      <li>Gửi cà phê / lời cảm ơn</li>
+      <li>Duy trì mối quan hệ</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+let count = localStorage.getItem("customerCount") || 0;
+count = parseInt(count);
+document.getElementById("count").innerText = count;
+
+function addCustomer() {
+  count++;
+  localStorage.setItem("customerCount", count);
+  document.getElementById("count").innerText = count;
+
+  if (count >= 20) {
+    document.getElementById("alertBox").style.display = "block";
+  }
+}
+
+function resetCount() {
+  if (confirm("Reset lại từ đầu?")) {
+    count = 0;
+    localStorage.setItem("customerCount", count);
+    document.getElementById("count").innerText = count;
+    document.getElementById("alertBox").style.display = "none";
+  }
+}
+</script>
+
+</body>
+</html>
