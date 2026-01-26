@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Shopee Affiliate Smart Filter - Max Commission</title>
     <style>
-        :root { --shopee: #ee4d2d; --accent: #673ab7; --gold: #ffc107; }
+        :root { --shopee: #ee4d2d; --accent: #673ab7; --gold: #ffc107; --blue: #007bff; }
         body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; padding: 20px; }
         .container { max-width: 1100px; margin: auto; }
         
@@ -37,6 +37,7 @@
         .card { 
             background: white; border-radius: 12px; padding: 15px; position: relative;
             border-top: 6px solid #ccc; transition: 0.3s; display: flex; flex-direction: column;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         .card.top-deal { border-top-color: var(--gold); background: #fffdf5; }
         
@@ -47,15 +48,17 @@
         }
         
         .price { color: var(--shopee); font-size: 1.4em; font-weight: bold; margin: 10px 0; }
-        .time-info { font-size: 13px; color: #666; display: flex; align-items: center; gap: 5px; }
+        .time-info { font-size: 13px; color: #666; display: flex; align-items: center; gap: 5px; margin-bottom: 15px; }
         
-        .links { display: flex; gap: 8px; margin-top: auto; padding-top: 15px; }
-        .links a { 
-            flex: 1; text-align: center; padding: 12px; border-radius: 6px; 
-            text-decoration: none; font-weight: bold; color: white; font-size: 13px;
+        .links { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+        .link-row { display: flex; gap: 5px; }
+        .links a, .links button { 
+            flex: 1; text-align: center; padding: 10px; border-radius: 6px; 
+            text-decoration: none; font-weight: bold; color: white; font-size: 12px; border: none; cursor: pointer;
         }
         .bg-shopee { background: var(--shopee); }
-        .bg-blue { background: #007bff; }
+        .bg-blue { background: var(--blue); }
+        .bg-gold { background: #f39c12; color: white; width: 100%; display: block; }
     </style>
 </head>
 <body>
@@ -63,7 +66,7 @@
 <div class="container">
     <div class="header">
         <h1>🚀 Shopee Affiliate Super Filter</h1>
-        <p>Lọc Chữ Cái • Hạn > 3H • Ưu Tiên Hoa Hồng Cao</p>
+        <p>Lọc Chữ Cái • Hạn > 3H • Tự Động Kết Nối Kho Tổng</p>
     </div>
 
     <div class="config-panel">
@@ -95,7 +98,31 @@
 </div>
 
 <script>
-    // Đọc File CSV
+    // --- HÀM KẾT NỐI KHO TỔNG ---
+    function saveToHub(name, price, link, rate) {
+        const STORAGE_KEY = 'nam_affiliate_hub_storage';
+        let hubData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        
+        if (hubData.some(item => item.link === link)) {
+            alert("Sản phẩm này đã có trong Kho Tổng rồi!");
+            return;
+        }
+
+        hubData.push({
+            name: name,
+            price: price,
+            link: link,
+            tier: "T", // Mặc định tầng T cho hàng hoa hồng cao (Extra)
+            platform: "Shopee Extra",
+            note: "Hoa hồng: " + rate + "%",
+            dateSaved: new Date().toLocaleDateString()
+        });
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(hubData));
+        alert("✅ Đã lưu sản phẩm hoa hồng " + rate + "% vào Kho Tổng!");
+    }
+
+    // --- LOGIC LỌC CSV ---
     document.getElementById('fileInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -133,10 +160,8 @@
             const endTime = m[9] ? m[9].replace(/"/g, '') : "";
             const diffHours = endTime ? (new Date(endTime) - new Date()) / (1000 * 60 * 60) : 999;
 
-            // Lọc 1: Thời gian phải > 3h
             if (diffHours <= 3) continue;
 
-            // Lọc 2: Trùng ít nhất 3 chữ cái hoán vị
             const name = m[1].replace(/"/g, '');
             const shop = m[4].replace(/"/g, '');
             const targetText = normalize(name + shop);
@@ -161,12 +186,11 @@
             }
         }
 
-        // SẮP XẾP: Hoa hồng cao nhất lên đầu
         products.sort((a, b) => b.rate - a.rate);
 
         products.forEach((p, idx) => {
             const card = document.createElement('div');
-            card.className = `card ${idx < 3 ? 'top-deal' : ''}`; // Highlight 3 cái cao nhất
+            card.className = `card ${idx < 3 ? 'top-deal' : ''}`;
             card.innerHTML = `
                 <div class="comm-badge">${p.rate}%</div>
                 <div style="font-weight:bold; font-size:14px; margin-top:20px; height:40px; overflow:hidden;">${p.name}</div>
@@ -176,16 +200,20 @@
                     <span style="color:${p.hours < 10 ? 'red' : 'green'}">⏳ Còn ~${Math.floor(p.hours)}h</span>
                 </div>
                 <div class="links">
-                    <a href="${p.link}" target="_blank" class="bg-blue">Link Gốc</a>
-                    <a href="${p.promo}" target="_blank" class="bg-shopee">LẤY LINK AFF</a>
+                    <button class="bg-gold" onclick="saveToHub('${p.name.replace(/'/g, "\\'")}', '${p.price}', '${p.promo}', ${p.rate})">
+                        📥 ĐẨY VÀO KHO TỔNG
+                    </button>
+                    <div class="link-row">
+                        <a href="${p.link}" target="_blank" class="bg-blue">Link Gốc</a>
+                        <a href="${p.promo}" target="_blank" class="bg-shopee">Link Aff</a>
+                    </div>
                 </div>
             `;
             grid.appendChild(card);
         });
 
-        document.getElementById('status').innerText = `Đã tìm thấy ${products.length} sản phẩm ưu đãi nhất!`;
+        document.getElementById('status').innerText = `Đã tìm thấy ${products.length} sản phẩm!`;
     }
 </script>
-
 </body>
 </html>
