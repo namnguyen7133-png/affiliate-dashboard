@@ -12,39 +12,27 @@
             --shopee-orange: #ff5722; --dark: #1e293b; --github-blue: #0066cc;
         }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-
-        /* SIDEBAR */
         .sidebar { width: 320px; background: white; border-right: 1px solid #e2e8f0; overflow-y: auto; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
         .step { padding: 12px; border-radius: 12px; margin-bottom: 12px; border-left: 6px solid #ccc; opacity: 0.6; transition: 0.3s; }
         .step.active { opacity: 1; transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-left-width: 10px; }
         .step.morning { border-left-color: var(--back-line); }
         .step.noon { border-left-color: var(--storage); }
         .step.afternoon { border-left-color: var(--front-line); }
-        
         .time-tag { font-size: 11px; font-weight: bold; color: #2563eb; background: #eef2ff; padding: 3px 8px; border-radius: 10px; }
         .battle-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; color: white; float: right; }
-
-        /* MAIN CONTENT */
         .main-content { flex: 1; overflow-y: auto; padding: 25px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        
-        .crm-mini { display: flex; align-items: center; gap: 15px; background: #10b981; color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .q-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
         .q-tab { flex: 1; padding: 10px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; opacity: 0.7; }
         .q-tab.active { opacity: 1; outline: 3px solid rgba(0,0,0,0.1); }
-
         textarea { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 10px; font-size: 13px; box-sizing: border-box; }
         .btn-group { display: flex; gap: 10px; margin-top: 10px; }
         .btn-action { flex: 2; background: var(--shopee-orange); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .btn-github { flex: 1; background: var(--github-blue); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #f1f5f9; }
         .btn-add-stock { background: #10b981; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-
-        .status-on { color: #10b981; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
@@ -54,78 +42,50 @@
         <div id="step1" class="step morning">
             <span class="battle-tag" style="background:var(--back-line)">HẬU PHƯƠNG</span>
             <span class="time-tag">08:00 - 09:00</span>
-            <h4 style="margin:8px 0">Soi bài & Kế hoạch</h4>
-            <p style="font-size:11px; color:#64748b">Kiểm tra doanh thu & biểu đồ hiệu quả.</p>
+            <h4 style="margin:8px 0">Kế hoạch</h4>
         </div>
-
         <div id="step2" class="step noon">
             <span class="battle-tag" style="background:var(--storage)">KHO LƯƠNG</span>
             <span class="time-tag">10:00 - 11:30</span>
-            <h4 style="margin:8px 0">Lọc CSV Shopee</h4>
-            <p style="font-size:11px; color:#64748b">Dán CSV vào ô Phân tích để lọc hàng.</p>
+            <h4 style="margin:8px 0">Đồng bộ Sheets</h4>
         </div>
-
         <div id="step3" class="step afternoon">
             <span class="battle-tag" style="background:var(--front-line)">TIỀN TUYẾN</span>
             <span class="time-tag">14:00 - 16:00</span>
-            <h4 style="margin:8px 0">Xuất file GitHub</h4>
-            <p style="font-size:11px; color:#64748b">Bấm nút xanh để tải files.json lên web.</p>
+            <h4 style="margin:8px 0">Xuất GitHub</h4>
         </div>
-
-        <button onclick="window.location.href='001-kho-hang.html'" class="btn-action" style="background:#f1f5f9; color:#475569; margin-top:10px;">
-            <i class="fas fa-eye"></i> Xem Showroom (Khách xem)
+        <button onclick="window.location.href='001-kho-hang.html'" class="btn-action" style="background:#f1f5f9; color:#475569; margin-top:10px; width:100%">
+            <i class="fas fa-eye"></i> Xem Showroom
         </button>
-        <hr>
-        <div style="font-size: 12px; color: #94a3b8;">
-            <i class="fas fa-info-circle"></i> Hệ thống: <span id="liveStatus" class="status-on">● Đang hoạt động</span>
-        </div>
     </div>
 
     <div class="main-content">
-        <div class="crm-mini">
-            <i class="fas fa-users fa-2x"></i>
-            <div style="flex:1">
-                <div style="font-size:12px; opacity:0.9">CHỈ SỐ CRM (KHÁCH TIỀM NĂNG)</div>
-                <div style="font-size:20px; font-weight:bold"><span id="custCount">0</span> / 20</div>
-            </div>
-            <button onclick="addCust()" style="background:white; color:#10b981; border:none; padding:8px 15px; border-radius:6px; font-weight:bold; cursor:pointer">+1 Khách</button>
-        </div>
-
-        <div class="q-tabs">
-            <button class="q-tab active" style="background:#dc3545" onclick="setQ('L', event)">L (Dưới 200k)</button>
-            <button class="q-tab" style="background:#007bff" onclick="setQ('T', event)">T (200k-1tr)</button>
-            <button class="q-tab" style="background:#6f42c1" onclick="setQ('C', event)">C (1tr-5tr)</button>
-            <button class="q-tab" style="background:#ffc107; color:black" onclick="setQ('D', event)">Đ (Trên 5tr)</button>
-        </div>
-
         <div class="grid">
             <div class="card">
-                <h3><i class="fas fa-filter"></i> 1. Lọc & Nhập Dữ Liệu</h3>
-                <input type="file" id="fileInput" accept=".csv" style="margin-bottom:10px; font-size:12px;">
-                <textarea id="inputText" rows="6" placeholder="Dán dữ liệu CSV từ Shopee vào đây..."></textarea>
-                <div id="subIdHint" style="margin:10px 0; font-size: 12px; font-weight:bold; color:#2563eb">SubID: ---</div>
+                <h3><i class="fas fa-sync"></i> 1. Nhập Dữ Liệu Tác Chiến</h3>
+                <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #16a34a;">
+                    <label style="font-size: 12px; font-weight: bold; color: #16a34a;">Cách 1: Dán Link Google Sheet (PubHTML)</label>
+                    <input type="text" id="sheetUrl" placeholder="Dán link pubhtml vào đây..." style="width:100%; padding:10px; margin:8px 0; border-radius:5px; border:1px solid #ddd;">
+                    <button onclick="fetchSheetData()" class="btn-action" style="background:#16a34a; width:100%; margin-bottom: 5px;">ĐỒNG BỘ TỪ SHEETS</button>
+                </div>
+                <textarea id="inputText" rows="4" placeholder="Hoặc dán nội dung CSV thủ công vào đây..."></textarea>
                 <div class="btn-group">
-                    <button class="btn-action" onclick="analyzeAll()">PHÂN TÍCH</button>
+                    <button class="btn-action" onclick="analyzeAll()">PHÂN TÍCH TEXT</button>
                     <button class="btn-github" onclick="xuatDataChuan()">XUẤT GITHUB</button>
                 </div>
             </div>
 
             <div class="card">
-                <h3><i class="fas fa-chart-area"></i> 2. Hiệu quả 7 ngày</h3>
+                <h3><i class="fas fa-chart-area"></i> 2. Hiệu quả</h3>
                 <canvas id="mainChart" height="150"></canvas>
             </div>
         </div>
 
         <div class="card">
-            <h3><i class="fas fa-boxes"></i> 3. Kệ hàng tạm thời (Tầng <span id="currentTier">L</span>)</h3>
+            <h3><i class="fas fa-boxes"></i> 3. Kệ hàng (Tầng <span id="currentTier">L</span>)</h3>
             <table id="productTable">
                 <thead>
-                    <tr>
-                        <th>Sản phẩm</th>
-                        <th>Giá</th>
-                        <th>Hoa hồng</th>
-                        <th>Hành động</th>
-                    </tr>
+                    <tr><th>Sản phẩm</th><th>Giá</th><th>Hoa hồng</th><th>Chọn</th></tr>
                 </thead>
                 <tbody id="productBody">
                     <tr><td colspan="4" style="text-align:center; color:#999">Chưa có dữ liệu.</td></tr>
@@ -135,57 +95,56 @@
     </div>
 
     <script>
-        let tier = 'L';
         let currentTempProducts = [];
-        let customers = parseInt(localStorage.getItem('cust_total')) || 0;
 
-        // Tự động đọc file nếu người dùng chọn file từ máy
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                document.getElementById('inputText').value = event.target.result;
+        async function fetchSheetData() {
+            let url = document.getElementById('sheetUrl').value;
+            if(!url) return alert("Vui lòng dán link!");
+            
+            // Tự động chuyển link pubhtml sang link csv
+            if(url.includes('/pubhtml')) {
+                url = url.split('/pubhtml')[0] + '/pub?output=csv';
+            }
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.text();
+                document.getElementById('inputText').value = data;
                 analyzeAll();
-            };
-            reader.readAsText(file);
-        });
+                alert("Đồng bộ thành công " + (data.split('\n').length - 1) + " dòng!");
+            } catch (error) {
+                alert("Lỗi kết nối. Hãy đảm bảo bạn đã 'Publish to web' đúng cách.");
+            }
+        }
 
         function analyzeAll() {
             const text = document.getElementById('inputText').value;
             if(!text) return;
-            
-            const subId = `${tier}_${new Date().getDate()}_${Math.floor(Math.random()*99)}`;
-            document.getElementById('subIdHint').innerText = "SubID gợi ý: " + subId;
-
-            const lines = text.split('\n').filter(line => line.trim() !== "");
+            const lines = text.split('\n').filter(l => l.trim() !== "");
             let rows = "";
             currentTempProducts = [];
 
             lines.forEach((line, index) => {
-                // Regex xử lý CSV chuẩn: tách dấu phẩy nhưng bỏ qua dấu phẩy trong ngoặc kép
-                const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                
-                // Bỏ qua dòng tiêu đề
-                if(index === 0 && (line.includes("Tên sản phẩm") || line.includes("Mã sản phẩm"))) return;
+                // Tách cột thông minh (cho cả CSV và Tab từ Google Sheet)
+                const cols = line.includes('\t') ? line.split('\t') : line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                if(index === 0 && (line.includes("Tên") || line.includes("Mã"))) return;
 
-                if(cols.length >= 8) {
-                    const name = cols[1].replace(/"/g, '').trim();
-                    const price = cols[2].replace(/"/g, '').trim();
-                    const hh = cols[6].replace(/"/g, '').trim();
+                if(cols.length >= 3) {
+                    const name = (cols[1] || "Không tên").replace(/"/g, '').trim();
+                    const price = (cols[2] || "0").replace(/"/g, '').trim();
+                    const hh = cols[6] || "10%";
                     const link = cols[cols.length - 1].trim();
 
-                    const pObj = { name, price, hh, link, sales: cols[3] || "0" };
-                    currentTempProducts.push(pObj);
-
+                    currentTempProducts.push({ name, price, hh, link });
                     rows += `<tr>
                         <td>${name.substring(0,35)}...</td>
                         <td>${price}</td>
-                        <td style="color: #10b981; font-weight:bold">${hh}</td>
+                        <td style="color:#10b981; font-weight:bold">${hh}</td>
                         <td><button class="btn-add-stock" onclick="addToKho(${currentTempProducts.length - 1})">Chọn</button></td>
                     </tr>`;
                 }
             });
-            document.getElementById('productBody').innerHTML = rows || "<tr><td colspan='4'>Dữ liệu không đúng định dạng CSV</td></tr>";
+            document.getElementById('productBody').innerHTML = rows || "<tr><td colspan='4'>Dữ liệu không khớp</td></tr>";
         }
 
         function addToKho(index) {
@@ -196,7 +155,7 @@
                 localStorage.setItem('shopee_kho_tong', JSON.stringify(kho));
                 alert("Đã thêm: " + product.name.substring(0,20));
             } else {
-                alert("Sản phẩm này đã có trong kho!");
+                alert("Đã có trong kho!");
             }
         }
 
@@ -212,29 +171,7 @@
             a.click();
         }
 
-        function setQ(q, event) {
-            tier = q;
-            document.getElementById('currentTier').innerText = q;
-            document.querySelectorAll('.q-tab').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            analyzeAll();
-        }
-
-        function addCust() {
-            customers++;
-            localStorage.setItem('cust_total', customers);
-            document.getElementById('custCount').innerText = customers;
-        }
-
-        function updateTimeline() {
-            const hour = new Date().getHours();
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            if (hour >= 8 && hour < 10) document.getElementById('step1').classList.add('active');
-            else if (hour >= 10 && hour < 14) document.getElementById('step2').classList.add('active');
-            else if (hour >= 14 && hour < 23) document.getElementById('step3').classList.add('active');
-        }
-
-        // Khởi tạo Biểu đồ
+        // Biểu đồ minh họa
         const ctx = document.getElementById('mainChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
@@ -243,10 +180,6 @@
                 datasets: [{ label: 'Đơn hàng', data: [5, 12, 8, 15, 10, 20, 25], borderColor: '#ff5722', tension: 0.4 }]
             }
         });
-
-        document.getElementById('custCount').innerText = customers;
-        setInterval(updateTimeline, 60000);
-        updateTimeline();
     </script>
 </body>
 </html>
