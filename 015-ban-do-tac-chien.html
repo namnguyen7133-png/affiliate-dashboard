@@ -92,15 +92,16 @@
         </div>
 
         <div class="q-tabs">
-            <button class="q-tab active" style="background:#dc3545" onclick="setQ('L')">L (Dưới 200k)</button>
-            <button class="q-tab" style="background:#007bff" onclick="setQ('T')">T (200k-1tr)</button>
-            <button class="q-tab" style="background:#6f42c1" onclick="setQ('C')">C (1tr-5tr)</button>
-            <button class="q-tab" style="background:#ffc107; color:black" onclick="setQ('D')">Đ (Trên 5tr)</button>
+            <button class="q-tab active" style="background:#dc3545" onclick="setQ('L', event)">L (Dưới 200k)</button>
+            <button class="q-tab" style="background:#007bff" onclick="setQ('T', event)">T (200k-1tr)</button>
+            <button class="q-tab" style="background:#6f42c1" onclick="setQ('C', event)">C (1tr-5tr)</button>
+            <button class="q-tab" style="background:#ffc107; color:black" onclick="setQ('D', event)">Đ (Trên 5tr)</button>
         </div>
 
         <div class="grid">
             <div class="card">
                 <h3><i class="fas fa-filter"></i> 1. Lọc & Nhập Dữ Liệu</h3>
+                <input type="file" id="fileInput" accept=".csv" style="margin-bottom:10px; font-size:12px;">
                 <textarea id="inputText" rows="6" placeholder="Dán dữ liệu CSV từ Shopee vào đây..."></textarea>
                 <div id="subIdHint" style="margin:10px 0; font-size: 12px; font-weight:bold; color:#2563eb">SubID: ---</div>
                 <div class="btn-group">
@@ -123,12 +124,11 @@
                         <th>Sản phẩm</th>
                         <th>Giá</th>
                         <th>Hoa hồng</th>
-                        <th>Mục tiêu</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody id="productBody">
-                    <tr><td colspan="5" style="text-align:center; color:#999">Chưa có dữ liệu. Hãy dán CSV và bấm Phân tích.</td></tr>
+                    <tr><td colspan="4" style="text-align:center; color:#999">Chưa có dữ liệu.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -139,15 +139,80 @@
         let currentTempProducts = [];
         let customers = parseInt(localStorage.getItem('cust_total')) || 0;
 
-        function updateTimeline() {
-            const hour = new Date().getHours();
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            if (hour >= 8 && hour < 10) document.getElementById('step1').classList.add('active');
-            else if (hour >= 10 && hour < 14) document.getElementById('step2').classList.add('active');
-            else if (hour >= 14 && hour < 23) document.getElementById('step3').classList.add('active');
+        // Tự động đọc file nếu người dùng chọn file từ máy
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('inputText').value = event.target.result;
+                analyzeAll();
+            };
+            reader.readAsText(file);
+        });
+
+        function analyzeAll() {
+            const text = document.getElementById('inputText').value;
+            if(!text) return;
+            
+            const subId = `${tier}_${new Date().getDate()}_${Math.floor(Math.random()*99)}`;
+            document.getElementById('subIdHint').innerText = "SubID gợi ý: " + subId;
+
+            const lines = text.split('\n').filter(line => line.trim() !== "");
+            let rows = "";
+            currentTempProducts = [];
+
+            lines.forEach((line, index) => {
+                // Regex xử lý CSV chuẩn: tách dấu phẩy nhưng bỏ qua dấu phẩy trong ngoặc kép
+                const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                
+                // Bỏ qua dòng tiêu đề
+                if(index === 0 && (line.includes("Tên sản phẩm") || line.includes("Mã sản phẩm"))) return;
+
+                if(cols.length >= 8) {
+                    const name = cols[1].replace(/"/g, '').trim();
+                    const price = cols[2].replace(/"/g, '').trim();
+                    const hh = cols[6].replace(/"/g, '').trim();
+                    const link = cols[cols.length - 1].trim();
+
+                    const pObj = { name, price, hh, link, sales: cols[3] || "0" };
+                    currentTempProducts.push(pObj);
+
+                    rows += `<tr>
+                        <td>${name.substring(0,35)}...</td>
+                        <td>${price}</td>
+                        <td style="color: #10b981; font-weight:bold">${hh}</td>
+                        <td><button class="btn-add-stock" onclick="addToKho(${currentTempProducts.length - 1})">Chọn</button></td>
+                    </tr>`;
+                }
+            });
+            document.getElementById('productBody').innerHTML = rows || "<tr><td colspan='4'>Dữ liệu không đúng định dạng CSV</td></tr>";
         }
 
-        function setQ(q) {
+        function addToKho(index) {
+            const product = currentTempProducts[index];
+            let kho = JSON.parse(localStorage.getItem('shopee_kho_tong')) || [];
+            if(!kho.find(item => item.link === product.link)) {
+                kho.push(product);
+                localStorage.setItem('shopee_kho_tong', JSON.stringify(kho));
+                alert("Đã thêm: " + product.name.substring(0,20));
+            } else {
+                alert("Sản phẩm này đã có trong kho!");
+            }
+        }
+
+        function xuatDataChuan() {
+            const kho = localStorage.getItem('shopee_kho_tong');
+            if(!kho || kho === "[]") return alert("Kho trống!");
+            const dataChuan = { "last_update": new Date().toLocaleString('vi-VN'), "products": JSON.parse(kho) };
+            const blob = new Blob([JSON.stringify(dataChuan, null, 2)], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "files.json";
+            a.click();
+        }
+
+        function setQ(q, event) {
             tier = q;
             document.getElementById('currentTier').innerText = q;
             document.querySelectorAll('.q-tab').forEach(b => b.classList.remove('active'));
@@ -161,77 +226,15 @@
             document.getElementById('custCount').innerText = customers;
         }
 
-        function analyzeAll() {
-            const text = document.getElementById('inputText').value;
-            if(!text) return;
-            
-            const subId = `${tier}_${new Date().getDate()}_${Math.floor(Math.random()*99)}`;
-            document.getElementById('subIdHint').innerText = "SubID gợi ý: " + subId;
-
-            const lines = text.split('\n');
-            let rows = "";
-            currentTempProducts = [];
-
-            lines.forEach((line, index) => {
-                const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                if(cols.length > 2 && index > 0) {
-                    const name = cols[1].replace(/"/g, '');
-                    const priceRaw = cols[2].replace(/[",.]/g, '');
-                    const price = parseInt(priceRaw) || 0;
-                    const link = cols[cols.length - 1].trim();
-                    const hh = "5-10%";
-                    const goal = Math.ceil(500000 / (price * 0.05));
-
-                    const pObj = { name, price: price.toLocaleString() + 'đ', hh, link, sales: "Mới" };
-                    currentTempProducts.push(pObj);
-
-                    rows += `<tr>
-                        <td>${name.substring(0,30)}...</td>
-                        <td>${pObj.price}</td>
-                        <td>${hh}</td>
-                        <td style="color:red; font-weight:bold">${goal} đơn</td>
-                        <td><button class="btn-add-stock" onclick="addToKho(${currentTempProducts.length - 1})">Chọn</button></td>
-                    </tr>`;
-                }
-            });
-            document.getElementById('productBody').innerHTML = rows || "<tr><td colspan='5' style='text-align:center'>Không tìm thấy SP</td></tr>";
+        function updateTimeline() {
+            const hour = new Date().getHours();
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            if (hour >= 8 && hour < 10) document.getElementById('step1').classList.add('active');
+            else if (hour >= 10 && hour < 14) document.getElementById('step2').classList.add('active');
+            else if (hour >= 14 && hour < 23) document.getElementById('step3').classList.add('active');
         }
 
-        // Lưu lẻ từng món vào Kho Tổng (LocalStorage)
-        function addToKho(index) {
-            const product = currentTempProducts[index];
-            let kho = JSON.parse(localStorage.getItem('shopee_kho_tong')) || [];
-            
-            // Tránh trùng link
-            if(!kho.find(item => item.link === product.link)) {
-                kho.push(product);
-                localStorage.setItem('shopee_kho_tong', JSON.stringify(kho));
-                alert("Đã thêm: " + product.name.substring(0,20));
-            } else {
-                alert("Sản phẩm này đã có trong kho!");
-            }
-        }
-
-        // Xuất file chuẩn để dán vào GitHub
-        function xuatDataChuan() {
-            const kho = localStorage.getItem('shopee_kho_tong');
-            if(!kho || kho === "[]") return alert("Kho đang trống! Hãy bấm 'Chọn' ở danh sách sản phẩm trước.");
-            
-            const dataChuan = {
-                "last_update": new Date().toLocaleString('vi-VN'),
-                "products": JSON.parse(kho)
-            };
-            
-            const blob = new Blob([JSON.stringify(dataChuan, null, 2)], {type: "application/json"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "files.json";
-            a.click();
-            alert("Đã tải files.json thành công! Hãy đẩy file này lên GitHub của bạn.");
-        }
-
-        // Biểu đồ
+        // Khởi tạo Biểu đồ
         const ctx = document.getElementById('mainChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
