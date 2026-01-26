@@ -7,84 +7,76 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --shopee-orange: #ff5722; --bg: #f4f6fa; --dark: #2c3e50; }
+        :root { --shopee-orange: #ff5722; --bg: #f4f6fa; --dark: #2c3e50; --success: #2ecc71; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: auto; padding: 15px; max-width: 1200px; }
         h1 { color: var(--shopee-orange); text-align: center; margin-bottom: 25px; }
         
-        /* Layout Grid */
         .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media (max-width: 850px) { .dashboard-grid { grid-template-columns: 1fr; } }
 
         .card { background: #fff; padding: 20px; margin-bottom: 15px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 4px solid var(--shopee-orange); }
         .card h3 { margin-top: 0; color: var(--dark); display: flex; align-items: center; gap: 10px; font-size: 1.1rem; }
         
-        /* Input & Button */
         input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        button { background: var(--shopee-orange); color: #fff; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+        button { background: var(--shopee-orange); color: #fff; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; margin-top: 10px;}
         button:hover { background: #e64a19; transform: translateY(-2px); }
-        .btn-outline { background: #fff; color: var(--shopee-orange); border: 1px solid var(--shopee-orange); }
+        .btn-save { background: var(--success); }
         
-        /* Table & Chart */
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border-bottom: 1px solid #eee; padding: 12px 8px; text-align: left; font-size: 14px; }
-        th { background: #fafafa; }
         .highlight { background: #fff3cd; font-weight: bold; padding: 2px 5px; border-radius: 4px; }
-        
-        .status-good { color: #2ecc71; font-weight: bold; }
-        .status-bad { color: #e74c3c; }
+        .result-box { background: #f8f9fa; border: 1px dashed #ccc; padding: 10px; font-size: 13px; margin-top: 10px; border-radius: 6px; white-space: pre-wrap; }
     </style>
 </head>
 <body>
 
-<h1><i class="fas fa-chart-pie"></i> Shopee Affiliate Pro Hub</h1>
+<h1><i class="fas fa-rocket"></i> Shopee Affiliate Pro Hub</h1>
 
 <div class="dashboard-grid">
     
     <div class="card">
-        <h3><i class="fas fa-edit"></i> 1. Soạn thảo & Phân tích SubID</h3>
-        <textarea id="inputText" rows="5" placeholder="Dán nội dung bài viết vào đây...">Tiếng Việt là ngôn ngữ tuyệt vời. Hãy mua ngay sản phẩm này tại Shopee!</textarea>
-        <input id="searchChars" value="A Ă Â" placeholder="Ký tự mục tiêu để tạo SubID">
-        <button onclick="analyzeText()"><i class="fas fa-magic"></i> Phân tích nhanh</button>
+        <h3><i class="fas fa-magic"></i> 1. Gắn Link Vào Truyện & Tạo SubID</h3>
+        <textarea id="inputText" rows="4" placeholder="Dán nội dung truyện/bài viết..."></textarea>
         
-        <div id="analysisResult" class="table-wrapper" style="margin-top:15px; font-size: 13px; color: #555;">
-            </div>
+        <div style="display:flex; gap:10px">
+            <input id="shortLink" placeholder="Dán Link Rút Gọn Shopee vào đây...">
+            <button onclick="processEverything()" style="width:150px">XỬ LÝ NGAY</button>
+        </div>
+
+        <div id="analysisResult" style="margin-top:10px; font-size: 12px;"></div>
+        
+        <p style="font-size: 12px; font-weight: bold; margin-bottom: 5px;">Kết quả bài đăng (Máy đã gắn link):</p>
+        <div id="finalContent" class="result-box">Chưa có dữ liệu...</div>
+        <button onclick="copyToClipboard('finalContent')" class="btn-save" style="padding:5px; font-size:11px;">Copy Bài Viết</button>
     </div>
 
     <div class="card">
-        <h3><i class="fas fa-plus-circle"></i> 2. Lưu kết quả Affiliate</h3>
-        <input id="title" placeholder="Tên bài / sản phẩm">
-        <input id="platform" placeholder="Nền tảng (FB/Zalo/TikTok)">
+        <h3><i class="fas fa-database"></i> 2. Lưu Kho & Google Sheet</h3>
+        <input id="title" placeholder="Tên sản phẩm">
         <div style="display:flex; gap:10px">
-            <input id="click" type="number" placeholder="Số click">
-            <input id="order" type="number" placeholder="Số đơn">
+            <input id="money" type="number" placeholder="Hoa hồng dự kiến">
+            <input id="platform" placeholder="Nền tảng (Zalo/FB)">
         </div>
-        <input id="money" type="number" placeholder="Hoa hồng (VNĐ)">
-        <button onclick="add()"><i class="fas fa-save"></i> Lưu vào hệ thống</button>
+        
+        <button onclick="saveToSystem()" class="btn-save"><i class="fas fa-save"></i> LƯU KHO & GHI ĐỀ GITHUB</button>
+
+        <p style="font-size: 12px; font-weight: bold; margin-top: 15px; margin-bottom: 5px;">Dòng dữ liệu cho Google Sheet:</p>
+        <div id="sheetRow" class="result-box">Ngày | Tên | Link | HH</div>
+        <button onclick="copyToClipboard('sheetRow')" style="background:#4285f4; padding:5px; font-size:11px;">Copy Dòng Sheet</button>
     </div>
 
 </div>
 
 <div class="card">
-    <h3><i class="fas fa-list-ul"></i> Danh sách hiệu quả nội dung</h3>
-    <div style="display:flex; gap:10px; margin-bottom:15px">
-        <select id="filter" onchange="render()" style="flex:2">
-            <option value="all">Tất cả dữ liệu</option>
-            <option value="week">7 ngày gần nhất</option>
-        </select>
-        <button onclick="exportCSV()" class="btn-outline" style="flex:1"><i class="fas fa-file-excel"></i> Xuất Excel</button>
-    </div>
-    
+    <h3><i class="fas fa-history"></i> Lịch sử lưu kho (Dùng để dán vào files.json trên GitHub)</h3>
     <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
-                    <th>Bài viết</th>
-                    <th>Nền tảng</th>
-                    <th>Click</th>
-                    <th>Đơn</th>
-                    <th>Hoa hồng</th>
-                    <th>CR (%)</th>
+                    <th>Sản phẩm</th>
+                    <th>Link Rút Gọn</th>
+                    <th>HH</th>
                     <th>Ngày</th>
                 </tr>
             </thead>
@@ -93,120 +85,78 @@
     </div>
 </div>
 
-<div class="card">
-    <h3><i class="fas fa-chart-bar"></i> Biểu đồ doanh thu</h3>
-    <canvas id="chart" height="100"></canvas>
-</div>
-
 <script>
-let data = JSON.parse(localStorage.getItem("aff_pro")) || [];
-const accentMap = {'Ă':'A','Â':'A','Đ':'D','Ê':'E','Ô':'O','Ơ':'O','Ư':'U','ă':'a','â':'a','đ':'d','ê':'e','ô':'o','ơ':'o','ư':'u','À':'A','Á':'A','Ả':'A','Ã':'A','Ạ':'A','Ằ':'A','Ắ':'A','Ẳ':'A','Ẵ':'A','Ặ':'A','Ầ':'A','Ấ':'A','Ẩ':'A','Ẫ':'A','Ậ':'A','È':'E','É':'E','Ẻ':'E','Ẽ':'E','Ẹ':'E','Ề':'E','Ế':'E','Ể':'E','Ễ':'E','Ệ':'E','Ì':'I','Í':'I','Ỉ':'I','Ĩ':'I','Ị':'I','Ò':'O','Ó':'O','Ỏ':'O','Õ':'O','Ọ':'O','Ồ':'O','Ố':'O','Ổ':'O','Ỗ':'O','Ộ':'O','Ờ':'O','Ớ':'O','Ở':'O','Ỡ':'O','Ợ':'O','Ù':'U','Ú':'U','Ủ':'U','Ũ':'U','Ụ':'U','Ừ':'U','Ứ':'U','Ử':'U','Ữ':'U','Ự':'U','Ỳ':'Y','Ý':'Y','Ỷ':'Y','Ỹ':'Y','Ỵ':'Y','à':'a','á':'a','ả':'a','ã':'a','ạ':'a','ằ':'a','ắ':'a','ẳ':'a','ẵ':'a','ặ':'a','ầ':'a','ấ':'a','ẩ':'a','ẫ':'a','ậ':'a','è':'e','é':'e','ẻ':'e','ẽ':'e','ẹ':'e','ề':'e','ế':'e','ể':'e','ễ':'e','ệ':'e','ì':'i','í':'i','ỉ':'i','ĩ':'i','ị':'i','ò':'o','ó':'o','ỏ':'o','õ':'o','ọ':'o','ồ':'o','ố':'o','ổ':'o','ỗ':'o','ộ':'o','ờ':'o','ớ':'o','ở':'o','ỡ':'o','ợ':'o','ù':'u','ú':'u','ủ':'u','ũ':'u','ụ':'u','ừ':'u','ứ':'u','ử':'u','ữ':'u','ự':'u','ỳ':'y','ý':'y','ỷ':'y','ỹ':'y','ỵ':'y'};
+let affData = JSON.parse(localStorage.getItem("aff_pro")) || [];
 
-// Phân tích SubID từ 006
-function analyzeText() {
+// 1. MÁY LÀM: Xử lý gắn link, SubID
+function processEverything() {
     const text = document.getElementById('inputText').value;
-    const noAccent = text.split('').map(c => accentMap[c] || c).join('');
-    const words = noAccent.split(/\s+/).filter(w => w.length > 0);
-    const lasts = words.map(w => w.replace(/[^\w]/g, '').slice(-1).toUpperCase());
+    const link = document.getElementById('shortLink').value;
     
-    // Đếm ký tự cuối xuất hiện nhiều nhất để gợi ý SubID
+    if(!link) { alert("Hãy dán link rút gọn vào!"); return; }
+
+    // Gắn link vào cuối truyện
+    const completePost = text + "\n\n👉 Săn ngay tại đây: " + link;
+    document.getElementById('finalContent').innerText = completePost;
+
+    // Phân tích SubID gợi ý
+    const words = text.split(/\s+/).filter(w => w.length > 0);
     const counts = {};
-    lasts.forEach(l => counts[l] = (counts[l] || 0) + 1);
-    const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, 3);
-    
-    let html = `<strong>Gợi ý SubID (Ký tự cuối):</strong> `;
-    sorted.forEach(([char, count]) => {
-        html += `<span class="highlight">${char} (${count})</span> `;
+    words.forEach(w => {
+        let char = w.slice(-1).toUpperCase();
+        if(/[A-Z]/.test(char)) counts[char] = (counts[char] || 0) + 1;
     });
-    document.getElementById('analysisResult').innerHTML = html;
-    
-    // Tự động điền tiêu đề nếu trống
-    if(!document.getElementById('title').value) {
-        document.getElementById('title').value = text.slice(0, 20) + "...";
-    }
+    const topChar = Object.entries(counts).sort((a,b) => b[1] - a[1])[0];
+    document.getElementById('analysisResult').innerHTML = `Gợi ý SubID: <span class="highlight">WEB_${new Date().getDate()}_${topChar ? topChar[0] : 'X'}</span>`;
 }
 
-function add(){
-    if(!title.value) return alert("Vui lòng nhập tên bài!");
-    data.push({
-        title: title.value,
-        platform: platform.value,
-        click: +click.value || 0,
-        order: +order.value || 0,
-        money: +money.value || 0,
-        date: Date.now()
+// 2. MÁY LÀM: Tạo dòng Google Sheet & Lưu LocalStorage
+function saveToSystem() {
+    const title = document.getElementById('title').value;
+    const link = document.getElementById('shortLink').value;
+    const money = document.getElementById('money').value;
+    const date = new Date().toLocaleDateString();
+
+    if(!title || !link) { alert("Thiếu tên hoặc link!"); return; }
+
+    // Tạo dòng cho Google Sheet
+    const row = `${date}\t${title}\t${link}\t${money}đ`;
+    document.getElementById('sheetRow').innerText = row;
+
+    // Lưu vào danh sách hệ thống
+    affData.push({
+        title: title,
+        link: link,
+        money: parseInt(money) || 0,
+        date: Date.now(),
+        platform: document.getElementById('platform').value || 'Web'
     });
-    localStorage.setItem("aff_pro", JSON.stringify(data));
-    resetForm();
+
+    localStorage.setItem("aff_pro", JSON.stringify(affData));
     render();
+    alert("Đã lưu kho thành công!");
 }
 
-function resetForm() {
-    title.value = platform.value = click.value = order.value = money.value = "";
-}
-
-function render(){
-    let tbody = "";
-    let now = Date.now();
-    let filter = document.getElementById("filter").value;
-    
-    let show = data.filter(i => {
-        let diff = (now - i.date) / 86400000;
-        if(filter === "week") return diff <= 7;
-        return true;
-    }).sort((a, b) => b.date - a.date);
-
-    show.forEach(i => {
-        let cr = i.click > 0 ? ((i.order / i.click) * 100).toFixed(1) : 0;
-        tbody += `
-        <tr>
+function render() {
+    let html = "";
+    affData.sort((a,b) => b.date - a.date).slice(0, 10).forEach(i => {
+        html += `<tr>
             <td>${i.title}</td>
-            <td>${i.platform}</td>
-            <td>${i.click}</td>
-            <td>${i.order}</td>
-            <td class="status-good">${i.money.toLocaleString()}đ</td>
-            <td>${cr}%</td>
-            <td><small>${new Date(i.date).toLocaleDateString()}</small></td>
+            <td><small>${i.link}</small></td>
+            <td>${i.money.toLocaleString()}đ</td>
+            <td>${new Date(i.date).toLocaleDateString()}</td>
         </tr>`;
     });
-    document.getElementById("list").innerHTML = tbody;
-    draw(show);
+    document.getElementById('list').innerHTML = html;
 }
 
-function draw(show){
-    let ctx = document.getElementById("chart");
-    let chartData = show.slice(0, 10).reverse(); // Lấy 10 bài gần nhất
-    if(window.c) window.c.destroy();
-    window.c = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: chartData.map(i => i.title.slice(0,10)),
-            datasets: [{
-                label: "Hoa hồng (VNĐ)",
-                data: chartData.map(i => i.money),
-                borderColor: "#ff5722",
-                backgroundColor: "rgba(255, 87, 34, 0.1)",
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: { responsive: true, plugins: { legend: { display: false } } }
-    });
+function copyToClipboard(id) {
+    const text = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(text);
+    alert("Đã copy!");
 }
 
-function exportCSV(){
-    let csv = "\uFEFFTên,Nền tảng,Click,Đơn,Hoa hồng,Ngày\n";
-    data.forEach(i => {
-        csv += `${i.title},${i.platform},${i.click},${i.order},${i.money},${new Date(i.date).toLocaleDateString()}\n`;
-    });
-    let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    let a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "shopee_affiliate_report.csv";
-    a.click();
-}
-
-render();
+window.onload = render;
 </script>
 </body>
 </html>
