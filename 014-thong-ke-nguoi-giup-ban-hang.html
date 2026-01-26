@@ -1,95 +1,166 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>Thống kê khách & nhắc chăm sóc người quen</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    padding: 20px;
-    max-width: 420px;
-    margin: auto;
-  }
-  h2 { text-align: center; }
-  .box {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-  }
-  .count {
-    font-size: 48px;
-    margin: 20px 0;
-  }
-  button {
-    font-size: 18px;
-    padding: 12px 20px;
-    margin: 10px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  .add { background: #28a745; color: white; }
-  .reset { background: #dc3545; color: white; }
-  .alert {
-    margin-top: 20px;
-    padding: 15px;
-    background: #fff3cd;
-    border-radius: 8px;
-    color: #856404;
-    display: none;
-  }
-</style>
-</head>
+    <meta charset="UTF-8">
+    <title>Siêu Hệ Thống Affiliate - Kim Tứ Đồ & CRM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { 
+            --color-L: #dc3545; --color-T: #007bff; --color-C: #6f42c1; --color-D: #ffc107; 
+            --shopee-orange: #ff5722; --bg: #f4f6f8; --success: #28a745;
+        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .container { max-width: 1200px; margin: auto; }
+        
+        /* Header & CRM Bar */
+        .top-bar { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 20px; }
+        @media (max-width: 768px) { .top-bar { grid-template-columns: 1fr; } }
 
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); height: 100%; }
+        
+        /* CRM Style */
+        .crm-box { text-align: center; border-left: 5px solid var(--success); }
+        .crm-count { font-size: 32px; font-weight: bold; color: var(--success); margin: 5px 0; }
+        .progress-container { background: #eee; border-radius: 10px; height: 10px; margin: 10px 0; overflow: hidden; }
+        .progress-bar { background: var(--success); height: 100%; width: 0%; transition: 0.5s; }
+        
+        /* Kim Tứ Đồ Tabs */
+        .quadrant-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .tab-btn { 
+            flex: 1; min-width: 100px; padding: 15px; border: none; border-radius: 12px; 
+            color: white; font-weight: bold; cursor: pointer; opacity: 0.6; transition: 0.3s;
+        }
+        .tab-btn.active { opacity: 1; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        
+        /* Main Workspace */
+        .main-layout { display: grid; grid-template-columns: 1.2fr 2fr; gap: 20px; }
+        @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
+
+        textarea { width: 100%; border: 1px solid #ddd; border-radius: 10px; padding: 10px; resize: vertical; }
+        .btn-add { background: var(--shopee-orange); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
+        .alert-care { background: #fff3cd; color: #856404; padding: 15px; border-radius: 10px; margin-top: 15px; display: none; border-left: 5px solid #ffc107; animation: shake 0.5s; }
+        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(5px); } 50% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+    </style>
+</head>
 <body>
 
-<h2>📊 Thống kê khách giới thiệu</h2>
+<div class="container">
+    <div class="top-bar">
+        <div class="card" style="background: linear-gradient(135deg, #2c3e50, #000); color: white;">
+            <h2 style="margin:0">💎 Affiliate Strategy Hub</h2>
+            <p id="q-desc" style="opacity:0.8; font-size:14px;">Chọn tầng để bắt đầu lọc sản phẩm...</p>
+        </div>
+        
+        <div class="card crm-box">
+            <div style="font-size: 12px; font-weight: bold; color: #666;">MỤC TIÊU CHĂM SÓC KHÁCH</div>
+            <div class="crm-count"><span id="custCount">0</span>/20</div>
+            <div class="progress-container"><div class="progress-bar" id="pBar"></div></div>
+            <div style="display: flex; gap: 5px;">
+                <button onclick="addCust()" style="flex:2; background: var(--success); color: white; border: none; border-radius: 4px; padding: 5px; cursor: pointer;">+1 Khách</button>
+                <button onclick="resetCust()" style="flex:1; background: #eee; border: none; border-radius: 4px; cursor: pointer;">Reset</button>
+            </div>
+        </div>
+    </div>
 
-<div class="box">
-  <div>👥 Số khách hiện tại</div>
-  <div class="count" id="count">0</div>
+    <div id="careAlert" class="alert-care">
+        <strong>☕ Đã đạt mốc 20 khách hàng!</strong> Dừng tìm khách mới, hãy nhắn tin chăm sóc người quen, gửi lời cảm ơn hoặc tặng mã giảm giá Shopee để duy trì tỷ lệ chuyển đổi.
+    </div>
 
-  <button class="add" onclick="addCustomer()">+1 khách</button>
-  <button class="reset" onclick="resetCount()">Reset</button>
+    <div class="quadrant-tabs">
+        <button class="tab-btn active" style="background:var(--color-L)" onclick="changeQ('L')">L (Dưới 200k)</button>
+        <button class="tab-btn" style="background:var(--color-T)" onclick="changeQ('T')">T (200k-1tr)</button>
+        <button class="tab-btn" style="background:var(--color-C)" onclick="changeQ('C')">C (1tr-5tr)</button>
+        <button class="tab-btn" style="background:var(--color-D)" onclick="changeQ('D')">Đ (Trên 5tr)</button>
+    </div>
 
-  <div class="alert" id="alertBox">
-    ☕ Đã đủ khách rồi!  
-    <br><br>
-    👉 Nhắc bạn:
-    <ul style="text-align:left">
-      <li>Chăm sóc người quen</li>
-      <li>Gửi cà phê / lời cảm ơn</li>
-      <li>Duy trì mối quan hệ</li>
-    </ul>
-  </div>
+    <div class="main-layout">
+        <div class="card">
+            <h3><i class="fas fa-search"></i> Lọc & Tạo SubID</h3>
+            <textarea id="csvInput" rows="8" placeholder="Dán dữ liệu Shopee vào đây..."></textarea>
+            <div id="subIdResult" style="margin: 10px 0; font-family: monospace; font-weight: bold; color: var(--color-T);"></div>
+            <button class="btn-add" onclick="processData()">PHÂN TÍCH CHIẾN DỊCH</button>
+        </div>
+
+        <div class="card">
+            <h3><i class="fas fa-chart-line"></i> Kết quả phân tích</h3>
+            <div id="resultArea">
+                <p style="color:#999; text-align:center">Chưa có dữ liệu để hiển thị.</p>
+            </div>
+        </div>
+    </div>
 </div>
 
+
+
 <script>
-let count = localStorage.getItem("customerCount") || 0;
-count = parseInt(count);
-document.getElementById("count").innerText = count;
+    let currentQ = 'L';
+    let customers = parseInt(localStorage.getItem("cust_count")) || 0;
 
-function addCustomer() {
-  count++;
-  localStorage.setItem("customerCount", count);
-  document.getElementById("count").innerText = count;
+    const configs = {
+        'L': { min: 0, max: 200000, desc: "L (Làm thuê): Hàng giá rẻ, tập trung số lượng đơn lớn (Mass Marketing)." },
+        'T': { min: 200001, max: 1000000, desc: "T (Tự doanh): Hàng trung cấp, bắt đầu cần tư vấn cá nhân." },
+        'C': { min: 1000001, max: 5000000, desc: "C (Chủ hệ thống): Hàng giá trị cao, cần xây dựng cộng đồng." },
+        'D': { min: 5000001, max: 99999999, desc: "Đ (Đầu tư): Hàng xa xỉ, chỉ cần 1 đơn cũng đủ mục tiêu." }
+    };
 
-  if (count >= 20) {
-    document.getElementById("alertBox").style.display = "block";
-  }
-}
+    function updateCRM() {
+        document.getElementById("custCount").innerText = customers;
+        let percent = Math.min((customers / 20) * 100, 100);
+        document.getElementById("pBar").style.width = percent + "%";
+        document.getElementById("careAlert").style.display = customers >= 20 ? "block" : "none";
+        localStorage.setItem("cust_count", customers);
+    }
 
-function resetCount() {
-  if (confirm("Reset lại từ đầu?")) {
-    count = 0;
-    localStorage.setItem("customerCount", count);
-    document.getElementById("count").innerText = count;
-    document.getElementById("alertBox").style.display = "none";
-  }
-}
+    function addCust() { customers++; updateCRM(); }
+    function resetCust() { if(confirm("Xóa data khách?")) { customers = 0; updateCRM(); } }
+
+    function changeQ(q) {
+        currentQ = q;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('q-desc').innerText = configs[q].desc;
+        processData();
+    }
+
+    function processData() {
+        const raw = document.getElementById("csvInput").value;
+        if(!raw) return;
+
+        // Phân tích SubID gợi ý (File 006)
+        const subId = `${currentQ}_${new Date().getDate()}${new Date().getMonth()+1}_PRO`;
+        document.getElementById("subIdResult").innerText = "Gợi ý SubID: " + subId;
+
+        // Lọc dữ liệu (File 011)
+        const lines = raw.split('\n');
+        let html = `<table><tr><th>Sản phẩm</th><th>Giá</th><th>Đơn mục tiêu</th></tr>`;
+        let found = 0;
+
+        lines.slice(1).forEach(line => {
+            const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            if(cols.length < 5) return;
+            
+            const name = cols[1].replace(/"/g, '');
+            const price = parseInt(cols[2].replace(/[",.]/g, '')) || 0;
+            
+            if(price >= configs[currentQ].min && price <= configs[currentQ].max) {
+                const goal = Math.ceil(1000000 / (price * 0.05)); // Giả định hoa hồng 5%
+                html += `<tr><td>${name.substring(0,30)}...</td><td>${price.toLocaleString()}đ</td><td style="color:red; font-weight:bold">${goal} đơn</td></tr>`;
+                found++;
+            }
+        });
+
+        html += `</table>`;
+        document.getElementById("resultArea").innerHTML = found > 0 ? html : "Không tìm thấy SP phù hợp tầng này.";
+    }
+
+    updateCRM();
+    document.getElementById('q-desc').innerText = configs['L'].desc;
 </script>
-
 </body>
 </html>
