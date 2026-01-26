@@ -2,207 +2,201 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Affiliate Hub Pro – Quản lý & Nhật ký</title>
+<title>NAM NGUYỄN - AFFILIATE HUB PRO</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* Giữ nguyên phần CSS của bạn vì nó rất đẹp và chuyên nghiệp */
-:root {
-  --primary: #2563eb; --primary-dark: #1d4ed8; --secondary: #0f766e;
-  --light: #f8fafc; --dark: #1e293b; --gray: #64748b;
-  --gray-light: #e2e8f0; --success: #10b981; --warning: #f59e0b;
-  --danger: #ef4444; --radius: 12px; --transition: all 0.3s ease;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); color: var(--dark); padding: 20px; min-height: 100vh; }
-.container { max-width: 1400px; margin: 0 auto; }
-header { text-align: center; margin-bottom: 30px; padding: 20px; background: white; border-radius: var(--radius); box-shadow: var(--shadow); }
-header h1 { color: var(--primary); font-size: 2.2rem; display: flex; align-items: center; justify-content: center; gap: 15px; }
-.main-content { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; }
-.panel { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; }
-.panel-title { display: flex; align-items: center; gap: 10px; color: var(--primary); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--gray-light); font-size: 1.3rem; }
-.file-list { flex: 1; min-width: 320px; max-height: 80vh; overflow-y: auto; }
-.file-item { padding: 12px 15px; border-radius: 8px; text-decoration: none; color: var(--dark); background: var(--light); border-left: 4px solid var(--gray); transition: var(--transition); display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; cursor: pointer; }
-.file-item:hover { background: #f1f5f9; transform: translateX(5px); }
-.file-item.active { background: var(--primary); color: white; border-left-color: var(--primary-dark); }
-.file-item.done { background: #dcfce7; border-left-color: var(--success); }
-.viewer { flex: 2; min-width: 400px; display: flex; flex-direction: column; min-height: 80vh; }
-.viewer-controls { display: flex; justify-content: space-between; margin-bottom: 15px; gap: 10px; }
-.viewer-frame { flex: 1; border-radius: 8px; overflow: hidden; border: 1px solid var(--gray-light); background: white; height: 600px; }
-iframe { width: 100%; height: 100%; border: none; }
-.diary { flex: 1; min-width: 320px; max-height: 80vh; overflow-y: auto; }
-.form-control { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--gray-light); border-radius: 8px; }
-.btn { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
-.btn-primary { background: var(--primary); color: white; width: 100%; justify-content: center; }
-.btn-success { background: var(--success); color: white; }
-.btn-outline { border: 1px solid var(--primary); color: var(--primary); background: white; }
-.log-entry { padding: 12px; border-radius: 8px; background: #f8fafc; border-left: 4px solid var(--primary); margin-bottom: 10px; font-size: 0.9rem; }
-.progress-container { background: white; border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
-.progress-bar { height: 12px; background: var(--gray-light); border-radius: 6px; overflow: hidden; margin: 10px 0; }
-.progress-fill { height: 100%; background: var(--success); transition: 0.5s; }
-@media (max-width: 1000px) { .main-content { flex-direction: column; } }
+    :root {
+        --primary: #ee4d2d; --primary-dark: #c52d13; --secondary: #0f766e;
+        --light: #f8fafc; --dark: #1e293b; --gray: #64748b;
+        --gray-light: #e2e8f0; --success: #10b981; --radius: 12px;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: var(--dark); padding: 15px; }
+    
+    header { text-align: center; margin-bottom: 20px; padding: 15px; background: white; border-radius: var(--radius); box-shadow: var(--shadow); border-bottom: 4px solid var(--primary); }
+    header h1 { color: var(--primary); font-size: 1.8rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    
+    .main-content { display: grid; grid-template-columns: 280px 1fr 320px; gap: 15px; height: calc(100vh - 180px); min-height: 600px; }
+    
+    .panel { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 15px; display: flex; flex-direction: column; overflow: hidden; }
+    .panel-title { color: var(--primary); margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid var(--gray-light); font-weight: bold; display: flex; align-items: center; gap: 8px; }
+    
+    .file-list-container { overflow-y: auto; flex: 1; }
+    .file-item { padding: 10px; border-radius: 8px; text-decoration: none; color: var(--dark); background: var(--light); border-left: 4px solid var(--gray); transition: 0.2s; display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; cursor: pointer; font-size: 13px; }
+    .file-item:hover { background: #f1f5f9; transform: translateX(3px); }
+    .file-item.active { background: var(--primary); color: white; border-left-color: #000; }
+    .file-item.done { border-left-color: var(--success); background: #f0fdf4; }
+
+    .viewer { flex: 1; }
+    .viewer-controls { display: flex; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
+    .viewer-frame { flex: 1; border-radius: 8px; overflow: hidden; border: 1px solid var(--gray-light); }
+    iframe { width: 100%; height: 100%; border: none; background: white; }
+
+    .diary form { display: flex; flex-direction: column; gap: 8px; }
+    .form-control { width: 100%; padding: 8px; border: 1px solid var(--gray-light); border-radius: 6px; font-size: 13px; }
+    .btn { padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-success { background: var(--success); color: white; flex: 1; }
+    .btn-outline { border: 1px solid var(--primary); color: var(--primary); background: white; }
+
+    .log-container { flex: 1; overflow-y: auto; margin-top: 15px; }
+    .log-entry { padding: 10px; border-radius: 6px; background: var(--light); border-left: 3px solid var(--primary); margin-bottom: 8px; font-size: 12px; }
+
+    .progress-container { background: white; border-radius: var(--radius); padding: 15px; box-shadow: var(--shadow); margin-top: 15px; }
+    .progress-bar { height: 10px; background: var(--gray-light); border-radius: 5px; overflow: hidden; margin-top: 8px; }
+    .progress-fill { height: 100%; background: var(--success); width: 0%; transition: 0.5s; }
+
+    @media (max-width: 1100px) { .main-content { grid-template-columns: 1fr; height: auto; } .viewer-frame { height: 500px; } }
 </style>
 </head>
-
 <body>
+
 <div class="container">
-  <header>
-    <h1><i class="fas fa-rocket"></i> AFFILIATE HUB PRO</h1>
-    <p class="subtitle">Hệ thống làm việc tuần tự & Nhật ký vận hành</p>
-  </header>
+    <header>
+        <h1><i class="fas fa-rocket"></i> NAM NGUYỄN AFFILIATE PRO</h1>
+        <p style="font-size: 12px; color: var(--gray);">Hệ thống vận hành tập trung & Quản lý Kho Tổng</p>
+    </header>
 
-  <div class="main-content">
-    <div class="panel file-list">
-      <div class="panel-title"><i class="fas fa-list-ol"></i> <span>Lộ trình làm việc</span></div>
-      <div class="file-list-container" id="list"></div>
+    <div class="main-content">
+        <div class="panel">
+            <div class="panel-title"><i class="fas fa-tasks"></i> Lộ trình công việc</div>
+            <div class="file-list-container" id="list"></div>
+        </div>
+
+        <div class="panel viewer">
+            <div class="viewer-controls">
+                <button class="btn btn-outline" onclick="changeFile(-1)"><i class="fas fa-chevron-left"></i></button>
+                <button class="btn btn-success" onclick="markDone()"><i class="fas fa-check"></i> Xong mục này</button>
+                <button class="btn btn-outline" onclick="changeFile(1)"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="viewer-frame">
+                <iframe id="frame" name="viewer_frame"></iframe>
+            </div>
+        </div>
+
+        <div class="panel diary">
+            <div class="panel-title"><i class="fas fa-history"></i> Nhật ký vận hành</div>
+            <form onsubmit="event.preventDefault(); saveLog();">
+                <input type="datetime-local" id="time" class="form-control">
+                <select id="platform" class="form-control">
+                    <option>Shopee Video</option><option>Facebook Group</option>
+                    <option>TikTok Shop</option><option>Zalo cá nhân</option>
+                </select>
+                <input id="product" class="form-control" placeholder="Tên SP / Link vừa đăng...">
+                <textarea id="note" class="form-control" rows="2" placeholder="Ghi chú (Ví dụ: Đã gắn mã giảm giá)"></textarea>
+                <button type="submit" class="btn btn-primary">Lưu Nhật Ký</button>
+            </form>
+            <div class="log-container" id="logs"></div>
+        </div>
     </div>
 
-    <div class="panel viewer">
-      <div class="viewer-controls">
-        <button class="btn btn-outline" onclick="prev()"><i class="fas fa-arrow-left"></i> Trước</button>
-        <button class="btn btn-success" onclick="markDone()"><i class="fas fa-check"></i> Xong</button>
-        <button class="btn btn-outline" onclick="next()">Sau <i class="fas fa-arrow-right"></i></button>
-      </div>
-      <div class="viewer-frame">
-        <iframe id="frame" name="viewer_frame"></iframe>
-      </div>
+    <div class="progress-container">
+        <div style="display:flex; justify-content: space-between; font-size: 13px;">
+            <span>Tiến độ làm việc: <b id="progress-percent">0%</b></span>
+            <span id="progress-text">0/0 hoàn thành</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
     </div>
-
-    <div class="panel diary">
-      <div class="panel-title"><i class="fas fa-pen-nib"></i> <span>Nhật ký đăng bài</span></div>
-      <form onsubmit="event.preventDefault(); saveLog();">
-        <input type="datetime-local" id="time" class="form-control">
-        <select id="platform" class="form-control">
-          <option>Facebook</option><option>Zale</option><option>TikTok</option>
-          <option>Shopee Video</option><option>Group FB</option>
-        </select>
-        <input id="product" class="form-control" placeholder="Tên sản phẩm/Link...">
-        <textarea id="note" class="form-control" placeholder="Ghi chú kết quả..."></textarea>
-        <button type="submit" class="btn btn-primary">Lưu nhật ký</button>
-      </form>
-      <hr style="margin: 20px 0; opacity: 0.2;">
-      <div id="logs"></div>
-    </div>
-  </div>
-
-  <div class="progress-container">
-    <div style="display: flex; justify-content: space-between;">
-      <span>Tiến độ hoàn thành: <b id="progress-percent">0%</b></span>
-      <span id="progress-text">0/0 tài liệu</span>
-    </div>
-    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-  </div>
 </div>
 
 <script>
-// DANH SÁCH FILE ĐÃ CẬP NHẬT THEO GITHUB CỦA BẠN
-  const files = [
-  "000-affiliate-hub.html",
-  "001-chon-nguoi-mo-hang.html",
-  "002-huong-dan-lam-tiep-thi.html",
-  "003-thoi-gian-bieu-gio-dang.html",
-  "004-hoa-hong-shope.html",
-  "005-hoa-hong-extra.html",
-  "006-hoa-hong-san-pham.html",
-  "009-luu-ten-duong-dan.html",
-  "012-Quan-ly-link.html",
-  "013-Quan-ly-Kim-tu-do.html",
-  "014-thong-ke-nguoi-giup-ban-hang.html",
-  "015-ban-do-tac-chien.html" 
-];
+    // 1. DANH SÁCH FILE CỦA BẠN (Đã sửa tên khớp GitHub)
+    const files = [
+        "000-affiliate-hub.html", "001-chon-nguoi-mo-hang.html", "002-huong-dan-lam-tiep-thi.html",
+        "003-thoi-gian-bieu-gio-dang.html", "004-hoa-hong-shope.html", "005-hoa-hong-extra.html",
+        "006-hoa-hong-san-pham.html", "009-luu-ten-duong-dan.html", "012-Quan-ly-link.html",
+        "013-Quan-ly-Kim-tu-do.html", "014-thong-ke-nguoi-giup-ban-hang.html", "015-ban-do-tac-chien.html"
+    ];
 
-let index = +localStorage.getItem("current_v2") || 0;
-let done = JSON.parse(localStorage.getItem("done_v2") || "[]");
-let logs = JSON.parse(localStorage.getItem("logs_v2") || "[]");
+    let currentIndex = +localStorage.getItem("nam_current_idx") || 0;
+    let doneList = JSON.parse(localStorage.getItem("nam_done_list") || "[]");
+    let logs = JSON.parse(localStorage.getItem("nam_logs") || "[]");
 
-// Cập nhật thời gian mặc định
-document.getElementById('time').value = new Date().toISOString().slice(0, 16);
+    // Khởi tạo thời gian hiện tại
+    document.getElementById('time').value = new Date().toISOString().slice(0, 16);
 
-function renderList() {
-  const list = document.getElementById("list");
-  list.innerHTML = "";
-  
-  files.forEach((file, i) => {
-    const item = document.createElement("div");
-    item.className = `file-item ${i === index ? 'active' : ''} ${done.includes(i) ? 'done' : ''}`;
-    
-    // Làm sạch tên hiển thị: Bỏ số thứ tự và .html
-    const cleanName = file.replace(/^\d+-/, '').replace('.html', '').replace(/-/g, ' ');
-    
-    item.innerHTML = `
-      <span><b>${file.split('-')[0]}</b>. ${cleanName}</span>
-      <i class="fas ${done.includes(i) ? 'fa-check-circle' : 'fa-circle'}" style="font-size: 0.8rem; opacity: 0.5;"></i>
-    `;
-    item.onclick = () => openFile(i);
-    list.appendChild(item);
-  });
-  updateProgress();
-}
+    function renderList() {
+        const listDiv = document.getElementById("list");
+        listDiv.innerHTML = "";
+        files.forEach((file, i) => {
+            const item = document.createElement("div");
+            item.className = `file-item ${i === currentIndex ? 'active' : ''} ${doneList.includes(i) ? 'done' : ''}`;
+            const cleanName = file.split('-').slice(1).join('-').replace('.html', '').replace(/-/g, ' ');
+            item.innerHTML = `<span><b>${file.split('-')[0]}</b>. ${cleanName}</span>
+                              <i class="fas ${doneList.includes(i) ? 'fa-check-circle' : 'fa-circle'}"></i>`;
+            item.onclick = () => openFile(i);
+            listDiv.appendChild(item);
+        });
+        updateProgress();
+    }
 
-function openFile(i) {
-  if(i < 0 || i >= files.length) return;
-  index = i;
-  document.getElementById("frame").src = files[i];
-  localStorage.setItem("current_v2", i);
-  renderList();
-}
+    function openFile(i) {
+        if(i < 0 || i >= files.length) return;
+        currentIndex = i;
+        document.getElementById("frame").src = files[i];
+        localStorage.setItem("nam_current_idx", i);
+        renderList();
+    }
 
-function next() { openFile(index + 1); }
-function prev() { openFile(index - 1); }
+    function changeFile(step) { openFile(currentIndex + step); }
 
-function markDone() {
-  if (!done.includes(index)) {
-    done.push(index);
-    localStorage.setItem("done_v2", JSON.stringify(done));
+    function markDone() {
+        if (!doneList.includes(currentIndex)) {
+            doneList.push(currentIndex);
+            localStorage.setItem("nam_done_list", JSON.stringify(doneList));
+            renderList();
+            setTimeout(() => changeFile(1), 300);
+        }
+    }
+
+    function updateProgress() {
+        const percent = Math.round((doneList.length / files.length) * 100);
+        document.getElementById("progress-percent").innerText = percent + "%";
+        document.getElementById("progress-fill").style.width = percent + "%";
+        document.getElementById("progress-text").innerText = `${doneList.length}/${files.length} Mục`;
+    }
+
+    function saveLog() {
+        const log = {
+            time: document.getElementById("time").value,
+            platform: document.getElementById("platform").value,
+            product: document.getElementById("product").value,
+            note: document.getElementById("note").value
+        };
+        if(!log.product) return alert("Nhập tên sản phẩm!");
+        logs.unshift(log);
+        localStorage.setItem("nam_logs", JSON.stringify(logs.slice(0, 30)));
+        renderLogs();
+        document.getElementById("product").value = "";
+        document.getElementById("note").value = "";
+    }
+
+    function renderLogs() {
+        document.getElementById("logs").innerHTML = logs.map(l => `
+            <div class="log-entry">
+                <div style="display:flex; justify-content:space-between; margin-bottom:3px">
+                    <b style="color:var(--primary)">${l.platform}</b>
+                    <small>${l.time.split('T')[1]} - ${l.time.split('T')[0]}</small>
+                </div>
+                <div>${l.product}</div>
+                <div style="font-size:11px; color:var(--gray); margin-top:3px italic">${l.note}</div>
+            </div>
+        `).join('');
+    }
+
+    // Tích hợp Cầu nối dữ liệu Kho Tổng
+    window.addEventListener('message', function(event) {
+        // Nếu các file con gửi lệnh lưu, Dashboard sẽ nhận ở đây
+        if (event.data.type === 'SAVE_TO_HUB') {
+            saveLogDirectly(event.data.product);
+        }
+    });
+
     renderList();
-    setTimeout(next, 500); // Tự động sang bài tiếp theo sau khi đánh dấu
-  }
-}
-
-function updateProgress() {
-  const percentage = Math.round((done.length / files.length) * 100);
-  document.getElementById("progress-percent").textContent = percentage + "%";
-  document.getElementById("progress-fill").style.width = percentage + "%";
-  document.getElementById("progress-text").textContent = `Đã xong ${done.length}/${files.length}`;
-}
-
-function saveLog() {
-  const log = {
-    time: document.getElementById("time").value,
-    platform: document.getElementById("platform").value,
-    product: document.getElementById("product").value,
-    note: document.getElementById("note").value
-  };
-  if(!log.product) return alert("Nhập tên SP!");
-  
-  logs.unshift(log);
-  localStorage.setItem("logs_v2", JSON.stringify(logs));
-  renderLogs();
-  
-  // Reset form
-  document.getElementById("product").value = "";
-  document.getElementById("note").value = "";
-}
-
-function renderLogs() {
-  const container = document.getElementById("logs");
-  container.innerHTML = logs.map(l => `
-    <div class="log-entry">
-      <div style="display:flex; justify-content:space-between; margin-bottom:5px">
-        <b style="color:var(--primary)">${l.platform}</b>
-        <small>${new Date(l.time).toLocaleString('vi-VN')}</small>
-      </div>
-      <div>${l.product}</div>
-      <div style="font-size:0.8rem; color:var(--gray)">${l.note}</div>
-    </div>
-  `).join('');
-}
-
-// Khởi chạy
-renderList();
-openFile(index);
-renderLogs();
+    openFile(currentIndex);
+    renderLogs();
 </script>
 </body>
 </html>
