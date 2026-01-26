@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bộ Lọc Kim Tứ Đồ Thông Minh - Nam Nguyễn</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 15px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        h2 { color: #ee4d2d; text-align: center; margin-bottom: 20px; }
+        .setup { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #fff5f2; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        button { background: #ee4d2d; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.3s; }
+        button:hover { background: #d73d1d; }
+        
+        .stat-box { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .stat-card { background: #eee; padding: 10px; border-radius: 8px; font-size: 12px; flex: 1; min-width: 100px; text-align: center; }
+        .stat-card b { color: #ee4d2d; font-size: 16px; display: block; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th { background: #f8f9fa; padding: 10px; border: 1px solid #eee; text-align: left; }
+        td { padding: 10px; border: 1px solid #eee; }
+        .high-light { color: #ee4d2d; font-weight: bold; }
+        .link-btn { color: #0066cc; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🚀 Bộ Lọc & Thống Kê Hoa Hồng</h2>
+    
+    <div class="setup">
+        <div>
+            <label>1. Chọn tệp CSV Shopee:</label>
+            <input type="file" id="csvFile" accept=".csv">
+        </div>
+        <div>
+            <label>2. Chọn khoảng hoa hồng:</label>
+            <select id="rangeHH">
+                <option value="8">Dưới 8%</option>
+                <option value="12">Dưới 12%</option>
+                <option value="15">Dưới 15%</option>
+                <option value="20">Dưới 20%</option>
+                <option value="100">Tất cả mức</option>
+            </select>
+        </div>
+    </div>
+
+    <button onclick="processData()">PHÂN TÍCH & LỌC</button>
+
+    <div id="output" style="margin-top:20px;">
+        <div id="statArea" class="stat-box"></div>
+        <table id="resultTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Ngành hàng</th>
+                    <th>Hoa hồng</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tbody id="resultBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function parseCSV(line) {
+        const result = [];
+        let cur = '', inQuote = false;
+        for (let char of line) {
+            if (char === '"') inQuote = !inQuote;
+            else if (char === ',' && !inQuote) { result.push(cur); cur = ''; }
+            else cur += char;
+        }
+        result.push(cur);
+        return result;
+    }
+
+    function processData() {
+        const fileInput = document.getElementById('csvFile');
+        const limit = parseFloat(document.getElementById('rangeHH').value);
+        if (!fileInput.files[0]) return alert("Hãy chọn file CSV!");
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const lines = e.target.result.split('\n');
+            let rowsHtml = '', count8 = 0, count12 = 0, count15 = 0, filteredCount = 0;
+
+            lines.forEach((line, i) => {
+                if (i === 0 || !line.trim()) return;
+                const cols = parseCSV(line);
+                if (cols.length >= 5) {
+                    const name = cols[0].split(' - ').pop();
+                    const hh = parseFloat(cols[3].replace('%','').replace('"','').replace(',','.'));
+                    const link = cols[4].trim();
+
+                    // Thống kê
+                    if (hh < 8) count8++;
+                    if (hh < 12) count12++;
+                    if (hh < 15) count15++;
+
+                    // Lọc theo yêu cầu
+                    if (hh < limit) {
+                        filteredCount++;
+                        rowsHtml += `<tr>
+                            <td><b>${name}</b></td>
+                            <td class="high-light">${hh}%</td>
+                            <td><a href="${link}" target="_blank" class="link-btn">Mở Link</a></td>
+                        </tr>`;
+                    }
+                }
+            });
+
+            // Hiển thị thống kê
+            document.getElementById('statArea').innerHTML = `
+                <div class="stat-card">Dưới 8%<b>${count8}</b>mục</div>
+                <div class="stat-card">Dưới 12%<b>${count12}</b>mục</div>
+                <div class="stat-card">Dưới 15%<b>${count15}</b>mục</div>
+            `;
+
+            document.getElementById('resultBody').innerHTML = rowsHtml;
+            document.getElementById('resultTable').style.display = filteredCount > 0 ? 'table' : 'none';
+        };
+        reader.readAsText(fileInput.files[0]);
+    }
+</script>
+
+</body>
+</html>
