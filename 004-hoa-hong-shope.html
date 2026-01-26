@@ -15,9 +15,10 @@
         input[type="text"], input[type="number"], input[type="file"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         .btn-group { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
         button { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-filter { background-color: #ee4d2d; color: white; flex-grow: 2; }
+        .btn-filter { background-color: #ee4d2d; color: white; width: 100%; margin-top: 10px; font-size: 16px; }
         .btn-sample { background-color: #2e7d32; color: white; }
         .btn-reset { background-color: #757575; color: white; }
+        .btn-save-hub { background-color: #ff9800; color: white; margin-top: 10px; padding: 8px 15px; font-size: 12px; }
         button:hover { opacity: 0.9; transform: translateY(-2px); }
         
         table { width: 100%; border-collapse: collapse; margin-top: 25px; }
@@ -26,7 +27,7 @@
         .stt { font-weight: bold; color: #ee4d2d; width: 30px; }
         .stats-info { font-size: 11px; color: #777; background: #f0f0f0; padding: 8px; border-radius: 5px; margin-top: 10px; }
         .highlight-char { background-color: #ffeb3b; color: #d32f2f; font-weight: bold; padding: 0 2px; border: 1px solid #fbc02d; }
-        .link-btn { display: inline-block; margin-top: 10px; padding: 6px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; font-size: 12px; }
+        .link-btn { display: inline-block; margin-top: 10px; margin-right: 10px; padding: 6px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -65,34 +66,52 @@
 </div>
 
 <script>
+    // --- HÀM CẦU NỐI LƯU DỮ LIỆU ---
+    function saveToGlobalHub(name, link, charCount) {
+        const STORAGE_KEY = 'nam_affiliate_hub_storage';
+        let hubData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        
+        const newProduct = {
+            name: name,
+            link: link,
+            price: "Lọc từ CSV",
+            tier: "L", // Mặc định tầng L (Hàng ngày) cho sản phẩm lọc
+            platform: "Shopee",
+            note: "Ký tự: " + charCount,
+            dateSaved: new Date().toLocaleDateString()
+        };
+
+        if (hubData.some(item => item.link === link)) {
+            alert("Sản phẩm này đã tồn tại trong Kho Tổng!");
+            return;
+        }
+
+        hubData.push(newProduct);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(hubData));
+        alert("🚀 Đã đẩy vào Kho Tổng thành công!");
+    }
+
+    // --- LOGIC XỬ LÝ CSV CỦA BẠN ---
     function setSample() {
         document.getElementById('targetChars').value = "N, Ô, N";
         document.getElementById('targetCount').value = 232;
     }
 
-    function resetAll() {
-        location.reload();
-    }
+    function resetAll() { location.reload(); }
 
-    // Hàm xử lý chính
     async function handleProcess() {
         const fileInput = document.getElementById('csvFile');
         const textInput = document.getElementById('inputText').value;
-        
         let contentToProcess = "";
-
         if (fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            contentToProcess = await file.text();
+            contentToProcess = await fileInput.files[0].text();
         } else {
             contentToProcess = textInput;
         }
-
         if (!contentToProcess.trim()) {
             alert("Vui lòng nhập tệp CSV hoặc dán văn bản!");
             return;
         }
-
         processData(contentToProcess);
     }
 
@@ -101,43 +120,25 @@
         const targetCountVal = parseFloat(document.getElementById('targetCount').value);
         const resultArea = document.getElementById('resultArea');
         const summary = document.getElementById('summary');
-
         const targets = targetInput.split(',').map(s => s.trim().toUpperCase()).filter(s => s !== "");
-        
-        // Tách dòng: Hỗ trợ cả dòng CSV thông thường và khối dữ liệu Shopee
         const lines = fullText.split(/\n(?=.*₫|.*Đã bán|.*Đánh giá)/g);
         
-        let htmlTable = `<table>
-            <thead>
-                <tr>
-                    <th>STT</th>
-                    <th>Nội dung trích xuất</th>
-                </tr>
-            </thead>
-            <tbody>`;
-        
+        let htmlTable = `<table><thead><tr><th>STT</th><th>Nội dung & Thao tác</th></tr></thead><tbody>`;
         let count = 0;
 
         lines.forEach((line) => {
             const cleanLine = line.trim();
             if (!cleanLine) return;
 
-            // --- Đếm thông số ---
             const charWithSpace = cleanLine.length;
-            const charNoSpace = cleanLine.replace(/\s+/g, '').length;
             const wordCount = cleanLine.split(/\s+/).filter(s => s !== "").length;
-            const alphaCount = (cleanLine.match(/[a-zA-Zà-ỹÀ-ỸđĐ]/g) || []).length;
 
-            // --- Kiểm tra điều kiện ±10% ---
             let passLimit = true;
             if (!isNaN(targetCountVal)) {
                 const range = targetCountVal * 0.1;
-                if (charWithSpace < (targetCountVal - range) || charWithSpace > (targetCountVal + range)) {
-                    passLimit = false;
-                }
+                if (charWithSpace < (targetCountVal - range) || charWithSpace > (targetCountVal + range)) passLimit = false;
             }
 
-            // --- Kiểm tra 3 chữ cái cuối ---
             const words = cleanLine.split(/\s+/);
             let matchCount = 0;
             let currentTargets = [...targets];
@@ -154,9 +155,13 @@
                 }
             });
 
-            // --- Hiển thị kết quả ---
             if (matchCount >= 3 && passLimit) {
                 count++;
+                // Trích xuất link để lưu
+                const urlMatch = cleanLine.match(/https?:\/\/[^\s]+/);
+                const firstLink = urlMatch ? urlMatch[0] : "#";
+                const shortName = cleanLine.substring(0, 60).replace(/[^\w\sà-ỹÀ-Ỹ]/gi, '') + "...";
+
                 const highlightedText = words.map((word, idx) => {
                     if (matchedIndices.includes(idx)) {
                         const cleanWord = word.replace(/[.,!?;:()"]+$/, "");
@@ -166,29 +171,26 @@
                     return word;
                 }).join(' ');
 
-                const urlRegex = /(https?:\/\/[^\s]+)/g;
-                const lineWithLink = highlightedText.replace(urlRegex, (url) => 
-                    `<br><a href="${url}" target="_blank" class="link-btn">Truy cập Link 🔗</a>`
-                );
+                const lineWithLink = highlightedText.replace(/(https?:\/\/[^\s]+)/g, 
+                    `<br><a href="$1" target="_blank" class="link-btn">Truy cập Link 🔗</a>`);
 
                 htmlTable += `<tr>
                     <td class="stt">${count}</td>
                     <td>
                         <div>${lineWithLink}</div>
-                        <div class="stats-info">
-                            📊 <b>Ký tự:</b> ${charWithSpace} (Mục tiêu: ${targetCountVal || 'N/A'}) | 
-                            <b>Từ:</b> ${wordCount} | <b>Chữ cái:</b> ${alphaCount}
-                        </div>
+                        <button class="btn-save-hub" onclick="saveToGlobalHub('${shortName}', '${firstLink}', ${charWithSpace})">
+                            📥 Lưu vào Kho Tổng
+                        </button>
+                        <div class="stats-info">📊 <b>Ký tự:</b> ${charWithSpace} | <b>Từ:</b> ${wordCount}</div>
                     </td>
                 </tr>`;
             }
         });
 
         htmlTable += `</tbody></table>`;
-        summary.innerHTML = count > 0 ? `🎯 Đã tìm thấy ${count} dòng khớp hoàn toàn tiêu chí!` : "Không tìm thấy dòng nào phù hợp.";
+        summary.innerHTML = count > 0 ? `🎯 Đã tìm thấy ${count} dòng khớp tiêu chí!` : "Không tìm thấy kết quả.";
         resultArea.innerHTML = count > 0 ? htmlTable : "";
     }
 </script>
-
 </body>
 </html>
