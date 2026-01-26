@@ -2,129 +2,220 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <title>Siêu Hệ Thống Affiliate Pro - Nam Nguyễn</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bộ Lọc Kim Tứ Đồ Thông Minh - Nam Nguyễn</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 15px; color: #333; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        h2 { color: #ee4d2d; text-align: center; margin-bottom: 20px; }
-        .setup { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #fff5f2; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
-        label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 14px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-        button { background: #ee4d2d; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.3s; }
-        button:hover { background: #d73d1d; }
-        
-        .stat-box { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .stat-card { background: #eee; padding: 10px; border-radius: 8px; font-size: 12px; flex: 1; min-width: 100px; text-align: center; }
-        .stat-card b { color: #ee4d2d; font-size: 16px; display: block; }
+        :root {
+            --shopee: #ee4d2d; --front: #ef4444; --back: #10b981; --storage: #f59e0b;
+            --bg: #f0f2f5; --dark: #1e293b;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
+        /* SIDEBAR 24H (015) */
+        .sidebar { width: 300px; background: white; border-right: 1px solid #e2e8f0; overflow-y: auto; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
+        .step { padding: 12px; border-radius: 10px; margin-bottom: 12px; border-left: 5px solid #ccc; opacity: 0.5; font-size: 13px; transition: 0.3s; }
+        .step.active { opacity: 1; transform: scale(1.02); box-shadow: 0 4px 10px rgba(0,0,0,0.08); border-left-width: 8px; }
+        .step.morning { border-left-color: var(--back); }
+        .step.noon { border-left-color: var(--storage); }
+        .step.afternoon { border-left-color: var(--front); }
+
+        /* MAIN CONTENT */
+        .main-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        
+        /* STAT BOX (Mới nhất) */
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 15px 0; }
+        .stat-card { background: #f8f9fa; padding: 12px; border-radius: 10px; text-align: center; border: 1px solid #eee; }
+        .stat-card b { color: var(--shopee); font-size: 18px; display: block; }
+        .stat-card span { font-size: 11px; color: #666; font-weight: bold; }
+
+        /* FILTER SETUP */
+        .setup-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 13px; }
+        
+        .btn-main { background: var(--shopee); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(238, 77, 45, 0.3); }
+
+        /* TABLE STYLE */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
-        th { background: #f8f9fa; padding: 10px; border: 1px solid #eee; text-align: left; }
-        td { padding: 10px; border: 1px solid #eee; }
-        .high-light { color: #ee4d2d; font-weight: bold; }
-        .link-btn { color: #0066cc; text-decoration: none; font-weight: bold; }
+        th { background: #f8f9fa; padding: 12px; text-align: left; border-bottom: 2px solid #eee; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        .high-light { color: var(--shopee); font-weight: bold; }
+        
+        /* CRM (014) */
+        .crm-mini { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, #10b981, #059669); color: white; padding: 12px 20px; border-radius: 10px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🚀 Bộ Lọc & Thống Kê Hoa Hồng</h2>
-    
-    <div class="setup">
-        <div>
-            <label>1. Chọn tệp CSV Shopee:</label>
-            <input type="file" id="csvFile" accept=".csv">
-        </div>
-        <div>
-            <label>2. Chọn khoảng hoa hồng:</label>
-            <select id="rangeHH">
-                <option value="8">Dưới 8%</option>
-                <option value="12">Dưới 12%</option>
-                <option value="15">Dưới 15%</option>
-                <option value="20">Dưới 20%</option>
-                <option value="100">Tất cả mức</option>
-            </select>
+    <div class="sidebar">
+        <h3 style="margin-top:0; color:var(--dark)"><i class="fas fa-crosshairs"></i> Chiến Dịch 24H</h3>
+        <div id="step1" class="step morning"><b>08:00</b> - Soi bài & Kiểm soát</div>
+        <div id="step2" class="step noon"><b>10:00</b> - Săn đạn & Lọc hàng</div>
+        <div id="step3" class="step afternoon"><b>14:00</b> - Lên kệ Tiền tuyến</div>
+        <div id="step4" class="step afternoon"><b>19:00</b> - Xuất kích Nổ đơn</div>
+        <hr>
+        <div style="font-size: 12px; line-height: 1.5; color: #64748b;">
+            <i class="fas fa-lightbulb"></i> <b>Tip Nam Nguyễn:</b> Hãy tập trung vào nhóm hoa hồng >12% để tối ưu công sức rải link.
         </div>
     </div>
 
-    <button onclick="processData()">PHÂN TÍCH & LỌC</button>
+    <div class="main-content">
+        
+        <div class="crm-mini">
+            <span><i class="fas fa-user-check"></i> Chăm sóc: <b><span id="custCount">0</span>/20</b> người quen</span>
+            <button onclick="addCust()" style="background:white; color:#10b981; border:none; padding:4px 12px; border-radius:5px; font-weight:bold; cursor:pointer">+1</button>
+        </div>
 
-    <div id="output" style="margin-top:20px;">
-        <div id="statArea" class="stat-box"></div>
-        <table id="resultTable" style="display:none;">
-            <thead>
-                <tr>
-                    <th>Ngành hàng</th>
-                    <th>Hoa hồng</th>
-                    <th>Link</th>
-                </tr>
-            </thead>
-            <tbody id="resultBody"></tbody>
-        </table>
+        <div class="card">
+            <h2 style="color:var(--shopee); margin-top:0; border-bottom: 2px solid #fff5f2; padding-bottom: 10px;">🚀 Bộ Lọc & Thống Kê Tổng Lực</h2>
+            
+            <div class="setup-grid">
+                <div>
+                    <label>1. Tệp CSV Shopee:</label>
+                    <input type="file" id="csvFile" accept=".csv">
+                </div>
+                <div>
+                    <label>2. Tầng Kim Tứ Đồ:</label>
+                    <select id="tierFilter">
+                        <option value="L">L (<200k)</option>
+                        <option value="T">T (200k-1tr)</option>
+                        <option value="C">C (1tr-5tr)</option>
+                        <option value="D">D (>5tr)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>3. Hoa hồng Min:</label>
+                    <select id="rangeHH">
+                        <option value="8">Trên 8%</option>
+                        <option value="12">Trên 12%</option>
+                        <option value="15">Trên 15%</option>
+                        <option value="0">Tất cả</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button class="btn-main" onclick="processData()">PHÂN TÍCH CHIẾN DỊCH</button>
+
+            <div id="statArea" class="stat-grid">
+                </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-top:0"><i class="fas fa-clipboard-list"></i> Danh Sách Sản Phẩm Mục Tiêu</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ngành hàng / Tên</th>
+                        <th>Hoa hồng</th>
+                        <th>Giá</th>
+                        <th>Link</th>
+                    </tr>
+                </thead>
+                <tbody id="resultBody">
+                    <tr><td colspan="4" style="text-align:center; color:#999">Vui lòng tải tệp để bắt đầu phân tích dữ liệu.</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 
-<script>
-    function parseCSV(line) {
-        const result = [];
-        let cur = '', inQuote = false;
-        for (let char of line) {
-            if (char === '"') inQuote = !inQuote;
-            else if (char === ',' && !inQuote) { result.push(cur); cur = ''; }
-            else cur += char;
-        }
-        result.push(cur);
-        return result;
-    }
+    <script>
+        let customers = parseInt(localStorage.getItem('cust_count')) || 0;
+        document.getElementById('custCount').innerText = customers;
 
-    function processData() {
-        const fileInput = document.getElementById('csvFile');
-        const limit = parseFloat(document.getElementById('rangeHH').value);
-        if (!fileInput.files[0]) return alert("Hãy chọn file CSV!");
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const lines = e.target.result.split('\n');
-            let rowsHtml = '', count8 = 0, count12 = 0, count15 = 0, filteredCount = 0;
-
-            lines.forEach((line, i) => {
-                if (i === 0 || !line.trim()) return;
-                const cols = parseCSV(line);
-                if (cols.length >= 5) {
-                    const name = cols[0].split(' - ').pop();
-                    const hh = parseFloat(cols[3].replace('%','').replace('"','').replace(',','.'));
-                    const link = cols[4].trim();
-
-                    // Thống kê
-                    if (hh < 8) count8++;
-                    if (hh < 12) count12++;
-                    if (hh < 15) count15++;
-
-                    // Lọc theo yêu cầu
-                    if (hh < limit) {
-                        filteredCount++;
-                        rowsHtml += `<tr>
-                            <td><b>${name}</b></td>
-                            <td class="high-light">${hh}%</td>
-                            <td><a href="${link}" target="_blank" class="link-btn">Mở Link</a></td>
-                        </tr>`;
-                    }
-                }
-            });
-
-            // Hiển thị thống kê
-            document.getElementById('statArea').innerHTML = `
-                <div class="stat-card">Dưới 8%<b>${count8}</b>mục</div>
-                <div class="stat-card">Dưới 12%<b>${count12}</b>mục</div>
-                <div class="stat-card">Dưới 15%<b>${count15}</b>mục</div>
-            `;
-
-            document.getElementById('resultBody').innerHTML = rowsHtml;
-            document.getElementById('resultTable').style.display = filteredCount > 0 ? 'table' : 'none';
+        const priceTiers = {
+            'L': [0, 200000], 'T': [200001, 1000000], 
+            'C': [1000001, 5000000], 'D': [5000001, 999999999]
         };
-        reader.readAsText(fileInput.files[0]);
-    }
-</script>
 
+        // Hàm xử lý CSV chuẩn (xử lý cả dấu phẩy trong ngoặc kép)
+        function parseCSV(line) {
+            const result = [];
+            let cur = '', inQuote = false;
+            for (let char of line) {
+                if (char === '"') inQuote = !inQuote;
+                else if (char === ',' && !inQuote) { result.push(cur); cur = ''; }
+                else cur += char;
+            }
+            result.push(cur);
+            return result;
+        }
+
+        function processData() {
+            const fileInput = document.getElementById('csvFile');
+            const minHH = parseFloat(document.getElementById('rangeHH').value);
+            const selectedTier = document.getElementById('tierFilter').value;
+            const priceRange = priceTiers[selectedTier];
+
+            if (!fileInput.files[0]) return alert("Hãy chọn file CSV!");
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split('\n');
+                let rowsHtml = '', count8 = 0, count12 = 0, count15 = 0, filtered = 0;
+
+                lines.forEach((line, i) => {
+                    if (i === 0 || !line.trim()) return;
+                    const cols = parseCSV(line);
+                    
+                    if (cols.length >= 4) {
+                        // Tên sp thường nằm ở cột 0, Link cột 4, HH cột 3, Giá cột 2 (tùy cấu trúc file Shopee của bạn)
+                        const name = cols[0].split(' - ').pop().replace(/"/g,'');
+                        const price = parseInt(cols[2] ? cols[2].replace(/[",.]/g, '') : 0);
+                        const hh = parseFloat(cols[3].replace('%','').replace('"','').replace(',','.'));
+                        const link = cols[4] ? cols[4].trim() : "#";
+
+                        // 1. Thống kê (Dựa trên mảnh ghép mới nhất)
+                        if (hh >= 8) count8++;
+                        if (hh >= 12) count12++;
+                        if (hh >= 15) count15++;
+
+                        // 2. Lọc theo Tầng giá + Hoa hồng Min
+                        if (price >= priceRange[0] && price <= priceRange[1] && hh >= minHH) {
+                            filtered++;
+                            rowsHtml += `<tr>
+                                <td><b>${name.substring(0,40)}...</b></td>
+                                <td class="high-light">${hh}%</td>
+                                <td>${price.toLocaleString()}đ</td>
+                                <td><a href="${link}" target="_blank" style="color:#0066cc; font-weight:bold; text-decoration:none">MỞ LINK</a></td>
+                            </tr>`;
+                        }
+                    }
+                });
+
+                // Hiển thị Stat Card
+                document.getElementById('statArea').innerHTML = `
+                    <div class="stat-card"><span>Mức > 8%</span><b>${count8}</b></div>
+                    <div class="stat-card"><span>Mức > 12%</span><b>${count12}</b></div>
+                    <div class="stat-card"><span>Mức > 15%</span><b>${count15}</b></div>
+                    <div class="stat-card" style="background:#fff5f2"><span>Đã lọc tầng ${selectedTier}</span><b>${filtered}</b></div>
+                `;
+
+                document.getElementById('resultBody').innerHTML = filtered > 0 ? rowsHtml : "<tr><td colspan='4' style='text-align:center'>Không tìm thấy SP nào khớp điều kiện.</td></tr>";
+            };
+            reader.readAsText(fileInput.files[0]);
+        }
+
+        function addCust() {
+            customers++;
+            localStorage.setItem('cust_count', customers);
+            document.getElementById('custCount').innerText = customers;
+            if(customers === 20) alert("🎯 Chạm mốc 20! Dừng lọc hàng, hãy đi chăm sóc khách ngay.");
+        }
+
+        function updateSteps() {
+            const h = new Date().getHours();
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            if(h >= 8 && h < 10) document.getElementById('step1').classList.add('active');
+            else if(h >= 10 && h < 14) document.getElementById('step2').classList.add('active');
+            else if(h >= 14 && h < 18) document.getElementById('step3').classList.add('active');
+            else if(h >= 19 && h < 23) document.getElementById('step4').classList.add('active');
+        }
+        updateSteps();
+        setInterval(updateSteps, 60000);
+    </script>
 </body>
 </html>
