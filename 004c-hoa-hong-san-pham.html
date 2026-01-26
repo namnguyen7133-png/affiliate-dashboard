@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Hệ Thống Tác Chiến Affiliate Pro Max - Nam Nguyễn Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --shopee-orange: #ee4d2d; --front: #ef4444; --back: #10b981; --storage: #f59e0b;
+            --bg: #f4f4f9; --dark: #1e293b;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+
+        /* SIDEBAR (015) */
+        .sidebar { width: 320px; background: white; border-right: 1px solid #e2e8f0; overflow-y: auto; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
+        .step { padding: 12px; border-radius: 10px; margin-bottom: 12px; border-left: 5px solid #ccc; opacity: 0.6; font-size: 13px; }
+        .step.active { opacity: 1; transform: scale(1.02); box-shadow: 0 4px 10px rgba(0,0,0,0.08); border-left-width: 8px; }
+        .step.morning { border-left-color: var(--back); }
+        .step.noon { border-left-color: var(--storage); }
+        .step.afternoon { border-left-color: var(--front); }
+
+        /* MAIN */
+        .main-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        
+        /* CÔNG CỤ LỌC (Ghép từ file mới nhất) */
+        .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 15px; }
+        label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #666; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        
+        .btn-shopee { background: var(--shopee-orange); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+        .btn-shopee:hover { opacity: 0.9; }
+
+        /* TABLE */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th { background: #f8fafc; padding: 12px; text-align: left; border-bottom: 2px solid #eee; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        .badge-sales { background: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        
+        /* CRM (014) */
+        .crm-header { display: flex; justify-content: space-between; align-items: center; background: var(--back); color: white; padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h3 style="color:var(--dark)"><i class="fas fa-map-signs"></i> Tác Chiến 24h</h3>
+        <div id="step1" class="step morning"><b>08:00</b> - Hậu phương: Soi bài</div>
+        <div id="step2" class="step noon"><b>10:00</b> - Kho lương: Lọc hàng</div>
+        <div id="step3" class="step afternoon"><b>14:00</b> - Tiền tuyến: Lên kệ</div>
+        <div id="step4" class="step afternoon"><b>19:00</b> - Chiến trường: Nổ đơn</div>
+        <hr>
+        <div class="card" style="padding:10px; font-size: 12px;">
+            <strong>Mẹo Nam Nguyễn:</strong> Lọc số bán "lẻ" (như 22k, 32k) thường là các shop đang chạy flash sale ngầm, dễ nổ đơn hơn.
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <div class="crm-header">
+            <div><i class="fas fa-users"></i> Khách đã chăm sóc: <b><span id="custCount">0</span>/20</b></div>
+            <button onclick="addCust()" style="background:white; color:var(--back); border:none; padding:5px 15px; border-radius:6px; cursor:pointer; font-weight:bold">+1 Khách</button>
+        </div>
+
+        <div class="card">
+            <h2 style="color:var(--shopee-orange); margin-top:0"><i class="fas fa-rocket"></i> Bộ Lọc Kim Tứ Đồ Nâng Cao</h2>
+            
+            <div class="input-group">
+                <label>Chọn tệp dữ liệu Shopee (CSV):</label>
+                <input type="file" id="csvFile" accept=".csv">
+            </div>
+
+            <div class="filter-grid">
+                <div>
+                    <label>Tầng Kim Tứ Đồ:</label>
+                    <select id="tierFilter">
+                        <option value="L">L (Dưới 200k)</option>
+                        <option value="T">T (200k - 1tr)</option>
+                        <option value="C">C (1tr - 5tr)</option>
+                        <option value="D">D (Trên 5tr)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Số bán chính xác (k):</label>
+                    <input type="text" id="salesFilter" value="22, 30, 32, 40">
+                </div>
+                <div>
+                    <label>Hoa hồng Min (%):</label>
+                    <input type="number" id="commFilter" value="7">
+                </div>
+            </div>
+            
+            <button class="btn-shopee" onclick="processData()">LỌC SẢN PHẨM CHIẾN LƯỢC</button>
+        </div>
+
+        <div class="card">
+            <h3><i class="fas fa-list-check"></i> Danh sách đạn dược phù hợp</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Số bán</th>
+                        <th>Hoa hồng</th>
+                        <th>Giá</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="resultBody">
+                    <tr><td colspan="5" style="text-align:center; color:#999">Vui lòng tải file để bắt đầu soi hàng...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        let customers = parseInt(localStorage.getItem('cust_count')) || 0;
+        document.getElementById('custCount').innerText = customers;
+
+        const tiers = {
+            'L': [0, 200000], 'T': [200001, 1000000], 
+            'C': [1000001, 5000000], 'D': [5000001, 999999999]
+        };
+
+        function processData() {
+            const fileInput = document.getElementById('csvFile');
+            const salesTargets = document.getElementById('salesFilter').value.split(',').map(s => s.trim() + 'k');
+            const minComm = parseFloat(document.getElementById('commFilter').value);
+            const selectedTier = document.getElementById('tierFilter').value;
+            const priceRange = tiers[selectedTier];
+
+            if (!fileInput.files[0]) return alert("Hãy chọn file CSV!");
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split('\n');
+                let rows = "";
+                let count = 0;
+
+                lines.forEach((line, index) => {
+                    if (index === 0) return;
+                    // Regex tách CSV chuẩn xử lý được cả dấu phẩy trong ngoặc kép
+                    const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    if (cols.length < 4) return;
+
+                    const name = cols[0].replace(/"/g, '');
+                    const link = cols[1].replace(/"/g, '');
+                    const sales = cols[2] ? cols[2].trim() : "";
+                    const comm = parseFloat(cols[3]) || 0;
+                    const price = parseInt(cols[4] ? cols[4].replace(/[",.]/g, '') : 0);
+
+                    // ĐIỀU KIỆN LỌC TỔNG HỢP: Tầng giá + Số bán + Hoa hồng
+                    if (price >= priceRange[0] && price <= priceRange[1] && 
+                        salesTargets.includes(sales) && comm >= minComm) {
+                        
+                        rows += `<tr>
+                            <td><div style="width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${name}</div></td>
+                            <td><span class="badge-sales">${sales}</span></td>
+                            <td style="color:var(--back); font-weight:bold">${comm}%</td>
+                            <td>${price.toLocaleString()}đ</td>
+                            <td><a href="${link}" target="_blank" style="color:var(--shopee-orange); text-decoration:none; font-weight:bold;">LẤY LINK</a></td>
+                        </tr>`;
+                        count++;
+                    }
+                });
+
+                document.getElementById('resultBody').innerHTML = count > 0 ? rows : "<tr><td colspan='5' style='text-align:center'>Không có SP nào thỏa mãn đồng thời cả 3 điều kiện lọc.</td></tr>";
+            };
+            reader.readAsText(fileInput.files[0]);
+        }
+
+        function addCust() {
+            customers++;
+            localStorage.setItem('cust_count', customers);
+            document.getElementById('custCount').innerText = customers;
+            if(customers >= 20) alert("🎯 Đã đủ 20 khách! Nam Nguyễn nhắc bạn: Dừng lọc hàng, đi chăm sóc người quen ngay!");
+        }
+
+        // Sidebar active theo giờ (015)
+        function updateSteps() {
+            const h = new Date().getHours();
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            if(h >= 8 && h < 10) document.getElementById('step1').classList.add('active');
+            else if(h >= 10 && h < 14) document.getElementById('step2').classList.add('active');
+            else if(h >= 14 && h < 18) document.getElementById('step3').classList.add('active');
+            else if(h >= 19 && h < 23) document.getElementById('step4').classList.add('active');
+        }
+        updateSteps();
+        setInterval(updateSteps, 60000);
+    </script>
+</body>
+</html>
