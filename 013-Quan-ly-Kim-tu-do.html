@@ -2,319 +2,172 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Shopee Affiliate - Kim Tứ Đồ Pro Max</title>
+    <title>Hệ Thống Affiliate Kim Tứ Đồ Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { 
-            --color-L: #dc3545; --color-T: #007bff; 
-            --color-C: #6f42c1; --color-D: #ffc107; 
-            --bg: #f4f7f6; --text-dark: #333; --text-light: #555;
+            --color-L: #dc3545; --color-T: #007bff; --color-C: #6f42c1; --color-D: #ffc107; 
+            --shopee-orange: #ff5722; --bg: #f0f2f5;
         }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; color: var(--text-dark); }
-        .container { max-width: 1200px; margin: auto; }
-        .header { background: #2c3e50; color: white; padding: 25px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 1400px; margin: auto; }
         
-        /* Menu Tầng Kim Tứ Đồ */
-        .quadrant-menu { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        /* Header */
+        .header { background: linear-gradient(135deg, #2c3e50, #000); color: white; padding: 30px; border-radius: 20px; text-align: center; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+
+        /* Quadrant Menu */
+        .quadrant-menu { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
         .q-btn { 
-            padding: 15px; border: none; border-radius: 10px; color: white; 
-            font-weight: bold; cursor: pointer; opacity: 0.5; transition: 0.3s;
-            font-size: 14px; line-height: 1.2;
+            padding: 20px; border: none; border-radius: 15px; color: white; font-weight: bold; cursor: pointer; 
+            transition: 0.4s; text-align: center; position: relative; overflow: hidden;
         }
-        .q-btn.active { opacity: 1; transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); border: 2px solid white; }
-        .btn-L { background: var(--color-L); }
-        .btn-T { background: var(--color-T); }
-        .btn-C { background: var(--color-C); }
-        .btn-D { background: var(--color-D); color: #000; }
-
-        .config-panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        .q-btn span { font-size: 24px; display: block; }
+        .q-btn small { font-weight: normal; opacity: 0.8; }
+        .q-btn.active { transform: scale(1.05); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+        .q-btn.active::after { content: '🎯'; position: absolute; top: 5px; right: 10px; }
         
-        .upload-zone { 
-            border: 2px dashed #ccc; padding: 15px; text-align: center; border-radius: 10px; 
-            margin-bottom: 15px; cursor: pointer; background: #fafafa;
-        }
-        .upload-zone:hover { border-color: var(--color-T); background: #f0f7ff; }
-        
-        .input-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 13px; }
-        label { font-size: 12px; font-weight: bold; color: var(--text-light); display: block; margin-bottom: 5px; }
+        .btn-L { background: var(--color-L); } .btn-T { background: var(--color-T); }
+        .btn-C { background: var(--color-C); } .btn-D { background: var(--color-D); color: #000; }
 
-        .btn-run { background: #28a745; color: white; width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 18px; transition: 0.3s; }
-        .btn-run:hover { background: #218838; transform: translateY(-2px); }
+        /* Main Workspace */
+        .main-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; }
+        @media (max-width: 1000px) { .main-grid { grid-template-columns: 1fr; } }
 
-        /* MỚI: Thanh lọc nhanh và Thống kê dự toán */
-        .summary-bar { 
-            background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 15px; 
-            border-left: 5px solid #28a745; display: flex; justify-content: space-between; 
-            align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .quick-filter-btns button { 
-            padding: 6px 12px; border-radius: 20px; border: 1px solid #ddd; 
-            background: #fff; cursor: pointer; font-size: 12px; transition: 0.2s; 
-        }
-        .quick-filter-btns button:hover { background: #e9ecef; border-color: #bbb; }
-        .revenue-stats { text-align: right; font-size: 14px; color: #2c3e50; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .card h3 { margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
 
-        /* Kết quả lọc */
-        #resultGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 25px; }
-        .card { 
-            background: white; border-radius: 12px; padding: 15px; border-top: 8px solid #ccc; 
-            display: flex; flex-direction: column; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            transition: 0.2s;
-        }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .card-L { border-top-color: var(--color-L); } .card-T { border-top-color: var(--color-T); }
-        .card-C { border-top-color: var(--color-C); } .card-D { border-top-color: var(--color-D); }
-        
-        .price-tag { color: #ee4d2d; font-size: 1.2em; font-weight: bold; margin: 5px 0; }
-        .stats { background: #f0f2f5; padding: 10px; border-radius: 8px; font-size: 12px; margin: 10px 0; border-left: 4px solid #333; }
-        .card .links { display: flex; gap: 8px; margin-top: 10px; }
-        .card .links a { flex: 1; text-align: center; padding: 8px; border-radius: 5px; text-decoration: none; color: white; font-size: 11px; font-weight: bold; }
-        .btn-save { 
-            background: #6c757d; color: white; border: none; padding: 8px 12px; border-radius: 5px; 
-            cursor: pointer; font-size: 11px; margin-top: 5px; display: block; width: 100%; transition: 0.2s;
-        }
-        .btn-save:hover { background: #5a6268; }
+        /* Inputs */
+        textarea, input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn-action { background: var(--shopee-orange); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
 
-        /* Kho hàng */
-        .warehouse-section { margin-top: 40px; padding-top: 20px; border-top: 1px dashed #ccc; }
-        .warehouse-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .warehouse-item { 
-            background: white; border-radius: 8px; padding: 15px; box-shadow: 0 1px 5px rgba(0,0,0,0.08);
-            border-left: 5px solid #ccc; position: relative;
-        }
-        .warehouse-item.L { border-left-color: var(--color-L); }
-        .warehouse-item.T { border-left-color: var(--color-T); }
-        .warehouse-item.C { border-left-color: var(--color-C); }
-        .warehouse-item.D { border-left-color: var(--color-D); }
-        .btn-delete { background: none; border: none; color: #dc3545; font-size: 18px; position: absolute; top: 8px; right: 10px; cursor: pointer; }
+        /* Result Area */
+        #resultGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        .product-card { border: 1px solid #eee; border-radius: 10px; padding: 15px; position: relative; border-top: 5px solid #ccc; transition: 0.3s; }
+        .product-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .price { color: #ee4d2d; font-size: 18px; font-weight: bold; }
+        .target-badge { background: #fff3cd; padding: 5px; border-radius: 5px; font-size: 12px; margin: 10px 0; display: block; }
+
+        /* Thống kê */
+        .stats-panel { display: flex; justify-content: space-around; background: #fff; padding: 20px; border-radius: 15px; margin-bottom: 20px; text-align: center; }
+        .stat-item b { font-size: 20px; color: var(--shopee-orange); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>💎 HỆ THỐNG QUẢN LÝ AFFILIATE KIM TỨ ĐỒ</h1>
-        <p id="target-desc">L (Làm thuê): Hàng dưới 200k. Dễ mua, cần số lượng đơn nhiều.</p>
+        <h1><i class="fas fa-gem"></i> KIM TỨ ĐỒ AFFILIATE PRO</h1>
+        <p id="target-desc">L (Ngày): Tập trung số lượng đơn cực lớn để tích tiểu thành đại.</p>
     </div>
 
     <div class="quadrant-menu">
-        <button class="q-btn btn-L active" onclick="setQuadrant('L')">L (NGÀY)<br>&lt; 200k</button>
-        <button class="q-btn btn-T" onclick="setQuadrant('T')">T (TUẦN)<br>200k-1tr</button>
-        <button class="q-btn btn-C" onclick="setQuadrant('C')">C (THÁNG)<br>1tr-5tr</button>
-        <button class="q-btn btn-D" onclick="setQuadrant('D')">Đ (NĂM)<br>&gt; 5tr</button>
+        <div class="q-btn btn-L active" onclick="setQuadrant('L')"><span>L</span><small>Dưới 200k</small></div>
+        <div class="q-btn btn-T" onclick="setQuadrant('T')"><span>T</span><small>200k - 1tr</small></div>
+        <div class="q-btn btn-C" onclick="setQuadrant('C')"><span>C</span><small>1tr - 5tr</small></div>
+        <div class="q-btn btn-D" onclick="setQuadrant('D')"><span>Đ</span><small>Trên 5tr</small></div>
     </div>
 
-    <div class="config-panel">
-        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
-            <b id="fileName">📁 Chọn File CSV</b> <small>hoặc dán dữ liệu vào ô bên dưới</small>
-            <input type="file" id="fileInput" accept=".csv" style="display:none">
-        </div>
-        
-        <div class="input-row">
-            <div><label>Giá từ (VNĐ):</label><input type="number" id="minPrice" value="0"></div>
-            <div><label>Giá đến (VNĐ):</label><input type="number" id="maxPrice" value="200000"></div>
-            <div><label>Hoa hồng Min (%):</label><input type="number" id="minComm" value="5"></div>
-            <div><label>Mục tiêu (VNĐ):</label><input type="number" id="targetMoney" value="100000"></div>
-        </div>
-        <textarea id="csvData" style="height:60px; margin-bottom:15px;" placeholder="Dán dữ liệu CSV từ Shopee vào đây..."></textarea>
-        <button class="btn-run" onclick="execute()">🚀 LỌC & PHÂN TÍCH SẢN PHẨM</button>
-    </div>
+    <div class="main-grid">
+        <div class="left-col">
+            <div class="card">
+                <h3><i class="fas fa-file-import"></i> Nhập dữ liệu Shopee</h3>
+                <textarea id="csvData" rows="6" placeholder="Dán dữ liệu CSV từ Shopee hoặc nội dung quảng bá..."></textarea>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="targetMoney" placeholder="Mục tiêu thu nhập (VNĐ)">
+                    <button class="btn-action" onclick="executeAnalysis()" style="width: auto; flex-grow: 1;">CHẠY PHÂN TÍCH</button>
+                </div>
+            </div>
 
-    <div class="summary-bar">
-        <div class="quick-filter-btns">
-            <strong>Lọc nhanh theo giá:</strong>
-            <button onclick="quickFilter(0, 9000)">Dưới 9k</button>
-            <button onclick="quickFilter(0, 50000)">Dưới 50k</button>
-            <button onclick="quickFilter(0, 200000)">Dưới 200k</button>
-            <button onclick="quickFilter(200001, 1000000)">200k - 1tr</button>
-            <button onclick="quickFilter(1000001, 999999999)">Trên 1tr</button>
+            <div class="card" id="subIdHint">
+                <h3><i class="fas fa-fingerprint"></i> Gợi ý SubID tối ưu</h3>
+                <div id="subIdContent">Hãy nhập văn bản để phân tích SubID...</div>
+            </div>
         </div>
-        <div id="revenue-stats" class="revenue-stats">
-            <i>Chưa có dữ liệu dự toán.</i>
+
+        <div class="right-col">
+            <div class="stats-panel">
+                <div class="stat-item">Mục tiêu<br><b id="statTarget">0đ</b></div>
+                <div class="stat-item">Sản phẩm lọc<br><b id="statCount">0</b></div>
+                <div class="stat-item">Đơn cần thiết<br><b id="statUnits">0</b></div>
+            </div>
+
+            <div id="resultGrid">
+                </div>
         </div>
-    </div>
-
-    <div id="status" style="font-weight:bold; color: var(--color-T); margin-bottom: 10px;"></div>
-    <div id="resultGrid"></div>
-
-    <div class="warehouse-section">
-        <h2>📦 KHO HÀNG CỦA BẠN (Đã Lưu)</h2>
-        <div id="warehouseStats" style="background: #e9ecef; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 14px;"></div>
-        <button id="exportBtn" onclick="exportWarehouse()" style="background:#007bff; color:white; padding:10px 15px; border:none; border-radius:5px; cursor:pointer; font-size:14px;">📁 Xuất ra CSV</button>
-        <button onclick="clearWarehouse()" style="background:#dc3545; color:white; padding:10px 15px; border:none; border-radius:5px; cursor:pointer; font-size:14px; margin-left:10px;">Xóa toàn bộ kho</button>
-        <div id="warehouseGrid" class="warehouse-grid" style="margin-top: 20px;"></div>
     </div>
 </div>
 
 <script>
     let currentQ = 'L';
-    let myWarehouse = JSON.parse(localStorage.getItem('shopee_warehouse')) || [];
-
     const configs = {
-        'L': { minP: 0, maxP: 200000, money: 100000, desc: "L (Làm thuê): Hàng dưới 200k. Dễ mua, cần số lượng đơn nhiều." },
-        'T': { minP: 200001, maxP: 1000000, money: 1000000, desc: "T (Làm tự do): Hàng từ 200k - 1tr. Đủ mua sắm cá nhân/công cụ." },
-        'C': { minP: 1000001, maxP: 5000000, money: 5000000, desc: "C (Chủ hệ thống): Hàng từ 1tr - 5tr. Xây dựng thu nhập tháng." },
-        'D': { minP: 5000001, maxP: 999999999, money: 20000000, desc: "Đ (Đầu tư): Hàng trên 5 triệu. Săn đơn lớn, ăn hoa hồng đậm." }
+        'L': { minP: 0, maxP: 200000, money: 100000, desc: "L (Ngày): Hàng dưới 200k. Dễ chốt đơn, tập trung phủ rộng." },
+        'T': { minP: 200001, maxP: 1000000, money: 1000000, desc: "T (Tuần): Hàng 200k - 1tr. Thu nhập khá, cần tư vấn nhẹ." },
+        'C': { minP: 1000001, maxP: 5000000, money: 5000000, desc: "C (Tháng): Hàng 1tr - 5tr. Xây dựng thương hiệu chuyên gia." },
+        'D': { minP: 5000001, maxP: 999999999, money: 20000000, desc: "Đ (Năm): Hàng trên 5tr. Săn 'cá voi', hoa hồng khủng." }
     };
 
     function setQuadrant(q) {
         currentQ = q;
         document.querySelectorAll('.q-btn').forEach(b => b.classList.remove('active'));
         document.querySelector('.btn-' + q).classList.add('active');
-        document.getElementById('minPrice').value = configs[q].minP;
-        document.getElementById('maxPrice').value = configs[q].maxP;
         document.getElementById('targetMoney').value = configs[q].money;
         document.getElementById('target-desc').innerText = configs[q].desc;
-        execute();
+        executeAnalysis();
     }
 
-    function quickFilter(min, max) {
-        document.getElementById('minPrice').value = min;
-        document.getElementById('maxPrice').value = max;
-        execute();
-    }
-
-    function execute() {
+    function executeAnalysis() {
         const raw = document.getElementById('csvData').value.trim();
-        if (!raw) {
-            document.getElementById('status').innerText = "Vui lòng dán dữ liệu CSV!";
-            return;
-        }
-
-        const minP = parseFloat(document.getElementById('minPrice').value) || 0;
-        const maxP = parseFloat(document.getElementById('maxPrice').value) || 999999999;
-        const minC = parseFloat(document.getElementById('minComm').value) || 0;
         const targetM = parseFloat(document.getElementById('targetMoney').value) || 0;
-        
-        const lines = raw.split('\n');
         const grid = document.getElementById('resultGrid');
         grid.innerHTML = '';
-        
-        let count = 0;
-        let totalPotentialComm = 0; 
-        const regex = /(".*?"|[^",\s]+)(?=\s*,|\s*$)/g;
 
-        for (let i = 1; i < lines.length; i++) {
-            const m = lines[i].match(regex);
-            if (!m || m.length < 8) continue;
+        // Phân tích SubID (Kế thừa từ 006)
+        if(raw.length > 10) {
+            const lastChars = raw.split(/\s+/).map(w => w.slice(-1).toUpperCase()).filter(c => /[A-Z]/.test(c));
+            const freq = {}; lastChars.forEach(c => freq[c] = (freq[c] || 0) + 1);
+            const top = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0,3);
+            document.getElementById('subIdContent').innerHTML = `Gợi ý SubID: <b>${currentQ}_${new Date().getDate()}_${top.map(x=>x[0]).join('')}</b>`;
+        }
+
+        // Logic lọc CSV và tính toán (Kế thừa từ 011)
+        const lines = raw.split('\n');
+        let count = 0; let totalUnits = 0;
+
+        lines.forEach(line => {
+            const m = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+            if (!m || m.length < 6) return;
 
             const name = m[1].replace(/"/g, '');
-            const price = parseFloat(m[2].replace(/"/g, '').replace(/\./g, '').replace(/,/g, '')) || 0;
-            const rate = parseFloat(m[5].replace(/"/g, '').replace('%', '')) || 0;
-            const linkGoc = m[7].replace(/"/g, '');
-            const linkAff = m[8] ? m[8].replace(/"/g, '') : linkGoc;
+            const price = parseFloat(m[2].replace(/[",.]/g, '')) || 0;
+            const rate = parseFloat(m[5].replace(/[",%]/g, '')) || 0;
 
-            if (price >= minP && price <= maxP && rate >= minC) {
+            if (price >= configs[currentQ].minP && price <= configs[currentQ].maxP) {
                 const comm = (price * rate) / 100;
                 const units = Math.ceil(targetM / comm);
-                
-                // Thu nhập tiềm năng = Hoa hồng x Số đơn cần để đạt mục tiêu
-                totalPotentialComm += (comm * units);
-
-                const card = document.createElement('div');
-                card.className = `card card-${currentQ}`;
-                card.innerHTML = `
-                    <div style="font-weight:bold; font-size:13px; height:35px; overflow:hidden;">${name}</div>
-                    <div class="price-tag">${price.toLocaleString()} đ</div>
-                    <div class="stats">
-                        💰 Hoa hồng: ${rate}% (<b>${comm.toLocaleString()}đ</b>)<br>
-                        🚩 Mục tiêu: <b style="color:red; font-size:15px;">${units} đơn</b>
-                    </div>
-                    <div class="links">
-                        <a href="${linkGoc}" target="_blank" style="background:#6c757d;">Gốc</a>
-                        <a href="${linkAff}" target="_blank" style="background:#ee4d2d;">Link AFF</a>
-                    </div>
-                    <button class="btn-save" onclick="addToWarehouse('${name.replace(/'/g, "\\'")}', ${price}, ${rate}, '${linkAff.replace(/'/g, "\\'")}', '${currentQ}')">Lưu vào Tầng ${currentQ}</button>
-                `;
-                grid.appendChild(card);
+                totalUnits += units;
                 count++;
+
+                const pCard = document.createElement('div');
+                pCard.className = 'product-card';
+                pCard.style.borderTopColor = getComputedStyle(document.documentElement).getPropertyValue('--color-'+currentQ);
+                pCard.innerHTML = `
+                    <div style="font-size:12px; font-weight:bold; height:32px; overflow:hidden;">${name}</div>
+                    <div class="price">${price.toLocaleString()}đ</div>
+                    <span class="target-badge">Cần bán: <b>${units} đơn</b> để đạt mục tiêu</span>
+                    <button class="btn-action" style="padding:5px; font-size:11px;">LẤY LINK</button>
+                `;
+                grid.appendChild(pCard);
             }
-        }
-        document.getElementById('status').innerText = `Tìm thấy ${count} sản phẩm phù hợp.`;
-        
-        // Cập nhật bảng dự toán
-        const revStats = document.getElementById('revenue-stats');
-        if (count > 0) {
-            revStats.innerHTML = `
-                Dự toán cho ${count} mã hàng:<br>
-                Tổng thu nhập nếu đạt mục tiêu: <b style="color:#28a745; font-size:18px;">${totalPotentialComm.toLocaleString()}đ</b>
-            `;
-        } else {
-            revStats.innerHTML = `<i>Không có dữ liệu phù hợp để dự toán.</i>`;
-        }
-    }
-
-    function addToWarehouse(name, price, rate, link, tier) {
-        if (myWarehouse.some(item => item.link === link && item.tier === tier)) {
-            alert("Sản phẩm đã có trong kho!"); return;
-        }
-        myWarehouse.push({ name, price, rate, link, tier, date: new Date().toLocaleDateString('vi-VN') });
-        localStorage.setItem('shopee_warehouse', JSON.stringify(myWarehouse));
-        renderWarehouse();
-        alert("Đã lưu vào kho hàng!");
-    }
-
-    function renderWarehouse() {
-        const grid = document.getElementById('warehouseGrid');
-        grid.innerHTML = '';
-        let stats = { L: 0, T: 0, C: 0, D: 0, total: 0 };
-
-        myWarehouse.forEach((item, index) => {
-            const div = document.createElement('div');
-            div.className = `warehouse-item ${item.tier}`;
-            div.innerHTML = `
-                <button class="btn-delete" onclick="deleteItem(${index})">×</button>
-                <h4>[${item.tier}] ${item.name}</h4>
-                <p class="price">${item.price.toLocaleString()}đ (${item.rate}%)</p>
-                <a href="${item.link}" target="_blank" style="font-size:11px; color:#ee4d2d;">Link AFF</a>
-            `;
-            grid.appendChild(div);
-            stats[item.tier]++; stats.total++;
         });
 
-        document.getElementById('warehouseStats').innerHTML = `
-            <strong>Thống kê kho:</strong> Tổng ${stats.total} SP | L:${stats.L} | T:${stats.T} | C:${stats.C} | D:${stats.D}
-        `;
+        document.getElementById('statTarget').innerText = targetM.toLocaleString() + 'đ';
+        document.getElementById('statCount').innerText = count;
+        document.getElementById('statUnits').innerText = totalUnits;
     }
 
-    function deleteItem(index) {
-        if (confirm("Xóa sản phẩm này?")) {
-            myWarehouse.splice(index, 1);
-            localStorage.setItem('shopee_warehouse', JSON.stringify(myWarehouse));
-            renderWarehouse();
-        }
-    }
-
-    function clearWarehouse() {
-        if (confirm("Xóa sạch toàn bộ kho?")) {
-            myWarehouse = [];
-            localStorage.setItem('shopee_warehouse', JSON.stringify(myWarehouse));
-            renderWarehouse();
-        }
-    }
-
-    function exportWarehouse() {
-        if (myWarehouse.length === 0) return alert("Kho trống!");
-        const headers = ["Tầng", "Tên", "Giá", "HoaHồng", "Link"];
-        const csv = [headers.join(','), ...myWarehouse.map(i => `${i.tier},"${i.name}",${i.price},${i.rate},"${i.link}"`)].join('\n');
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `Kho_Shopee_${new Date().getTime()}.csv`;
-        link.click();
-    }
-
-    document.getElementById('fileInput').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            document.getElementById('fileName').innerText = "✅ " + file.name;
-            const reader = new FileReader();
-            reader.onload = (ev) => { document.getElementById('csvData').value = ev.target.result; execute(); };
-            reader.readAsText(file);
-        }
-    });
-
-    window.onload = () => { setQuadrant('L'); renderWarehouse(); };
+    window.onload = () => { document.getElementById('targetMoney').value = 100000; };
 </script>
 </body>
 </html>
