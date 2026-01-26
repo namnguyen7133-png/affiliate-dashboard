@@ -2,106 +2,206 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Bản Đồ Tác Chiến Affiliate 24h</title>
+    <title>Hệ Thống Tác Chiến Affiliate Tổng Lực</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --step-bg: #ffffff;
-            --time-color: #2563eb;
-            --front-line: #ef4444; /* Tiền tuyến */
-            --back-line: #10b981;  /* Hậu phương */
-            --storage: #f59e0b;    /* Kho lương */
+            --front-line: #ef4444; --back-line: #10b981; --storage: #f59e0b;
+            --shopee-orange: #ff5722; --dark: #1e293b;
         }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; line-height: 1.6; padding: 20px; }
-        .timeline { max-width: 800px; margin: 0 auto; }
-        .step { 
-            background: var(--step-bg); 
-            border-radius: 15px; 
-            padding: 20px; 
-            margin-bottom: 20px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border-left: 8px solid #ccc;
-            position: relative;
-        }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+
+        /* SIDEBAR: LỘ TRÌNH TÁC CHIẾN (File mới) */
+        .sidebar { width: 350px; background: white; border-right: 1px solid #e2e8f0; overflow-y: auto; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
+        .step { padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 6px solid #ccc; position: relative; opacity: 0.6; transition: 0.3s; }
+        .step.active { opacity: 1; transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .step.morning { border-left-color: var(--back-line); }
         .step.noon { border-left-color: var(--storage); }
         .step.afternoon { border-left-color: var(--front-line); }
-        .time-tag { 
-            font-weight: bold; color: var(--time-color); 
-            display: inline-block; margin-bottom: 10px;
-            background: #eef2ff; padding: 5px 12px; border-radius: 20px;
-        }
-        .battle-tag {
-            float: right; font-size: 0.8rem; padding: 4px 10px; border-radius: 5px; color: white;
-        }
-        .bg-back { background: var(--back-line); }
-        .bg-storage { background: var(--storage); }
-        .bg-front { background: var(--front-line); }
         
-        h2 { color: #1e293b; margin-top: 0; }
-        .instruction { background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px dashed #cbd5e1; }
-        .checklist { list-style: none; padding: 0; }
-        .checklist li::before { content: "✅ "; }
+        .time-tag { font-size: 11px; font-weight: bold; color: #2563eb; background: #eef2ff; padding: 3px 8px; border-radius: 10px; }
+        .battle-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; color: white; float: right; }
+
+        /* MAIN CONTENT: DASHBOARD (Hợp nhất 006, 010, 011) */
+        .main-content { flex: 1; overflow-y: auto; padding: 25px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        
+        /* Stats & UI */
+        .crm-mini { display: flex; align-items: center; gap: 15px; background: #10b981; color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+        .q-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .q-tab { flex: 1; padding: 10px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; opacity: 0.7; }
+        .q-tab.active { opacity: 1; outline: 3px solid rgba(0,0,0,0.1); }
+
+        textarea { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 10px; font-size: 13px; }
+        .btn-action { background: var(--shopee-orange); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; font-weight: bold; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #f1f5f9; }
+        
+        .status-on { color: #10b981; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-<div class="timeline">
-    <h1 style="text-align:center;">🚀 LỘ TRÌNH TÁC CHIẾN MỖI NGÀY</h1>
-
-    <div class="step morning">
-        <span class="battle-tag bg-back">HẬU PHƯƠNG</span>
-        <span class="time-tag">08:00 - 09:00: Nạp năng lượng & Soi bài</span>
-        <h2>Bước 1: Kiểm soát Hậu phương</h2>
-        <div class="instruction">
-            Mở <b>GitHub Dashboard</b>. Xem danh sách từ 000 đến 014. 
-            Hôm nay bạn cần học bài nào? Hãy nhấn "Xong" cho bài cũ.
+    <div class="sidebar">
+        <h3 style="margin-top:0"><i class="fas fa-map-marked-alt"></i> Lộ trình 24h</h3>
+        <div id="step1" class="step morning">
+            <span class="battle-tag" style="background:var(--back-line)">HẬU PHƯƠNG</span>
+            <span class="time-tag">08:00 - 09:00</span>
+            <h4 style="margin:8px 0">Soi bài & Kiểm soát</h4>
+            <p style="font-size:12px; color:#64748b">Kiểm tra Dashboard, xem bài học cũ.</p>
         </div>
-        <ul class="checklist">
-            <li>Mở bài 013 (Kim Tứ Đồ) để chuẩn bị lọc hàng.</li>
-            <li>Xem lại nhật ký ngày hôm qua (kết quả thế nào?).</li>
-        </ul>
+
+        <div id="step2" class="step noon">
+            <span class="battle-tag" style="background:var(--storage)">KHO LƯƠNG</span>
+            <span class="time-tag">10:00 - 11:30</span>
+            <h4 style="margin:8px 0">Lọc hàng & Săn đạn</h4>
+            <p style="font-size:12px; color:#64748b">Tải CSV Shopee, tìm 5 món "đỉnh".</p>
+        </div>
+
+        <div id="step3" class="step afternoon">
+            <span class="battle-tag" style="background:var(--front-line)">TIỀN TUYẾN</span>
+            <span class="time-tag">14:00 - 16:00</span>
+            <h4 style="margin:8px 0">Trưng bày kệ hàng</h4>
+            <p style="font-size:12px; color:#64748b">Cập nhật My Collection & GitHub.</p>
+        </div>
+
+        <div id="step4" class="step afternoon">
+            <span class="battle-tag" style="background:var(--front-line)">CHIẾN TRƯỜNG</span>
+            <span class="time-tag">19:00 - 21:00</span>
+            <h4 style="margin:8px 0">Xuất kích (Nổ đơn)</h4>
+            <p style="font-size:12px; color:#64748b">Rải link Facebook/Zalo/TikTok.</p>
+        </div>
+        <hr>
+        <div style="font-size: 12px; color: #94a3b8;">
+            <i class="fas fa-info-circle"></i> Trạng thái: <span id="liveStatus" class="status-on">● Đang tác chiến</span>
+        </div>
     </div>
 
-    <div class="step noon">
-        <span class="battle-tag bg-storage">KHO LƯƠNG</span>
-        <span class="time-tag">10:00 - 11:30: Săn đạn dược</span>
-        <h2>Bước 2: Lọc hàng vào Kho</h2>
-        <div class="instruction">
-            Tải file CSV mới từ Shopee, đưa vào <b>Google Sheets</b>. 
-            Dùng công cụ lọc ở bài 013 để tìm ra 5 món "đỉnh" nhất.
+    <div class="main-content">
+        <div class="crm-mini">
+            <i class="fas fa-users fa-2x"></i>
+            <div style="flex:1">
+                <div style="font-size:12px; opacity:0.9">CHỈ SỐ CHĂM SÓC KHÁCH (CRM)</div>
+                <div style="font-size:20px; font-weight:bold"><span id="custCount">0</span> / 20 Khách tiềm năng</div>
+            </div>
+            <button onclick="addCust()" style="background:white; color:#10b981; border:none; padding:8px 15px; border-radius:6px; font-weight:bold; cursor:pointer">+1 Khách</button>
         </div>
-        <ul class="checklist">
-            <li>Lấy Link AFF của 5 món đó.</li>
-            <li>Lưu vào cột "Đã chọn" trong Google Sheets.</li>
-        </ul>
+
+        <div class="q-tabs">
+            <button class="q-tab active" style="background:#dc3545" onclick="setQ('L')">L (Dưới 200k)</button>
+            <button class="q-tab" style="background:#007bff" onclick="setQ('T')">T (200k-1tr)</button>
+            <button class="q-tab" style="background:#6f42c1" onclick="setQ('C')">C (1tr-5tr)</button>
+            <button class="q-tab" style="background:#ffc107; color:black" onclick="setQ('D')">Đ (Trên 5tr)</button>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h3><i class="fas fa-edit"></i> Công cụ nội dung</h3>
+                <textarea id="inputText" rows="6" placeholder="Dán văn bản hoặc CSV vào đây..."></textarea>
+                <div id="subIdHint" style="margin:10px 0; font-weight:bold; color:#2563eb">SubID gợi ý: ---</div>
+                <button class="btn-action" onclick="analyzeAll()">PHÂN TÍCH CHIẾN DỊCH</button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-chart-area"></i> Hiệu quả chiến dịch</h3>
+                <canvas id="mainChart" height="150"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><i class="fas fa-boxes"></i> Kho hàng mục tiêu (Tầng <span id="currentTier">L</span>)</h3>
+            <table id="productTable">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Giá</th>
+                        <th>Hoa hồng</th>
+                        <th>Mục tiêu đơn</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="productBody">
+                    <tr><td colspan="5" style="text-align:center; color:#999">Chưa có dữ liệu phân tích</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="step afternoon">
-        <span class="battle-tag bg-front">TIỀN TUYẾN</span>
-        <span class="time-tag">14:00 - 16:00: Trưng bày kệ hàng</span>
-        <h2>Bước 3: Lên kệ Tiền tuyến</h2>
-        <div class="instruction">
-            Đưa 5 sản phẩm đã chọn vào <b>My Collection</b> và trang <b>Cửa hàng di động</b>.
-        </div>
-        <ul class="checklist">
-            <li>Thay ảnh bìa đẹp cho sản phẩm trên Shopee.</li>
-            <li>Cập nhật link vào trang GitHub "Tiền tuyến".</li>
-        </ul>
-    </div>
+    <script>
+        let tier = 'L';
+        let customers = parseInt(localStorage.getItem('cust_total')) || 0;
 
-    <div class="step afternoon">
-        <span class="battle-tag bg-front">CHIẾN TRƯỜNG</span>
-        <span class="time-tag">19:00 - 21:00: Xuất kích (Nổ đơn)</span>
-        <h2>Bước 4: Công phá Chiến trường</h2>
-        <div class="instruction">
-            Đây là giờ vàng! Mang link đi rải tại Facebook, Zalo, TikTok.
-        </div>
-        <ul class="checklist">
-            <li>Viết bài chia sẻ (Content lôi cuốn).</li>
-            <li>Ghi nhật ký ngay vào Dashboard sau khi đăng bài.</li>
-        </ul>
-    </div>
-</div>
+        // Tự động kích hoạt bước theo thời gian thực
+        function updateTimeline() {
+            const hour = new Date().getHours();
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            if (hour >= 8 && hour < 10) document.getElementById('step1').classList.add('active');
+            else if (hour >= 10 && hour < 14) document.getElementById('step2').classList.add('active');
+            else if (hour >= 14 && hour < 18) document.getElementById('step3').classList.add('active');
+            else if (hour >= 19 && hour < 23) document.getElementById('step4').classList.add('active');
+        }
 
+        function setQ(q) {
+            tier = q;
+            document.getElementById('currentTier').innerText = q;
+            document.querySelectorAll('.q-tab').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            analyzeAll();
+        }
+
+        function addCust() {
+            customers++;
+            localStorage.setItem('cust_total', customers);
+            document.getElementById('custCount').innerText = customers;
+            if(customers === 20) alert("☕ Đã đủ 20 khách! Hãy chuyển sang bước CHĂM SÓC.");
+        }
+
+        function analyzeAll() {
+            const text = document.getElementById('inputText').value;
+            if(!text) return;
+
+            // Logic SubID (006)
+            const subId = `${tier}_${new Date().getDate()}_${text.length % 99}`;
+            document.getElementById('subIdHint').innerText = "SubID gợi ý: " + subId;
+
+            // Logic Lọc sản phẩm (011)
+            const lines = text.split('\n');
+            let rows = "";
+            lines.forEach(line => {
+                const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                if(cols.length > 2) {
+                    const price = parseInt(cols[2].replace(/[",.]/g, '')) || 0;
+                    const goal = Math.ceil(500000 / (price * 0.05)); // Mục tiêu 500k hoa hồng
+                    rows += `<tr>
+                        <td>${cols[1].substring(0,25)}...</td>
+                        <td>${price.toLocaleString()}đ</td>
+                        <td>5%</td>
+                        <td style="color:red; font-weight:bold">${goal} đơn</td>
+                        <td><button style="font-size:10px">Lưu</button></td>
+                    </tr>`;
+                }
+            });
+            document.getElementById('productBody').innerHTML = rows || "<tr><td colspan='5' style='text-align:center'>Không tìm thấy SP phù hợp</td></tr>";
+        }
+
+        // Khởi tạo biểu đồ (010)
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                datasets: [{ label: 'Hoa hồng', data: [12, 19, 3, 5, 2, 3, 9], borderColor: '#ff5722', tension: 0.4 }]
+            }
+        });
+
+        document.getElementById('custCount').innerText = customers;
+        setInterval(updateTimeline, 60000);
+        updateTimeline();
+    </script>
 </body>
 </html>
