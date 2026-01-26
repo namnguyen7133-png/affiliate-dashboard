@@ -1,53 +1,200 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>Theo dõi Affiliate</title>
-<style>
-table {border-collapse: collapse; width:100%}
-th,td {border:1px solid #ccc; padding:6px; text-align:center}
-.good {background:#c8f7c5}
-.bad {background:#f7c5c5}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Nội Dung & Affiliate</title>
+    <style>
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --success: #2ecc71;
+            --warning: #f1c40f;
+            --danger: #e74c3c;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background: #f0f2f5;
+            color: #333; min-height: 100vh; padding: 20px;
+        }
+
+        .container { max-width: 1300px; margin: 0 auto; }
+
+        /* Header bám sát phong cách file 006 */
+        .header {
+            text-align: center; margin-bottom: 30px; padding: 25px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 15px; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            margin: 30px 0 15px; padding-left: 10px;
+            border-left: 5px solid var(--primary);
+            color: var(--dark); font-size: 1.5rem;
+        }
+
+        .main-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px; margin-bottom: 30px;
+        }
+
+        .card {
+            background: white; border-radius: 12px; padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: 0.3s; border-top: 4px solid var(--secondary);
+        }
+
+        textarea, input[type="text"] {
+            width: 100%; padding: 10px; border: 1px solid #ddd;
+            border-radius: 6px; margin-bottom: 10px; font-size: 14px;
+        }
+
+        .btn {
+            padding: 8px 12px; border: none; border-radius: 5px;
+            font-weight: 600; cursor: pointer; font-size: 12px; color: white;
+            display: inline-flex; align-items: center; gap: 5px;
+        }
+
+        .btn-blue { background: var(--secondary); }
+        .btn-red { background: var(--danger); }
+        .btn-green { background: var(--success); }
+
+        .result-box {
+            background: var(--light); border-radius: 6px; padding: 10px;
+            margin-top: 10px; max-height: 200px; overflow-y: auto;
+            border: 1px solid #eee; font-size: 13px;
+        }
+
+        /* Style cho Bảng Affiliate file 009 */
+        .affiliate-table-container {
+            background: white; padding: 20px; border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); overflow-x: auto;
+        }
+
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #eee; padding: 10px; text-align: center; font-size: 14px; }
+        th { background: var(--light); color: var(--dark); }
+        
+        .good { background: #e8f5e9; color: #2e7d32; font-weight: bold; }
+        .bad { background: #ffebee; color: #c62828; }
+        
+        .status-tag {
+            padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;
+        }
+        .tag-giu { background: var(--success); color: white; }
+        .tag-bo { background: var(--danger); color: white; }
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-<h2>Theo dõi bài Affiliate</h2>
+<div class="container">
+    <div class="header">
+        <h1><i class="fas fa-chart-line"></i> Hub Nội Dung & Affiliate</h1>
+        <p>Phân tích văn bản tối ưu hóa SubID và Theo dõi chuyển đổi</p>
+    </div>
 
-<table>
-<tr>
-<th>Ngày</th>
-<th>Nền tảng</th>
-<th>Bài</th>
-<th>Sub ID</th>
-<th>Click</th>
-<th>Đơn</th>
-<th>Hoa hồng</th>
-<th>Trạng thái</th>
-</tr>
+    <h2 class="section-title">1. Công cụ phân tích (006)</h2>
+    <div class="main-grid">
+        <div class="card" style="grid-column: span 1;">
+            <h3><i class="fas fa-pen"></i> Nguồn & Mục tiêu</h3>
+            <textarea id="inputText" rows="4" placeholder="Nhập văn bản...">Tiếng Việt là ngôn ngữ chính thức tại Việt Nam. Đây là bài viết mẫu cho Affiliate.</textarea>
+            <input type="text" id="searchChars" value="A Ă Â" placeholder="Chữ cái mục tiêu (SubID)">
+            <div style="display: flex; gap: 5px;">
+                <button class="btn btn-blue" onclick="analyzeFull()"><i class="fas fa-bolt"></i> Chạy phân tích</button>
+                <button class="btn btn-red" onclick="document.getElementById('inputText').value=''"><i class="fas fa-trash"></i> Xóa</button>
+            </div>
+        </div>
 
-<tr class="bad">
-<td>20/01</td>
-<td>Facebook</td>
-<td>Trà dưỡng nhan</td>
-<td>FB_2001_Tra_Truyen</td>
-<td>45</td>
-<td>0</td>
-<td>0</td>
-<td>BỎ</td>
-</tr>
+        <div class="card">
+            <h3><i class="fas fa-align-left"></i> Ô 3: Cấu trúc câu</h3>
+            <div class="result-box" id="analysisResult">Chưa có dữ liệu...</div>
+        </div>
 
-<tr class="good">
-<td>21/01</td>
-<td>Zalo</td>
-<td>Sữa tắm bé</td>
-<td>ZL_2101_Sua_Ngan</td>
-<td>12</td>
-<td>1</td>
-<td>35.000</td>
-<td>GIỮ</td>
-</tr>
+        <div class="card">
+            <h3><i class="fas fa-font"></i> Ô 4: Chữ cuối (Gốc)</h3>
+            <div class="result-box" id="lastLettersResult">Chưa có dữ liệu...</div>
+        </div>
 
-</table>
+        <div class="card">
+            <h3><i class="fas fa-fingerprint"></i> Ô 7: Gợi ý SubID</h3>
+            <div class="result-box" id="lastLettersNoAccentResult">Chưa có dữ liệu...</div>
+        </div>
+    </div>
+
+    <h2 class="section-title">2. Theo dõi hiệu quả (009)</h2>
+    <div class="affiliate-table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Ngày</th>
+                    <th>Nền tảng</th>
+                    <th>Bài viết</th>
+                    <th>Sub ID (Từ Ô 7)</th>
+                    <th>Click</th>
+                    <th>Đơn</th>
+                    <th>Hoa hồng</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="bad">
+                    <td>20/01</td>
+                    <td>Facebook</td>
+                    <td>Trà dưỡng nhan</td>
+                    <td><code>FB_2001_Tra_Truyen</code></td>
+                    <td>45</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td><span class="status-tag tag-bo">BỎ</span></td>
+                </tr>
+                <tr class="good">
+                    <td>21/01</td>
+                    <td>Zalo</td>
+                    <td>Sữa tắm bé</td>
+                    <td><code>ZL_2101_Sua_Ngan</code></td>
+                    <td>12</td>
+                    <td>1</td>
+                    <td>35.000</td>
+                    <td><span class="status-tag tag-giu">GIỮ</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const accentMap = {'Ă':'A','Â':'A','Đ':'D','Ê':'E','Ô':'O','Ơ':'O','Ư':'U','ă':'a','â':'a','đ':'d','ê':'e','ô':'o','ơ':'o','ư':'u','À':'A','Á':'A','Ả':'A','Ã':'A','Ạ':'A','Ằ':'A','Ắ':'A','Ẳ':'A','Ẵ':'A','Ặ':'A','Ầ':'A','Ấ':'A','Ẩ':'A','Ẫ':'A','Ậ':'A','È':'E','É':'E','Ẻ':'E','Ẽ':'E','Ẹ':'E','Ề':'E','Ế':'E','Ể':'E','Ễ':'E','Ệ':'E','Ì':'I','Í':'I','Ỉ':'I','Ĩ':'I','Ị':'I','Ò':'O','Ó':'O','Ỏ':'O','Õ':'O','Ọ':'O','Ồ':'O','Ố':'O','Ổ':'O','Ỗ':'O','Ộ':'O','Ờ':'O','Ớ':'O','Ở':'O','Ỡ':'O','Ợ':'O','Ù':'U','Ú':'U','Ủ':'U','Ũ':'U','Ụ':'U','Ừ':'U','Ứ':'U','Ử':'U','Ữ':'U','Ự':'U','Ỳ':'Y','Ý':'Y','Ỷ':'Y','Ỹ':'Y','Ỵ':'Y','à':'a','á':'a','ả':'a','ã':'a','ạ':'a','ằ':'a','ắ':'a','ẳ':'a','ẵ':'a','ặ':'a','ầ':'a','ấ':'a','ẩ':'a','ẫ':'a','ậ':'a','è':'e','é':'e','ẻ':'e','ẽ':'e','ẹ':'e','ề':'e','ế':'e','ể':'e','ễ':'e','ệ':'e','ì':'i','í':'i','ỉ':'i','ĩ':'i','ị':'i','ò':'o','ó':'o','ỏ':'o','õ':'o','ọ':'o','ồ':'o','ố':'o','ổ':'o','ỗ':'o','ộ':'o','ờ':'o','ớ':'o','ở':'o','ỡ':'o','ợ':'o','ù':'u','ú':'u','ủ':'u','ũ':'u','ụ':'u','ừ':'u','ứ':'u','ử':'u','ữ':'u','ự':'u','ỳ':'y','ý':'y','ỷ':'y','ỹ':'y','ỵ':'y'};
+
+    function removeAccents(str) {
+        return str.split('').map(char => accentMap[char] || char).join('');
+    }
+
+    function analyzeFull() {
+        const text = document.getElementById('inputText').value;
+        const target = document.getElementById('searchChars').value.split(/\s+/).filter(c => c);
+        
+        // Ô 3
+        const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 20);
+        document.getElementById('analysisResult').innerHTML = sentences.map(s => `• ${s.trim()}`).join('<br>');
+
+        // Ô 4
+        const words = text.split(/\s+/);
+        const lasts = words.map(w => w.replace(/[^\w\s]/gi, '').slice(-1));
+        document.getElementById('lastLettersResult').innerText = lasts.slice(-10).join(', ') + "...";
+
+        // Ô 7 (Gợi ý SubID không dấu)
+        const noAccentText = removeAccents(text);
+        const wordsNA = noAccentText.split(/\s+/);
+        const lastsNA = wordsNA.map(w => w.replace(/[^\w\s]/gi, '').slice(-1));
+        document.getElementById('lastLettersNoAccentResult').innerHTML = `<b>Ký tự gợi ý:</b> ${Array.from(new Set(lastsNA)).slice(0, 5).join(' - ')}`;
+    }
+</script>
+
 </body>
 </html>
