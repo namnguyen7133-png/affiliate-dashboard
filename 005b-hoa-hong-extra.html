@@ -2,172 +2,240 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <title>Hệ Thống Tác Chiến Affiliate Toàn Năng - Nam Nguyễn</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bộ Lọc Sản Phẩm Kim Tứ Đồ - Nam Nguyễn</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        h2 { color: #ee4d2d; text-align: center; text-transform: uppercase; }
-        .filter-box { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; background: #fff5f2; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
-        label { font-weight: bold; font-size: 13px; color: #555; display: block; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
-        button { background: #ee4d2d; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.3s; }
-        button:hover { background: #d73d1d; transform: translateY(-2px); }
-        
-        .stats-container { display: flex; gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: #333; color: white; padding: 15px; border-radius: 10px; flex: 1; text-align: center; }
-        .stat-card span { display: block; font-size: 20px; font-weight: bold; color: #ffbe00; }
+        :root {
+            --shopee: #ee4d2d; --front: #ef4444; --back: #10b981; --storage: #f59e0b;
+            --bg: #f4f7f6; --dark: #333;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
-        th { background: #ee4d2d; color: white; padding: 12px; text-align: left; }
+        /* SIDEBAR CHIẾN THUẬT (015) */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #e0e0e0; overflow-y: auto; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
+        .step { padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 5px solid #ccc; opacity: 0.5; font-size: 12px; transition: 0.3s; }
+        .step.active { opacity: 1; transform: scale(1.03); box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left-width: 8px; }
+        .step.morning { border-left-color: var(--back); }
+        .step.noon { border-left-color: var(--storage); }
+        .step.afternoon { border-left-color: var(--front); }
+
+        /* MAIN CONTENT */
+        .main-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        
+        /* THỐNG KÊ SIÊU PHẨM (Mảnh mới nhất) */
+        .stats-grid { display: flex; gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: var(--dark); color: white; padding: 15px; border-radius: 12px; flex: 1; text-align: center; border-bottom: 4px solid var(--shopee); }
+        .stat-card span { display: block; font-size: 22px; font-weight: bold; color: #ffbe00; margin-top: 5px; }
+
+        /* BỘ LỌC ĐA TẦNG */
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; background: #fff5f2; padding: 20px; border-radius: 12px; }
+        label { font-weight: bold; font-size: 12px; color: #666; display: block; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; }
+        
+        .btn-action { background: var(--shopee); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; margin-top: 15px; transition: 0.3s; }
+        .btn-action:hover { background: #d73d1d; transform: translateY(-2px); }
+
+        /* BẢNG KẾT QUẢ */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th { background: #f8f9fa; padding: 12px; text-align: left; border-bottom: 2px solid #eee; }
         td { padding: 12px; border-bottom: 1px solid #eee; }
-        tr:hover { background: #fff9f8; }
         .price { color: #2ecc71; font-weight: bold; }
-        .comm { color: #ee4d2d; font-weight: bold; }
-        .sales { background: #fff0eb; color: #ee4d2d; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        .btn-link { background: #0066cc; color: white; text-decoration: none; padding: 5px 10px; border-radius: 5px; font-size: 11px; }
+        .sales-badge { background: #fff0eb; color: var(--shopee); padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+        .btn-link { background: #0066cc; color: white; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; }
+
+        /* CRM MINI (014) */
+        .crm-bar { display: flex; justify-content: space-between; align-items: center; background: var(--back); color: white; padding: 10px 20px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🚀 TRÍCH XUẤT SIÊU PHẨM SHOPEE</h2>
-    
-    <div class="filter-box">
-        <div>
-            <label>1. Chọn tệp CSV (Báo cáo sản phẩm):</label>
-            <input type="file" id="csvFile" accept=".csv">
-        </div>
-        <div>
-            <label>2. Hoa hồng mục tiêu:</label>
-            <select id="rangeHH">
-                <option value="all">Tất cả mức</option>
-                <option value="8">Dưới 8%</option>
-                <option value="12">Dưới 12%</option>
-                <option value="15">Dưới 15%</option>
-                <option value="20">Dưới 20%</option>
-            </select>
-        </div>
-        <div>
-            <label>3. Doanh số tối thiểu:</label>
-            <select id="minSales">
-                <option value="0">Tất cả</option>
-                <option value="10">Từ 10k+ bán</option>
-                <option value="50">Từ 50k+ bán</option>
-                <option value="100">Từ 100k+ bán</option>
-            </select>
+    <div class="sidebar">
+        <h3 style="margin-top:0"><i class="fas fa-rocket"></i> Lộ Trình 24H</h3>
+        <div id="step1" class="step morning"><b>08:00</b> - Hậu phương: Soi bài</div>
+        <div id="step2" class="step noon"><b>10:00</b> - Kho lương: Lọc hàng</div>
+        <div id="step3" class="step afternoon"><b>14:00</b> - Tiền tuyến: Lên kệ</div>
+        <div id="step4" class="step afternoon"><b>19:00</b> - Chiến trường: Nổ đơn</div>
+        <hr>
+        <div style="font-size: 11px; color: #888; line-height: 1.6;">
+            <b>Ghi chú:</b> Tập trung vào các sản phẩm có số bán >10k (Hot Items) để tăng tỷ lệ click-to-buy.
         </div>
     </div>
 
-    <button onclick="processData()">PHÂN TÍCH VÀ LỌC DỮ LIỆU</button>
-
-    <div id="stats" class="stats-container" style="display:none; margin-top:20px;">
-        <div class="stat-card">Tổng sản phẩm<span id="totalItems">0</span></div>
-        <div class="stat-card">Món "Khủng" (>100k bán)<span id="hotItems">0</span></div>
-        <div class="stat-card">HH cao (>15%)<span id="highComm">0</span></div>
-    </div>
-
-    <table id="resultTable" style="display:none;">
-        <thead>
-            <tr>
-                <th>Tên sản phẩm</th>
-                <th>Giá</th>
-                <th>Đã bán</th>
-                <th>Hoa hồng</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody id="resultBody"></tbody>
-    </table>
-</div>
-
-<script>
-    function parseCSV(text) {
-        const rows = [];
-        let currentRow = [];
-        let currentField = '';
-        let inQuotes = false;
-
-        for (let i = 0; i < text.length; i++) {
-            let char = text[i];
-            if (char === '"') {
-                inQuotes = !inQuotes;
-            } else if (char === ',' && !inQuotes) {
-                currentRow.push(currentField.trim());
-                currentField = '';
-            } else if ((char === '\r' || char === '\n') && !inQuotes) {
-                if (currentField || currentRow.length > 0) {
-                    currentRow.push(currentField.trim());
-                    rows.push(currentRow);
-                    currentRow = [];
-                    currentField = '';
-                }
-            } else {
-                currentField += char;
-            }
-        }
-        return rows;
-    }
-
-    function processData() {
-        const fileInput = document.getElementById('csvFile');
-        const hhLimit = document.getElementById('rangeHH').value;
-        const saleLimit = parseInt(document.getElementById('minSales').value);
+    <div class="main-content">
         
-        if (!fileInput.files[0]) return alert("Vui lòng chọn file CSV!");
+        <div class="crm-bar">
+            <span><i class="fas fa-heart"></i> Đã chăm sóc: <b id="custCount">0</b>/20 khách người quen</span>
+            <button onclick="addCust()" style="background:white; color:var(--back); border:none; padding:5px 12px; border-radius:6px; cursor:pointer; font-weight:bold">+1 Khách</button>
+        </div>
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const data = parseCSV(e.target.result);
-            let html = '';
-            let total = 0, hot = 0, high = 0;
+        <div class="card">
+            <h2 style="color:var(--shopee); margin-top:0"><i class="fas fa-filter"></i> TRÍCH XUẤT SIÊU PHẨM</h2>
+            
+            <div class="filter-grid">
+                <div style="grid-column: span 2;">
+                    <label>1. Tệp CSV (Báo cáo Shopee):</label>
+                    <input type="file" id="csvFile" accept=".csv">
+                </div>
+                <div>
+                    <label>2. Tầng Kim Tứ Đồ:</label>
+                    <select id="tierFilter">
+                        <option value="all">Tất cả giá</option>
+                        <option value="L">L (<200k)</option>
+                        <option value="T">T (200k-1tr)</option>
+                        <option value="C">C (1tr-5tr)</option>
+                        <option value="D">D (>5tr)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>3. Hoa hồng Max:</label>
+                    <select id="hhLimit">
+                        <option value="100">Tất cả</option>
+                        <option value="8">Dưới 8%</option>
+                        <option value="12">Dưới 12%</option>
+                        <option value="15">Dưới 15%</option>
+                    </select>
+                </div>
+                <div>
+                    <label>4. Số bán tối thiểu:</label>
+                    <select id="minSales">
+                        <option value="0">Tất cả</option>
+                        <option value="10">Từ 10k+ bán</option>
+                        <option value="50">Từ 50k+ bán</option>
+                        <option value="100">Từ 100k+ bán</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button class="btn-action" onclick="processData()">BẮT ĐẦU PHÂN TÍCH DỮ LIỆU</button>
+        </div>
 
-            data.forEach((cols, i) => {
-                if (i === 0 || cols.length < 8) return;
+        <div id="stats" class="stats-container stats-grid" style="display:none;">
+            <div class="stat-card">Tổng sản phẩm <span id="totalItems">0</span></div>
+            <div class="stat-card">Siêu phẩm (>100k bán) <span id="hotItems">0</span></div>
+            <div class="stat-card">HH cao (>15%) <span id="highComm">0</span></div>
+        </div>
 
-                // Cột: 1: Tên, 2: Giá, 3: Doanh thu, 5: % HH, 8: Link ưu đãi
-                const name = cols[1];
-                const price = cols[2];
-                const salesStr = cols[3].toLowerCase();
-                const hhStr = cols[5].replace('%', '').replace(',', '.');
-                const hh = parseFloat(hhStr);
-                const link = cols[8];
+        <div class="card">
+            <h3 style="margin-top:0"><i class="fas fa-list-ul"></i> Kết Quả Lọc Chi Tiết</h3>
+            <table id="resultTable" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>Tên sản phẩm</th>
+                        <th>Giá</th>
+                        <th>Đã bán</th>
+                        <th>Hoa hồng</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="resultBody"></tbody>
+            </table>
+        </div>
+    </div>
 
-                // Chuyển đổi số bán (ví dụ "10k+" -> 10)
-                let salesVal = 0;
-                if (salesStr.includes('k')) salesVal = parseFloat(salesStr.replace('k+', ''));
-                else salesVal = parseFloat(salesStr) / 1000;
+    <script>
+        let customers = parseInt(localStorage.getItem('cust_count')) || 0;
+        document.getElementById('custCount').innerText = customers;
 
-                // Thống kê
-                total++;
-                if (salesVal >= 100) hot++;
-                if (hh >= 15) high++;
-
-                // Lọc
-                let hhMatch = (hhLimit === "all") || (hh < parseFloat(hhLimit));
-                let saleMatch = salesVal >= saleLimit;
-
-                if (hhMatch && saleMatch) {
-                    html += `<tr>
-                        <td>${name.substring(0, 50)}...</td>
-                        <td class="price">${price}</td>
-                        <td><span class="sales">${cols[3]}</span></td>
-                        <td class="comm">${hh}%</td>
-                        <td><a href="${link}" target="_blank" class="btn-link">Lấy Link</a></td>
-                    </tr>`;
-                }
-            });
-
-            document.getElementById('totalItems').innerText = total;
-            document.getElementById('hotItems').innerText = hot;
-            document.getElementById('highComm').innerText = high;
-            document.getElementById('stats').style.display = 'flex';
-            document.getElementById('resultBody').innerHTML = html;
-            document.getElementById('resultTable').style.display = 'table';
+        const priceTiers = {
+            'L': [0, 200000], 'T': [200001, 1000000], 
+            'C': [1000001, 5000000], 'D': [5000001, 999999999], 'all': [0, 999999999]
         };
-        reader.readAsText(fileInput.files[0]);
-    }
-</script>
 
+        // Hàm parse chuẩn (xử lý ngoặc kép)
+        function parseCSV(text) {
+            const rows = [];
+            let curField = '', inQuotes = false, currentRow = [];
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                if (c === '"') inQuotes = !inQuotes;
+                else if (c === ',' && !inQuotes) { currentRow.push(curField.trim()); curField = ''; }
+                else if ((c === '\n' || c === '\r') && !inQuotes) {
+                    if (curField || currentRow.length > 0) {
+                        currentRow.push(curField.trim());
+                        rows.push(currentRow);
+                        currentRow = []; curField = '';
+                    }
+                } else curField += c;
+            }
+            return rows;
+        }
+
+        function processData() {
+            const fileInput = document.getElementById('csvFile');
+            if (!fileInput.files[0]) return alert("Vui lòng chọn file CSV!");
+
+            const tier = document.getElementById('tierFilter').value;
+            const hhMax = parseFloat(document.getElementById('hhLimit').value);
+            const saleMin = parseInt(document.getElementById('minSales').value);
+            const priceRange = priceTiers[tier];
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = parseCSV(e.target.result);
+                let html = '', total = 0, hot = 0, high = 0, filtered = 0;
+
+                data.forEach((cols, i) => {
+                    if (i === 0 || cols.length < 8) return;
+
+                    const name = cols[1] || "Không tên";
+                    const priceRaw = cols[2] ? cols[2].replace(/[",.]/g, '') : "0";
+                    const priceVal = parseInt(priceRaw);
+                    const salesStr = cols[3].toLowerCase();
+                    const hh = parseFloat(cols[5].replace('%', '').replace(',', '.'));
+                    const link = cols[8];
+
+                    // Chuyển đổi "10k+" thành số 10
+                    let salesNum = salesStr.includes('k') ? parseFloat(salesStr.replace('k+', '')) : parseFloat(salesStr)/1000;
+
+                    // Thống kê tổng quát
+                    total++;
+                    if (salesNum >= 100) hot++;
+                    if (hh >= 15) high++;
+
+                    // Áp dụng bộ lọc đa tầng
+                    if (priceVal >= priceRange[0] && priceVal <= priceRange[1] && 
+                        hh <= hhMax && salesNum >= saleMin) {
+                        filtered++;
+                        html += `<tr>
+                            <td>${name.substring(0, 50)}...</td>
+                            <td class="price">${priceVal.toLocaleString()}đ</td>
+                            <td><span class="sales-badge">${cols[3]}</span></td>
+                            <td style="color:var(--shopee); font-weight:bold">${hh}%</td>
+                            <td><a href="${link}" target="_blank" class="btn-link">LẤY LINK</a></td>
+                        </tr>`;
+                    }
+                });
+
+                document.getElementById('totalItems').innerText = total;
+                document.getElementById('hotItems').innerText = hot;
+                document.getElementById('highComm').innerText = high;
+                document.getElementById('stats').style.display = 'flex';
+                document.getElementById('resultBody').innerHTML = html || "<tr><td colspan='5' style='text-align:center'>Không tìm thấy siêu phẩm nào khớp điều kiện.</td></tr>";
+                document.getElementById('resultTable').style.display = 'table';
+            };
+            reader.readAsText(fileInput.files[0]);
+        }
+
+        function addCust() {
+            customers++;
+            localStorage.setItem('cust_count', customers);
+            document.getElementById('custCount').innerText = customers;
+            if(customers === 20) alert("🎯 Chạm mốc 20 khách! Hãy dừng việc lọc hàng và bắt đầu gửi tin nhắn chăm sóc.");
+        }
+
+        function updateSteps() {
+            const h = new Date().getHours();
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            if(h >= 8 && h < 10) document.getElementById('step1').classList.add('active');
+            else if(h >= 10 && h < 14) document.getElementById('step2').classList.add('active');
+            else if(h >= 14 && h < 18) document.getElementById('step3').classList.add('active');
+            else if(h >= 19 && h < 23) document.getElementById('step4').classList.add('active');
+        }
+        updateSteps();
+        setInterval(updateSteps, 60000);
+    </script>
 </body>
 </html>
