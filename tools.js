@@ -1,57 +1,71 @@
 const colors = ["blue", "green", "orange", "purple"];
 const menu = document.getElementById("menu");
 
+function getGroupKey(filename) {
+  // Lấy 3 số đầu: 004, 005, 006...
+  const match = filename.match(/^(\d{3})/);
+  return match ? match[1] : "other";
+}
+
 function renderMenu(files) {
   menu.innerHTML = "";
 
-  // nhóm TOOL: các file bắt đầu bằng 004
-  const toolGroup = files.filter(item =>
-    item.file.startsWith("004")
-  );
+  // 1. Lọc active
+  const activeFiles = files.filter(f => f.active === true);
 
-  // các mục còn lại
-  const otherGroup = files.filter(item =>
-    !item.file.startsWith("004")
-  );
-
-  // vẽ nhóm thường
-  otherGroup.forEach((item, index) => {
-    const a = document.createElement("a");
-    a.href = item.file;
-    a.textContent = item.name;
-    a.className = colors[index % colors.length] + " menu-item";
-    a.target = "_blank";
-    menu.appendChild(a);
+  // 2. Gom nhóm theo số
+  const groups = {};
+  activeFiles.forEach(item => {
+    const key = getGroupKey(item.file);
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item);
   });
 
-  // vẽ TOOL
-  if (toolGroup.length > 0) {
-    const title = document.createElement("div");
-    title.textContent = "🔧 TOOL – Nhóm 004";
-    title.style.fontWeight = "bold";
-    title.style.marginTop = "16px";
-    menu.appendChild(title);
+  // 3. Sắp xếp nhóm theo số
+  const sortedGroupKeys = Object.keys(groups).sort();
 
-    toolGroup.forEach(item => {
+  sortedGroupKeys.forEach((key, groupIndex) => {
+    const group = groups[key];
+
+    // Nếu nhóm chỉ có 1 file → hiển thị như bình thường
+    if (group.length === 1) {
+      const item = group[0];
       const a = document.createElement("a");
       a.href = item.file;
-      a.textContent = "↳ " + item.name;
-      a.className = "menu-item";
-      a.style.marginLeft = "18px";
+      a.textContent = item.name;
+      a.className = colors[groupIndex % colors.length] + " menu-item";
       a.target = "_blank";
       menu.appendChild(a);
-    });
-  }
+      return;
+    }
+
+    // Nếu có A/B/C → tạo nhóm
+    const title = document.createElement("div");
+    title.textContent = `📁 Nhóm ${key}`;
+    title.style.fontWeight = "bold";
+    title.style.marginTop = "14px";
+    menu.appendChild(title);
+
+    // Sắp xếp A → B → C
+    group
+      .sort((a, b) => a.file.localeCompare(b.file))
+      .forEach(item => {
+        const a = document.createElement("a");
+        a.href = item.file;
+        a.textContent = "↳ " + item.name;
+        a.className = "menu-item";
+        a.style.marginLeft = "18px";
+        a.target = "_blank";
+        menu.appendChild(a);
+      });
+  });
 }
 
-/* load files.json */
+/* Load files.json */
 fetch("files.json")
   .then(res => res.json())
-  .then(list => {
-    const activeList = list.filter(item => item.active === true);
-    renderMenu(activeList);
-  })
+  .then(list => renderMenu(list))
   .catch(err => {
-    menu.innerHTML = "❌ Không tải được danh sách";
+    menu.innerHTML = "❌ Không tải được menu";
     console.error(err);
   });
