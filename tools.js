@@ -1,15 +1,20 @@
 const colors = ["blue", "green", "orange", "purple"];
 const menu = document.getElementById("menu");
 
-/* Vẽ menu có gộp TOOL */
 function renderMenu(files) {
   menu.innerHTML = "";
 
-  // 1. Tách nhóm TOOL và nhóm khác
-  const toolGroup = files.filter(item => item.tag === "tool");
-  const otherGroup = files.filter(item => item.tag !== "tool");
+  // nhóm TOOL: các file bắt đầu bằng 004
+  const toolGroup = files.filter(item =>
+    item.file.startsWith("004")
+  );
 
-  // 2. Vẽ các nhóm KHÔNG PHẢI TOOL (hiện bình thường)
+  // các mục còn lại
+  const otherGroup = files.filter(item =>
+    !item.file.startsWith("004")
+  );
+
+  // vẽ nhóm thường
   otherGroup.forEach((item, index) => {
     const a = document.createElement("a");
     a.href = item.file;
@@ -19,27 +24,27 @@ function renderMenu(files) {
     menu.appendChild(a);
   });
 
-  // 3. Nếu có TOOL → gộp lại
+  // vẽ TOOL
   if (toolGroup.length > 0) {
-    const groupTitle = document.createElement("div");
-    groupTitle.textContent = "🔧 TOOL";
-    groupTitle.style.fontWeight = "bold";
-    groupTitle.style.marginTop = "16px";
-    groupTitle.style.marginBottom = "8px";
-    menu.appendChild(groupTitle);
+    const title = document.createElement("div");
+    title.textContent = "🔧 TOOL – Nhóm 004";
+    title.style.fontWeight = "bold";
+    title.style.marginTop = "16px";
+    menu.appendChild(title);
 
     toolGroup.forEach(item => {
       const a = document.createElement("a");
       a.href = item.file;
       a.textContent = "↳ " + item.name;
-      a.className = "menu-item tool-child";
+      a.className = "menu-item";
+      a.style.marginLeft = "18px";
       a.target = "_blank";
       menu.appendChild(a);
     });
   }
 }
 
-/* Đọc files.json */
+/* load files.json */
 fetch("files.json")
   .then(res => res.json())
   .then(list => {
@@ -47,6 +52,6 @@ fetch("files.json")
     renderMenu(activeList);
   })
   .catch(err => {
-    menu.innerHTML = "❌ Không tải được danh sách tool";
+    menu.innerHTML = "❌ Không tải được danh sách";
     console.error(err);
   });
