@@ -1,26 +1,104 @@
 [
   {
-    "name": "001 – Tìm tên người",
-    "file": "001-tim-ten-nguoi.html",
-    "tag": "text",
-    "active": false
-  },
-  {
-    "name": "002 – Thời gian biểu làm việc",
-    "file": "002-thoi-gian-bieu-lam-viec.html",
-    "tag": "work",
+    "name": "000 – Affiliate Hub – Trung tâm điều phối toàn bộ hệ thống bán hàng tự động",
+    "file": "000-affiliate-hub.html",
+    "tag": "hub",
     "active": true
   },
   {
-    "name": "003 – Shopee tự động làm hoa hồng",
-    "file": "003-shopee-tu-dong-lam-hh.html",
-    "tag": "shopee",
+    "name": "001 – Chọn người mở hàng – Kích hoạt đơn đầu tiên có hoa hồng",
+    "file": "001-chon-nguoi-mo-hang.html",
+    "tag": "start",
     "active": true
   },
   {
-    "name": "004 – Shopee tìm chữ cuối đoạn văn",
-    "file": "004-shopee-tim-chu-cuoi-doan-van.html",
-    "tag": "shopee",
+    "name": "002 – Hướng dẫn làm tiếp thị liên kết Shopee từ A đến Z",
+    "file": "002-huong-dan-lam-tiep-thi.html",
+    "tag": "guide",
+    "active": true
+  },
+  {
+    "name": "003 – Thời gian biểu giờ đăng bài vàng để tối ưu chuyển đổi",
+    "file": "003-thoi-gian-bieu-gio-dang.html",
+    "tag": "time",
+    "active": true
+  },
+  {
+    "name": "004 – Cách tính hoa hồng Shopee chi tiết từng ngành hàng",
+    "file": "004-hoa-hong-shope.html",
+    "tag": "money",
+    "active": true
+  },
+  {
+    "name": "004B – Phân tích hoa hồng Shopee nâng cao cho người làm lâu dài",
+    "file": "004B-hoa-hong-shope.html",
+    "tag": "money",
+    "active": true
+  },
+  {
+    "name": "004C – Hoa hồng theo từng sản phẩm cụ thể và chiến lược chọn hàng",
+    "file": "004c-hoa-hong-san-pham.html",
+    "tag": "money",
+    "active": true
+  },
+  {
+    "name": "005 – Hoa hồng Extra và cách tối ưu lợi nhuận vượt trội",
+    "file": "005-hoa-hong-extra.html",
+    "tag": "money",
+    "active": true
+  },
+  {
+    "name": "005B – Phân tích hoa hồng Extra nâng cao",
+    "file": "005b-hoa-hong-extra.html",
+    "tag": "money",
+    "active": true
+  },
+  {
+    "name": "006 – Hoa hồng theo từng sản phẩm Shopee",
+    "file": "006-hoa-hong-san-pham.html",
+    "tag": "money",
+    "active": true
+  },
+  {
+    "name": "006B – So sánh hoa hồng sản phẩm theo ngành",
+    "file": "006B-hoa-hong-san-pham.html",
+    "tag": "money",
+    "active": true
+  },
+  {
+    "name": "006C – Chọn sản phẩm hoa hồng cao nhưng vẫn dễ bán",
+    "file": "006c-hoa-hong-san-pham.html",
+    "tag": "money",
+    "active": true
+  },
+  {
+    "name": "009 – Lưu tên đường dẫn và quản lý link Affiliate",
+    "file": "009-luu-ten-duong-dan.html",
+    "tag": "tool",
+    "active": true
+  },
+  {
+    "name": "012 – Quản lý link Affiliate tập trung",
+    "file": "012-Quan-ly-link.html",
+    "tag": "tool",
+    "active": true
+  },
+  {
+    "name": "013 – Quản lý Kim Tự Đồ – Hệ thống người hỗ trợ bán hàng",
+    "file": "013-Quan-ly-Kim-tu-do.html",
+    "tag": "system",
+    "active": true
+  },
+  {
+    "name": "014 – Thống kê người giúp bạn bán hàng",
+    "file": "014-thong-ke-nguoi-giup-ban-hang.html",
+    "tag": "system",
+    "active": true
+  },
+  {
+    "name": "015 – Bản đồ tác chiến Affiliate – Nhìn là biết làm gì",
+    "file": "015-ban-do-tac-chien.html",
+    "tag": "map",
     "active": true
   }
 ]
